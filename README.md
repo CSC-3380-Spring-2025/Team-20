@@ -1,10 +1,10 @@
-# [Name of the Project] : [Team Number]
+# [UNI-FriendSync] : [Team 20]
 # Members
-Project Manager: [Name] ([GitHub Name])\
-Communications Lead: [Name] ([GitHub Name])\
-Git Master: [Name] ([GitHub Name])\
-Design Lead: [Name] ([GitHub Name])\
-Quality Assurance Tester: [Name] ([GitHub Name])
+Project Manager: [Lizeth Rodriguez] ([liz3throdriquez])\
+Communications Lead: [Cameron Bly] ([cbly315])\
+Git Master: [Pooja Garlapati] ([pogarla23])\
+Design Lead: [Hermyone Green] ([VaiGreen])\
+Quality Assurance Tester: [Lily Yang] ([lyang33lsu])
 
 # About Our Software
 
