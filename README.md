@@ -1,14 +1,14 @@
 # [UNI-FriendSync] : [Team 20]
 # Members
-Project Manager: [Lizeth Rodriguez] ([liz3throdriquez])\
-Communications Lead: [Cameron Bly] ([cbly315])\
-Git Master: [Pooja Garlapati] ([pogarla23])\
-Design Lead: [Hermyone Green] ([VaiGreen])\
-Quality Assurance Tester: [Lily Yang] ([lyang33lsu])
+Project Manager: Lizeth Rodriguez ([liz3throdriquez])\
+Communications Lead: Cameron Bly ([cbly315])\
+Git Master: Pooja Garlapati ([pogarla23])\
+Design Lead: Hermyone Green ([VaiGreen])\
+Quality Assurance Tester: Lily Yang ([lyang33lsu])
 
 # About Our Software
+An interactive website to connect with LSU people. 
 
-Describe a little about what the project is about here.
 ## Platforms Tested on
 - MacOS
 - Android
@@ -16,7 +16,7 @@ Describe a little about what the project is about here.
 - Linux
 - Windows
 # Important Links
-Kanban Board: [link]\
+Figma: [link]\
 Designs: [link]\
 Styles Guide(s): [link]
 
