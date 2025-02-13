@@ -1,10 +1,10 @@
-# [UNI-FriendSync] : [Team 20]
+# UNI-FriendSync : Team 20
 # Members
-Project Manager: Lizeth Rodriguez ([liz3throdriquez])\
-Communications Lead: Cameron Bly ([cbly315])\
-Git Master: Pooja Garlapati ([pogarla23])\
-Design Lead: Hermyone Green ([VaiGreen])\
-Quality Assurance Tester: Lily Yang ([lyang33lsu])
+Project Manager: Lizeth Rodriguez (liz3throdriquez)\
+Communications Lead: Cameron Bly (cbly315)\
+Git Master: Pooja Garlapati (pogarla23)\
+Design Lead: Hermyone Green (VaiGreen)\
+Quality Assurance Tester: Lily Yang (lyang33lsu)
 
 # About Our Software
 An interactive website to connect with LSU people. 
@@ -13,8 +13,8 @@ An interactive website to connect with LSU people.
 - MacOS
 - Android
 - iOS
-- Linux
 - Windows
+  
 # Important Links
 Figma: <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs</a>\
 Designs: [link]\
@@ -23,7 +23,7 @@ Styles Guide(s): [link]
 # How to Run Dev and Test Environment
 
 ## Dependencies
-- List all dependencies here
+- List all dependencies here  -- provide a gitignore
 - Don't forget to include versions
 ### Downloading Dependencies
 Describe where to download the dependencies here. Some will likely require a web download. Provide links here. For IDE extensions, make sure your project works with the free version of them, and detail which IDE(s) these are available in. 
