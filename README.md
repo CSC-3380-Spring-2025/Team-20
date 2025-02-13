@@ -16,7 +16,7 @@ An interactive website to connect with LSU people.
 - Linux
 - Windows
 # Important Links
-Figma: <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Figma Link</a>\
+Figma: <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs</a>\
 Designs: [link]\
 Styles Guide(s): [link]
 
