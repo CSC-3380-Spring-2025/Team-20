@@ -6,7 +6,7 @@ import MapControls from "../../components/mapcontrols";
 
 export default function MapPage() {
   return (
-    <div className="relative">
+    <div>
       <Header />
       <SearchBar />
       <MapControls />

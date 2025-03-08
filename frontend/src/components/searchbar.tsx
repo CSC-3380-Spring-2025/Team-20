@@ -1,23 +1,12 @@
-"use client"; 
-
-import { useState } from "react";
-
 export default function SearchBar() {
-  const [search, setSearch] = useState("");
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
 
   return (
     <div>
-       <div className="absolute top-16 left-0 bg-blue-500 p-4 rounded shadow-md" style={{ width: '500px', height: '50px' }}>
+       <div className="absolute top-20 left-4 bg-white rounded" style={{ width: '300px', height: '40px' }}>
             <input
               type="text"
-              value={search}
-              onChange={handleSearch}
-              placeholder="Search"
-              className="w-full h-full bg-transparent text"
+              placeholder="  Search"
+              className="w-full h-full bg-transparent text-black"
             />
           </div>
     </div>
