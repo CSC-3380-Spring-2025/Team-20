@@ -21,6 +21,14 @@ Designs: [link]\
 Styles Guide(s): [link]
 
 # How to Run Dev and Test Environment
+1. Download dependencies (make sure to delete .next or node.js folder)
+```
+npm install 
+```
+2. Run Environment. Make sure to use a compatible web browser. 
+```
+npm run dev
+```
 
 ## Dependencies
 - List all dependencies here  -- provide a gitignore
