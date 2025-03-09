@@ -3,10 +3,13 @@
 //import DatePicker from "react-datepicker";
 //import Navbar from "../app/EP-components/navbar"
 import Button from "../app/EP-components/button"
-import { useState } from "react";
+import Header from "./EP-components/header";
+//import { useState } from "react";
 
 export default function Home() {
   //Buttons --> set Event 
+
+  /**
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [eventDetails, setEventDetails] = useState({
     title: " ",
@@ -14,15 +17,17 @@ export default function Home() {
     location: null, 
     description: " "
   })
+
+  */
 //insert navbar
   
   return (
-     <div>
-      <div className="Header">
-        
-      </div>
+     <main>
+      <Header/>
       
+      <div className="MyEvent-container">
 
+      </div>
       <div className="Body">
 
         <Button backgroundColor="#24a0ed" color="white" fontSize="12px" padding="8px 20px" borderRadius="5px" fontWeight="bold" onClick={() =>alert("Standby, Add Event")}>
@@ -31,7 +36,7 @@ export default function Home() {
       </div>
   
       
-     </div>
+     </main>
       
     
   );

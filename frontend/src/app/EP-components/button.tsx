@@ -14,7 +14,6 @@ interface ButtonStyle{
 interface My_Button extends ButtonStyle {
   children: React.ReactNode;
   onClick? : () => void; 
-
 }
 
 const Button: React.FC<My_Button> = ({
