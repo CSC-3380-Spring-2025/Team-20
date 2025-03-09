@@ -1,7 +1,7 @@
 
 'use client';
-import DatePicker from "react-datepicker";
-import Navbar from "../app/EP-components/navbar"
+//import DatePicker from "react-datepicker";
+//import Navbar from "../app/EP-components/navbar"
 import Button from "../app/EP-components/button"
 import { useState } from "react";
 
@@ -14,12 +14,12 @@ export default function Home() {
     location: null, 
     description: " "
   })
-
+//insert navbar
   
   return (
      <div>
       <div className="Header">
-        <Navbar/>
+        
       </div>
       
 

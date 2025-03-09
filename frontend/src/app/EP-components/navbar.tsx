@@ -1,7 +1,7 @@
 'use client';
-import React from "react";
+//import React from "react";
 
-
+/** 
 interface NavProps{
     Title: "UNIFRIEND-SYNC";
     Button: String
@@ -26,5 +26,5 @@ export default function Header(){
 // styling..will import to styling in file later TT
 
 const headDiv = document.getElementById('headDiv');
-
+*/
 
