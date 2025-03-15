@@ -45,18 +45,6 @@ export default function MapControls() {
         </button>
         <button
           className="bg-white text-gray-500 w-10 h-10 rounded text-xl"
-          onClick={() => setZoom((z) => Math.min(z + 1, 10))}
-        >
-          +
-        </button>
-        <button
-          className="bg-white text-gray-500 w-10 h-10 rounded text-xl"
-          onClick={() => setZoom((z) => Math.max(z - 1, 1))}
-        >
-          -
-        </button>
-        <button
-          className="bg-white text-gray-500 w-10 h-10 rounded text-xl"
         > 
         🧍
         </button>
