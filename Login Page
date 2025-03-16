@@ -1,0 +1,16 @@
+import React from 'react';
+
+const LoginPage: React.FC = () => (
+  <div className="login-page flex flex-col items-center justify-center text-center">
+    <h1 className="text-4xl font-bold mb-6">Login to Your Account</h1>
+    <input
+      className="w-1/3 p-3 border border-gray-300 rounded-md mb-4"
+      placeholder="Enter your email"
+    />
+    <button className="bg-[#8359E3] text-white px-6 py-2 rounded-lg hover:bg-[#6b45c8] active:scale-95 transition">
+      Login
+    </button>
+  </div>
+);
+
+export default LoginPage;
