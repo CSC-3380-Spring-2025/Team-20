@@ -1,31 +1,30 @@
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 function Header() {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
-  const mobileMenuRef = useRef<HTMLDivElement>(null); 
 
-
+  // Toggle hamburger menu visibility
   const toggleHamburger = () => {
-    setIsHamburgerOpen(!isHamburgerOpen);
+    setIsHamburgerOpen(prevState => !prevState);
   };
 
-  
+  // Reference for the mobile menu to handle clicks outside
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close the mobile menu if clicking outside of it
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+      setIsHamburgerOpen(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setIsHamburgerOpen(false);
-      }
-    };
-
-    
     document.addEventListener("mousedown", handleClickOutside);
-
-    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [handleClickOutside]);
 
   return (
     <header style={styles.header}>
@@ -38,7 +37,11 @@ function Header() {
 
         <ul style={styles.navRight}>
           <li style={styles.navItem}>
-            <button style={styles.hamburger} onClick={toggleHamburger}>
+            <button 
+              style={styles.hamburger} 
+              onClick={toggleHamburger} 
+              aria-label={isHamburgerOpen ? "Close menu" : "Open menu"}
+            >
               &#9776;
             </button>
           </li>
@@ -48,22 +51,21 @@ function Header() {
         </ul>
       </nav>
 
-     
       {isHamburgerOpen && (
         <div ref={mobileMenuRef} style={styles.mobileMenu}>
-          <Link href="/bio-page" style={styles.mobileLink}>
+          <Link href="/bio-page" style={styles.mobileLink} aria-label="Go to my page">
             My Page
           </Link>
-          <Link href="/events-page" style={styles.mobileLink}>
+          <Link href="/events-page" style={styles.mobileLink} aria-label="Go to events page">
             Events
           </Link>
-          <Link href="/campus-map" style={styles.mobileLink}>
+          <Link href="/campus-map" style={styles.mobileLink} aria-label="Go to campus map">
             My Map
           </Link>
-          <Link href="/interests" style={styles.mobileLink}>
+          <Link href="/interests" style={styles.mobileLink} aria-label="Go to interests page">
             Interests
           </Link>
-          <Link href="/settings-page" style={styles.mobileLink}>
+          <Link href="/settings-page" style={styles.mobileLink} aria-label="Go to settings page">
             Settings
           </Link>
         </div>
@@ -72,12 +74,13 @@ function Header() {
   );
 }
 
-// Updated styles
+// Updated styles based on Figma
 const styles = {
   header: {
     backgroundColor: "purple",
     color: "white",
     padding: "10px 20px",
+    fontWeight: "bold",
   },
   nav: {
     display: "flex",
