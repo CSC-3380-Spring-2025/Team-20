@@ -1,9 +1,9 @@
 'use client';
  //please change when actually working on page .. move directory as such
  //transfer container styling to components. proceed to add event form
-import Button from "../../app/EP-components/button"; 
-import Header from "../../app/EP-components/header";
-import DivContainer from "../../app/EP-components/containers";
+import Button from "../app/EP-components/button"; 
+import Header from "../app/EP-components/header";
+import DivContainer from "../app/EP-components/containers";
 import { useState } from "react";
 import Link from "next/link";
 

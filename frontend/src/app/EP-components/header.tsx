@@ -56,7 +56,7 @@ function Header() {
           <Link href="/bio-page" style={styles.mobileLink} aria-label="Go to my page">
             My Page
           </Link>
-          <Link href="/events-page" style={styles.mobileLink} aria-label="Go to events page">
+          <Link href="/" style={styles.mobileLink} aria-label="Go to events page">
             Events
           </Link>
           <Link href="/campus-map" style={styles.mobileLink} aria-label="Go to campus map">
