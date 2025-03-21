@@ -1,20 +1,35 @@
-//import Image from "next/image";
+"use client";
 
-/**
- * 
- * 
- *  <div className= "grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      
-        H
-      </div>
- */
-export default function Home() {
+import React from "react";
+import Login from "./login";
+
+export default function Home() { 
+
+  //i want on my screeen to display this number is greater than 2 else say it's not
+
+  
   return (
-     <div>
-
-      Hello
-     </div>
-      
-    
+    <div style={styles.divContainer}>
+      <h3>Login Website</h3>
+      <Login/>
+    </div>
   );
+
+  
 }
+/**
+ *  return (
+    <div style={styles.divContainer}>
+      <h3>Login Website</h3>
+      NII
+    </div>
+  );
+ */
+
+const styles = {
+  divContainer: {
+    width: "500px",
+    margin: "0 auto",
+    paddingTop: "30px",
+  },
+};
