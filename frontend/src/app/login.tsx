@@ -35,13 +35,13 @@ export default function Login() {
 
 const styles = {
     button: {
-      backgroundColor: "#3498db", // Blue color for button
-      color: "white", // White text color
+      backgroundColor: "#3498db",
+      color: "white",
       fontWeight: "bold",
-      padding: "10px 20px", // Padding for button
-      borderRadius: "8px", // Rounded corners
-      border: "none", // Remove border
-      cursor: "pointer", // Pointer cursor on hover
-      transition: "background-color 0.3s ease", // Smooth background transition
+      padding: "10px 20px",
+      borderRadius: "8px", 
+      border: "none", 
+      cursor: "pointer", 
+      transition: "background-color 0.3s ease", 
     },
   };
