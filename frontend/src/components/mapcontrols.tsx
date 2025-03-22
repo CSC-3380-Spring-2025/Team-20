@@ -1,54 +1,38 @@
-"use client"; 
+import React from "react";
+import { useMap } from "react-leaflet";
+import { Home } from "lucide-react";
 
-import { useState } from "react";
+interface HomeButton {
+  center: [number, number];
+  zoom: number;
+}
 
-export default function MapControls() {
-  const [zoom, setZoom] = useState<number>(1);
-  const [popup, setPopup] = useState<boolean>(false);
+const HomeButton: React.FC<HomeButton> = ({ center, zoom }) => {
+  const map = useMap();
 
-  const togglePopup = () => setPopup(!popup); 
+  const clickableHome = () => {
+    map.flyTo(center, zoom);
+  };
 
   return (
-    <div className="relative w-full h-screen">
-
-      {/* Button in Top Right Corner */}
-      <div className="absolute top-5 right-4 text-xl">
-        <button
-          className="text-xl"
-          onClick={togglePopup}
-        > 
-        🔗
-        </button>
-
-        {/* Popup */}
-        {popup && (
-          <div className="absolute top-16 right-0 bg-white p-4 rounded" style={{ width: '400px', height: '300px' }}>
-            <p 
-            className="text-black rounded text-xl"
-            >
-              Share Location
-            </p>
-            <button onClick={togglePopup}>
-              X
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Buttons in Bottom Right Corner */}
-      <div className="absolute bottom-12 right-4 flex flex-col space-y-3">
-        <button
-          className="bg-white text-gray-500 w-10 h-10 rounded text-xl"
-          onClick={() => setZoom(1)}
-        >
-          🏠
-        </button>
-        <button
-          className="bg-white text-gray-500 w-10 h-10 rounded text-xl"
-        > 
-        🧍
-        </button>
-      </div>
-    </div>
+    <button
+      onClick={clickableHome}
+      style={{
+        position: "absolute",
+        top: "80px",
+        left: "10px",
+        height: "35px",
+        width: "35px",  
+        backgroundColor: "white",
+        padding: "5px",
+        border: "1px solid gray",
+        borderRadius: "5px",
+        zIndex: 1000
+      }}
+    >
+      <Home size={24} />
+    </button>
   );
-}
+};
+
+export default HomeButton;

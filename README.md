@@ -4,7 +4,7 @@ Project Manager: Lizeth Rodriguez (liz3throdriquez)\
 Communications Lead: Cameron Bly (cbly315)\
 Git Master: Pooja Garlapati (pogarla23)\
 Design Lead: Hermyone Green (VaiGreen)\
-Quality Assurance Tester: Lily Yang (lyang33lsu)
+Quality Assurance Tester: Lily Yang (lyang33lsu)\
 
 # About Our Software
 An interactive website to connect with LSU people. 
