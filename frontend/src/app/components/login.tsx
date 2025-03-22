@@ -23,7 +23,7 @@ export default function Login() {
         {/* Sign in button */}
         <button
           style={styles.button}
-          onClick={() => signIn("google", { callbackUrl: "http://localhost:3004" })}
+          onClick={() => signIn("google", { callbackUrl: "http://localhost:3000" })}
           type="button"
         >
           Sign in with Google
