@@ -21,6 +21,7 @@ interface ContainerStyle {
   position?: 'relative' | 'absolute' | 'fixed' | 'static' | 'sticky'; 
   top?:string;
   overflowY?: 'auto' | 'scroll' | 'hidden' | 'visible';
+  style?: React.CSSProperties;
 
 }
 
@@ -48,6 +49,7 @@ const DivContainer: React.FC<DivContainerProps> = ({
   position,
   top,
   overflowY,
+  style,
 }) => {
   const containerStyle: React.CSSProperties = {
     backgroundColor,
@@ -68,6 +70,7 @@ const DivContainer: React.FC<DivContainerProps> = ({
     position,
     top,
     overflowY,
+    ...style,
   };
 
   return <div style={containerStyle}>{children}</div>;
