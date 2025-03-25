@@ -9,12 +9,12 @@ export const titleStyle = {
   export const linkStyle = {
     fontSize: '30px',
     marginTop: '50px',
-    color: '#0070f3',
-    textDecoration: 'underline',
+    color: 'black',
     padding: '1px 12px',
     fontWeight: 'bold',
   };
 
+  
   export const headerStyle = {
     fontSize: '25px',
     padding: '1px 12px',
