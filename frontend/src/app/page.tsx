@@ -1,20 +1,44 @@
-//import Image from "next/image";
+'use client';
 
-/**
- * 
- * 
- *  <div className= "grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      
-        H
-      </div>
- */
+import Button from "../app/EP-components/button";
+import Header from "../app/EP-components/header";
+import DivContainer from "../app/EP-components/containers";
+import EventSection from "../app/EP-components/EventSection";
+import { titleStyle, linkStyle} from "../app/styles/eventstyle";
+import useEvents from "../app/hooks/useEvents";
+import Link from "next/link";
+
 export default function Home() {
-  return (
-     <div>
+  const { events, addEvent, deleteEvent } = useEvents();
 
-      Hello
-     </div>
-      
-    
+  return (
+    <main>
+      <Header />
+
+      <DivContainer padding="2px" width="100%">
+        <DivContainer display="flex" justifyContent="space-between" padding="40px 20px 10px 10px" width="100%">
+          <p style={titleStyle}>My Events</p>
+          <Button
+            backgroundColor="#24a0ed"    
+            color="white"
+            fontSize="12px"
+            padding="2px 10px"
+            borderRadius="5px"
+            fontWeight="bold"
+            onClick={addEvent}
+          >
+            Add Event
+          </Button>
+        </DivContainer>
+
+        <EventSection title="My Events" events={events} deleteEvent={deleteEvent} />
+      </DivContainer>
+
+      <EventSection title="Popular Events" events={events} deleteEvent={deleteEvent} />
+
+      <Link href="/EVENTLSU">
+        <p style={linkStyle}>Leaving LSU?</p>
+      </Link>
+    </main>
   );
 }
