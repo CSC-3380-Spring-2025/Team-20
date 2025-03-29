@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import { Home } from "lucide-react";
+import 'leaflet-control-geocoder';
+import 'leaflet-control-geocoder/dist/Control.Geocoder.css'; 
+import L from "leaflet";
 
 interface HomeButton {
   center: [number, number];
   zoom: number;
 }
 
+//Home Button Component
 const HomeButton: React.FC<HomeButton> = ({ center, zoom }) => {
   const map = useMap();
 
@@ -35,4 +39,36 @@ const HomeButton: React.FC<HomeButton> = ({ center, zoom }) => {
   );
 };
 
-export default HomeButton;
+declare module 'leaflet' {
+  namespace Control {
+    function geocoder(options?: any): any;
+  }
+}
+
+//Search Bar Component
+const SearchBar: React.FC = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    const searchControl = L.Control.geocoder({
+      defaultMarkGeocode: false,
+      placeholder: 'Search Maps',
+      errorMessage: 'Maps cannot find',
+      showResultIcons: true,
+    })
+      .on("markgeocode", (e: any) => {
+        const { center } = e.geocode;
+        map.flyTo(center, 17); 
+        L.marker(center).addTo(map).bindPopup(e.geocode.name).openPopup();
+      })
+      .addTo(map);
+
+    return () => {
+      map.removeControl(searchControl);
+    };
+  }, [map]);
+
+  return null;
+};
+
+export { HomeButton, SearchBar };
