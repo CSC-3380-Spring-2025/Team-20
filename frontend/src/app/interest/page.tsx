@@ -4,15 +4,81 @@ import { useState, useEffect } from 'react';
 
 export default function Home() {
   const categories = {
-    Hobbies: ["Reading", "Gaming", "Painting", "Knitting", "Gardening", "Photography", "Writing", "Fishing", "Cycling", "Birdwatching", "Woodworking", "Calligraphy", "Pottery", "Scrapbooking", "Cooking", "Baking", "Chess", "Puzzles", "Origami", "Magic Tricks", "Yoga"],
-    Sports: ["Soccer", "Basketball", "Tennis", "Baseball", "Football", "Swimming", "Running", "Cycling", "Boxing", "Martial Arts", "Wrestling", "Volleyball", "Golf", "Table Tennis", "Hockey", "Badminton", "Skiing", "Snowboarding", "Rock Climbing", "Surfing", "Track and Field"],
-    Food: ["Pizza", "Sushi", "Burgers", "Pasta", "Steak", "Seafood", "Salad", "Sandwiches", "BBQ", "Ice Cream", "Chocolate", "Tacos", "Curry", "Dumplings", "Ramen", "Cheese", "Bread", "Vegan Dishes", "Fried Chicken", "Smoothies", "Soups"],
-    Movies: ["Action", "Comedy", "Horror", "Drama", "Sci-Fi", "Fantasy", "Thriller", "Romance", "Animated", "Documentary", "Mystery", "Crime", "Musical", "Historical", "Superhero", "Western", "Indie", "Foreign Films", "Biopics", "Psychological Thriller", "Experimental"],
-    Colors: ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Pink", "Black", "White", "Gray", "Teal", "Magenta", "Cyan", "Brown", "Maroon", "Navy", "Turquoise", "Lavender", "Gold", "Silver", "Beige"],
-    Animals: ["Dogs", "Cats", "Birds", "Horses", "Elephants", "Dolphins", "Lions", "Tigers", "Bears", "Penguins", "Giraffes", "Zebras", "Kangaroos", "Pandas", "Snakes", "Frogs", "Wolves", "Owls", "Butterflies", "Foxes", "Rabbits"],
-    Career: ["Engineering", "Medicine", "Art", "Law", "Education", "Business", "Finance", "Tech", "Science", "Psychology", "Marketing", "Journalism", "Architecture", "Music", "Acting", "Politics", "Writing", "Nursing", "Military", "Entrepreneurship", "Social Work"],
-    Fashion: ["Streetwear", "Formal", "Casual", "Vintage", "Bohemian", "Punk", "Gothic", "Chic", "Athleisure", "Preppy", "Hipster", "Grunge", "Minimalist", "Kawaii", "Y2K", "Cottagecore", "Techwear", "High Fashion", "Denim", "Monochrome", "Classic"],
-    Personality: ["Introvert", "Extrovert", "Ambivert", "Optimist", "Pessimist", "Realist", "Adventurous", "Creative", "Empathetic", "Logical", "Charismatic", "Independent", "Determined", "Spontaneous", "Analytical", "Easygoing", "Humble", "Generous", "Courageous", "Loyal", "Resilient"]
+    Hobbies: [
+      "Reading", "Gaming", "Painting", "Drawing", "Writing", "Photography", 
+      "Cycling", "Cooking", "Gardening", "Knitting", "Pottery", "Woodworking",
+      "Birdwatching", "Fishing", "Astronomy", "Scrapbooking", "Traveling"
+    ],
+    Sports: [
+      "Soccer", "Basketball", "Tennis", "Baseball", "Cricket", "Rugby", 
+      "Golf", "Swimming", "Boxing", "Cycling", "Running", "Badminton", 
+      "Table Tennis", "Volleyball", "Handball", "Football"
+    ],
+    Food: [
+      "Pizza", "Sushi", "Burgers", "Pasta", "Tacos", "Salads", "Burritos", 
+      "Sushi", "Ramen", "Sandwiches", "Fried Chicken", "Steak", "Seafood", 
+      "Ice Cream", "Chocolate", "Donuts", "Cakes", "Cookies", "Pastries"
+    ],
+    Movies: [
+      "Action", "Comedy", "Horror", "Thriller", "Romance", "Sci-Fi", "Fantasy", 
+      "Drama", "Animation", "Documentary", "Adventure", "Mystery", "Crime", 
+      "Historical", "Musical", "Family"
+    ],
+    Colors: [
+      "Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Pink", "Black", 
+      "White", "Gray", "Brown", "Cyan", "Magenta", "Beige", "Turquoise", "Ivory"
+    ],
+    Animals: [
+      "Dogs", "Cats", "Birds", "Fish", "Lions", "Tigers", "Elephants", "Giraffes", 
+      "Zebras", "Monkeys", "Bears", "Pandas", "Kangaroos", "Koalas", "Penguins", 
+      "Snakes", "Lizards", "Horses"
+    ],
+    Career: [
+      "Engineering", "Medicine", "Art", "Teaching", "Law", "Nursing", "Design", 
+      "Marketing", "Finance", "Sales", "Journalism", "Psychology", "Architecture", 
+      "Software Development", "Civil Engineering", "Education", "Business"
+    ],
+    Fashion: [
+      "Streetwear", "Formal", "Casual", "Athleisure", "Vintage", "Bohemian", 
+      "Business Casual", "Smart Casual", "Luxury", "Minimalist", "Preppy", "Trendy",
+      "Gothic", "Punk", "Artsy", "Chic", "Hip-Hop"
+    ],
+    Personality: [
+      "Introvert", "Extrovert", "Ambivert", "Optimist", "Pessimist", "Realist", 
+      "Dreamer", "Perfectionist", "Leader", "Follower", "Thinker", "Feeler", 
+      "Empath", "Analytical", "Creative", "Pragmatic", "Adventurous", "Sentimental"
+    ],
+    Music: [
+      "Rock", "Pop", "Hip-Hop", "Classical", "Jazz", "Blues", "Reggae", "Country", 
+      "Electronic", "R&B", "Indie", "Alternative", "Metal", "Folk", "Punk", "Disco", 
+      "Soul", "Gospel", "Funk"
+    ],
+    Books: [
+      "Fiction", "Non-Fiction", "Biography", "Science Fiction", "Fantasy", "Mystery", 
+      "Thriller", "Romance", "Historical Fiction", "Horror", "Self-Help", "Philosophy", 
+      "Poetry", "Cookbooks", "Travel", "Art", "Graphic Novels", "Adventure"
+    ],
+    Travel: [
+      "Beach", "Mountains", "Desert", "City", "Countryside", "Island", "Cruise", 
+      "Road Trip", "Camping", "Backpacking", "Sightseeing", "Hiking", "Nature", 
+      "Adventure", "Luxury", "Budget Travel", "Cultural"
+    ]
+  };
+
+  // Add a list of trending items for each category
+  const trendingItems = {
+    Hobbies: ["Reading", "Gaming", "Photography"],
+    Sports: ["Soccer", "Basketball", "Tennis"],
+    Food: ["Pizza", "Sushi", "Burgers"],
+    Movies: ["Action", "Comedy", "Horror"],
+    Colors: ["Red", "Blue", "Green"],
+    Animals: ["Dogs", "Cats", "Birds"],
+    Career: ["Engineering", "Medicine", "Art"],
+    Fashion: ["Streetwear", "Casual", "Luxury"],
+    Personality: ["Introvert", "Extrovert", "Optimist"],
+    Music: ["Rock", "Pop", "Hip-Hop"],
+    Books: ["Fiction", "Non-Fiction", "Biography"],
+    Travel: ["Beach", "Mountains", "City"]
   };
 
   const categoryNames = Object.keys(categories);
@@ -21,18 +87,14 @@ export default function Home() {
   const [selectedButtons, setSelectedButtons] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [saveMessage, setSaveMessage] = useState("");
+  const [savedMessage, setSavedMessage] = useState("");
 
   useEffect(() => {
-    const savedSelections = localStorage.getItem("selectedButtons");
+    const savedSelections = localStorage.getItem("selectedInterests");
     if (savedSelections) {
       setSelectedButtons(JSON.parse(savedSelections));
     }
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("selectedButtons", JSON.stringify(selectedButtons));
-  }, [selectedButtons]);
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
@@ -40,40 +102,50 @@ export default function Home() {
   };
 
   const handleButtonClick = (buttonName) => {
+    if (selectedButtons.length >= MAX_SELECTION && !selectedButtons.includes(buttonName)) {
+      alert("You have reached the maximum number of selections (20). Please deselect some before selecting more.");
+      return;
+    }
+
     setSelectedButtons((prevState) => {
-      if (prevState.includes(buttonName)) {
-        return prevState.filter(name => name !== buttonName);
-      } else {
-        return prevState.length < MAX_SELECTION ? [...prevState, buttonName] : prevState;
-      }
+      const newSelected = prevState.includes(buttonName)
+        ? prevState.filter(name => name !== buttonName)
+        : [...prevState, buttonName];
+
+      localStorage.setItem("selectedInterests", JSON.stringify(newSelected));
+
+      return newSelected;
     });
   };
 
-  const handleSaveProfile = () => {
-    localStorage.setItem("profileSelections", JSON.stringify(selectedButtons));
-    setSaveMessage("Your selections have been saved to your profile!");
-    setTimeout(() => setSaveMessage(""), 3000);
-  };
-  const getTrendingButtons = (category) => {
-    const categoryButtons = categories[category] || [];
-    return [...categoryButtons].sort((a, b) => (clickCounts[b] || 0) - (clickCounts[a] || 0)).slice(0, 3);
-  };
-
-  const filteredButtons = selectedCategory
-    ? categories[selectedCategory].filter(name =>
-        name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredButtons = searchQuery
+    ? Object.entries(categories).flatMap(([category, items]) =>
+        items
+          .filter(item => item.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map(item => ({ name: item, category }))
       )
-    : categoryNames.filter(name =>
-        name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    : selectedCategory
+    ? [
+        ...trendingItems[selectedCategory].map(item => ({ name: item, category: selectedCategory })),
+        ...categories[selectedCategory].filter(item => !trendingItems[selectedCategory].includes(item))
+          .map(item => ({ name: item, category: selectedCategory }))
+      ]
+    : categoryNames.map(name => ({ name, category: null }));
+
+  const handleSave = () => {
+    setSavedMessage("Your interests have been saved!");
+    setTimeout(() => {
+      setSavedMessage("");
+    }, 3000);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-blue-300 pb-32">
+    <div className="min-h-screen flex flex-col bg-blue-300 pb-36">
       <header className="bg-blue-300 text-gray-500 py-4 shadow-md">
         <div className="flex justify-between items-center px-8">
           <div className="text-left text-3xl font-semibold">UniFriendSync</div>
           <nav className="flex space-x-9">
-            {["Home", "Events", "Map", "Interests", "Mini Games", "Profile"].map((item, index) => (
+            {["Home", "Events", "Map", "Interests", "Mini Games"].map((item, index) => (
               <a key={index} href={`#${item.toLowerCase()}`} className="text-2xl font-semibold hover:text-gray-800">
                 {item}
               </a>
@@ -82,7 +154,22 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="flex justify-between px-8 mt-4 items-center">
+      <div className="flex justify-start px-8 mt-4">
+        <button
+          onClick={handleSave}
+          className="bg-green-500 text-white px-8 py-2 rounded-md shadow-lg hover:bg-green-700"
+        >
+          Save Interests
+        </button>
+      </div>
+
+      {savedMessage && (
+        <div className="flex justify-center mt-2">
+          <div className="text-green-600 font-semibold">{savedMessage}</div>
+        </div>
+      )}
+
+      <div className="flex justify-end px-8 mt-4">
         <input
           type="text"
           placeholder="Search..."
@@ -90,42 +177,44 @@ export default function Home() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-64 p-2 border border-gray-400 rounded-lg shadow-md text-gray-900"
         />
-        <button onClick={handleSaveProfile} className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-700">
-          Save to Profile
-        </button>
       </div>
-      {saveMessage && <p className="text-center text-white mt-2">{saveMessage}</p>}
 
       {selectedCategory && (
         <div className="flex justify-start px-8 mt-4">
-          <button onClick={() => setSelectedCategory(null)} className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-800">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-800"
+          >
             ← Back to Categories
           </button>
         </div>
       )}
 
-      <div className="text-center mt-4 text-white text-lg">
-        {selectedButtons.length} / {MAX_SELECTION} selected
+      <div className="flex justify-center px-8 mt-4">
+        <div className="text-xl font-semibold">
+          {selectedButtons.length}/{MAX_SELECTION} selected
+        </div>
       </div>
+
       {selectedButtons.length >= MAX_SELECTION && (
-        <div className="text-center text-red-500 font-bold mt-2">
-          You have reached the maximum of 20 selections!
+        <div className="flex justify-center px-8 mt-2">
+          <div className="text-red-600 font-semibold">You have reached the maximum of 20 selections!</div>
         </div>
       )}
 
       <main className="flex-grow flex justify-center items-center">
         <div className="grid grid-cols-3 gap-4">
           {filteredButtons.length > 0 ? (
-            filteredButtons.map((name, index) => (
+            filteredButtons.map(({ name, category }, index) => (
               <button
                 key={index}
                 onClick={() => selectedCategory ? handleButtonClick(name) : handleCategoryClick(name)}
                 className={`bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
                   selectedButtons.includes(name) ? "bg-blue-700" : ""
                 }`}
-                disabled={!selectedButtons.includes(name) && selectedButtons.length >= MAX_SELECTION}
+                disabled={selectedButtons.length >= MAX_SELECTION && !selectedButtons.includes(name)}
               >
-                {name}
+                {name} {category && <span className="text-sm text-gray-300">({category})</span>}
               </button>
             ))
           ) : (
@@ -153,4 +242,4 @@ export default function Home() {
       </footer>
     </div>
   );
-}cd 
+}
