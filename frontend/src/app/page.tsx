@@ -1,20 +1,34 @@
-//import Image from "next/image";
+"use client";
+import React from "react";
+import Header from "./oc-components/header";
+import * as styles from "./styles/oc-style";
+import { useHover } from "./hooks/useHover";
+import { OptionsBar } from "./oc-components/options-bar";
+import Link from "next/link";
 
-/**
- * 
- * 
- *  <div className= "grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      
-        H
-      </div>
- */
 export default function Home() {
-  return (
-     <div>
+  const [Hovered, listener] = useHover();
 
-      Hello
-     </div>
-      
+
+  return (
+    <>
+      <Header />
+
+      <main>
+        <div style={styles.container}>
+          <Link href="/events-page">  <button
+              style={{...styles.backbutton,
+                textDecoration: Hovered ? "underline" : "none",}}{...listener}>
+              ← Events
+            </button></Link>
+        </div>
+
+        <OptionsBar/>
+       
+
+      </main>
+
     
+    </>
   );
 }
