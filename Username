@@ -1,0 +1,51 @@
+import { useState } from "react";
+
+interface User {
+  username: string;
+  displayName: string;
+}
+
+const existingUsers: User[] = [
+  { username: "john_doe", displayName: "John Doe" },
+  { username: "jane_smith", displayName: "Jane Smith" },
+];
+
+function SetUserProfile() {
+  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const isUsernameTaken = (name: string) => existingUsers.some(user => user.username === name);
+
+  const handleSubmit = () => {
+    if (isUsernameTaken(username)) {
+      setError("Username is already taken. Please choose another.");
+      setSuccess("");
+      return;
+    }
+
+    setError("");
+    setSuccess("Profile updated successfully!");
+    existingUsers.push({ username, displayName });
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-6 border rounded shadow">
+      <h2 className="text-xl font-bold mb-4">Set Your Profile</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-green-500">{success}</p>}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Username</label>
+        <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter a unique username" className="w-full p-2 border rounded" />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Display Name</label>
+        <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Enter your display name" className="w-full p-2 border rounded" />
+      </div>
+      <button onClick={handleSubmit} className="w-full p-2 bg-blue-500 text-white rounded">Save</button>
+    </div>
+  );
+}
+
+export { SetUserProfile };
