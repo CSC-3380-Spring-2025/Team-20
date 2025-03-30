@@ -1,7 +1,8 @@
 import { Event } from '../types/eventTypes'; // Import the correct type
-import DivContainer from './containers';
 import { headerStyle } from '../styles/eventstyle';
 import * as styles from "../styles/eventformstyle";
+
+import DivContainer from "./containers";
 
 const EventSection = ({
   title,
