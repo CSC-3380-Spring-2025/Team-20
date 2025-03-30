@@ -1,0 +1,40 @@
+import React { useState } from "react";
+
+const ProfilePhotoUploader: React.FC = () => {
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Please upload a valid image file.");
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "center", maxWidth: "300px", margin: "auto", padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
+      {image ? (
+        <img
+          src={image}
+          alt="Profile Preview"
+          style={{ width: "128px", height: "128px", borderRadius: "50%", objectFit: "cover", marginBottom: "10px" }}
+        />
+      ) : (
+        <div style={{ width: "128px", height: "128px", border: "2px dashed gray", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "auto", marginBottom: "10px" }}>
+          <span style={{ color: "gray" }}>Upload</span>
+        </div>
+      )}
+      <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} id="fileUpload" />
+      <label htmlFor="fileUpload" style={{ display: "block", padding: "8px 16px", backgroundColor: "#007bff", color: "white", borderRadius: "5px", cursor: "pointer" }}>
+        Upload Photo
+      </label>
+    </div>
+  );
+};
+
+export default ProfilePhotoUploader;
