@@ -1,0 +1,51 @@
+/* Current Event Page */
+.current-event-page {
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
+}
+
+/* Created Event Title */
+.created-event-title {
+    position: absolute;
+    width: 457px;
+    height: 56px;
+    left: 100px;
+    top: 113px;
+}
+
+/* Recommended Event Title */
+.rec-event-title {
+    position: absolute;
+    width: 477px;
+    height: 69px;
+    left: 150px;
+    top: 572px;
+}
+
+/* Created Event Pill */
+.created-event-pill {
+    position: absolute;
+    width: 656px;
+    height: 261px;
+    left: 150px;
+    top: 230px;
+}
+
+/* Recommended Event Pill */
+.rec-event-pill {
+    position: absolute;
+    width: 656px;
+    height: 261px;
+    left: 151px;
+    top: 687px;
+}
+
+/* Leaving LSU Button */
+.leaving-lsu-button {
+    position: absolute;
+    width: 871px;
+    height: 69px;
+    left: 525px;
+    top: 993px;
+}
