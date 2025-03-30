@@ -1,0 +1,104 @@
+/* Main/Bio Page */
+.main-bio-page {
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
+}
+
+/* Photo Add Frame */
+.photo-add-frame {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 57px 4px;
+    gap: 10px;
+    isolation: isolate;
+    
+    position: absolute;
+    width: 203px;
+    height: 195px;
+    left: 175px;
+    top: 155px;
+}
+
+/* Edit Profile Pill */
+.edit-profile-pill {
+    position: absolute;
+    width: 187px;
+    height: 69px;
+    left: 175px;
+    top: 842px;
+}
+
+/* Event Calendar Bio Page */
+.event-calendar-bio {
+    position: absolute;
+    width: 925px;
+    height: 753px;
+    left: 677px;
+    top: 855px;
+}
+
+/* Event Calendar Title Bio Page */
+.event-calendar-title-bio {
+    position: absolute;
+    width: 339px;
+    height: 69px;
+    left: 494px;
+    top: 786px;
+}
+
+/* Current Interests Bio Page */
+.current-interests-bio {
+    position: absolute;
+    width: 460px;
+    height: 69px;
+    left: 447px;
+    top: 266px;
+}
+
+/* Interest Carousel Bio Page */
+.interest-carousel-bio {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    padding: 0px;
+    gap: 75px 30px;
+    
+    position: absolute;
+    width: 1542px;
+    height: 450px;
+    left: 494px;
+    top: 349px;
+}
+
+/* User Name Static */
+.user-name-static {
+    position: absolute;
+    width: 273px;
+    height: 42px;
+    left: 120px;
+    top: 350px;
+}
+
+/* Link Static */
+.link-static {
+    position: absolute;
+    width: 156px;
+    height: 42px;
+    left: 198px;
+    top: 390px;
+    border-radius: 30px;
+}
+
+/* Bio Static */
+.bio-static {
+    position: absolute;
+    width: 204px;
+    height: 141px;
+    left: 195px;
+    top: 447px;
+    border-radius: 30px;
+}
