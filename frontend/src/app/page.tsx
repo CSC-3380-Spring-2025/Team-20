@@ -3,13 +3,46 @@ import Button from "../app/EP-components/button";
 import Header from "../app/EP-components/header";
 import DivContainer from "../app/EP-components/containers";
 import EventSection from "../app/EP-components/EventSection";
-import { titleStyle, linkStyle } from "../app/styles/eventstyle";
+import EventForm from "./EP-components/eventForm";
 import useEvents from "../app/hooks/useEvents";
 import Link from "next/link";
-import popularEvents from "./types/populareventsTypes"; // Import the default popular events
+import popularEvents from "./types/populareventsTypes";
+import { useState } from "react";
+import { titleStyle, linkStyle } from "../app/styles/eventstyle";
+import { Event } from "./types/eventTypes";
+
 
 export default function Home() {
   const { events, addEvent, deleteEvent } = useEvents();
+
+  const [popularEventsState, setPopularEventsState] = useState<Event[]>(popularEvents);
+
+  const [showForm, setShowForm] = useState(false);
+
+  const handleAddEvent = () => {
+    setShowForm(true);
+  }
+
+  const handleCancelEvent = () => {
+    setShowForm(false);
+  }
+
+  const handleSubmitEvent = (event: Event) => {
+    addEvent(event); 
+    setShowForm(false); 
+  }
+
+
+  //will be VERY VERY important for the matching algorithm
+  const joinEvent = (index: number) => {
+    setPopularEventsState((prevState) => {
+      const updatedEvents = [...prevState];
+      const event = updatedEvents[index];
+      event.totalInterested += 1;
+      return updatedEvents;
+    });
+  };
+
 
   return (
     <main>
@@ -25,16 +58,23 @@ export default function Home() {
             padding="2px 10px"
             borderRadius="5px"
             fontWeight="bold"
-            onClick={addEvent}
+            onClick={handleAddEvent}
           >
-            Add Event
+            ➕ Add Event
           </Button>
         </DivContainer>
 
-        <EventSection title="My Events" events={events} deleteEvent={deleteEvent} isPopular={false} /> 
+        {showForm && (
+          <EventForm
+            onSave={handleSubmitEvent}
+            onDelete={handleCancelEvent}
+          />
+        )}
+
+        <EventSection title="My Events" events={events} deleteEvent={deleteEvent} isPopular={false} joinEvent = {joinEvent} /> 
       </DivContainer>
 
-      <EventSection title="Popular Events" events={popularEvents} deleteEvent={deleteEvent} isPopular={true} />
+      <EventSection title="Popular Events" events={popularEventsState} deleteEvent={deleteEvent} isPopular={true} joinEvent={joinEvent} />
 
       <Link href="/outside-campus">
         <p style={linkStyle}>Leaving LSU?</p>
