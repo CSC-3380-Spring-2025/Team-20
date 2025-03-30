@@ -1,12 +1,12 @@
 'use client';
-
 import Button from "../app/EP-components/button";
 import Header from "../app/EP-components/header";
 import DivContainer from "../app/EP-components/containers";
 import EventSection from "../app/EP-components/EventSection";
-import { titleStyle, linkStyle} from "../app/styles/eventstyle";
+import { titleStyle, linkStyle } from "../app/styles/eventstyle";
 import useEvents from "../app/hooks/useEvents";
 import Link from "next/link";
+import popularEvents from "./types/populareventsTypes"; // Import the default popular events
 
 export default function Home() {
   const { events, addEvent, deleteEvent } = useEvents();
@@ -31,12 +31,12 @@ export default function Home() {
           </Button>
         </DivContainer>
 
-        <EventSection title="My Events" events={events} deleteEvent={deleteEvent} />
+        <EventSection title="My Events" events={events} deleteEvent={deleteEvent} isPopular={false} /> 
       </DivContainer>
 
-      <EventSection title="Popular Events" events={events} deleteEvent={deleteEvent} />
+      <EventSection title="Popular Events" events={popularEvents} deleteEvent={deleteEvent} isPopular={true} />
 
-      <Link href="/EVENTLSU">
+      <Link href="/outside-campus">
         <p style={linkStyle}>Leaving LSU?</p>
       </Link>
     </main>

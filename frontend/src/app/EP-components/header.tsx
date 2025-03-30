@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
+import * as styles from "../styles/headerstyle"
 
 function Header() {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
@@ -74,58 +76,4 @@ function Header() {
   );
 }
 
-// Updated styles based on Figma
-const styles = {
-  header: {
-    backgroundColor: "purple",
-    color: "white",
-    padding: "10px 20px",
-    fontWeight: "bold",
-  },
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  navLeft: {
-    display: "flex",
-    alignItems: "center",
-    listStyleType: "none",
-  },
-  navRight: {
-    display: "flex",
-    alignItems: "center",
-    listStyleType: "none",
-  },
-  navItem: {
-    marginLeft: "15px",
-  },
-  hamburger: {
-    background: "none",
-    border: "none",
-    fontSize: "30px",
-    color: "white",
-    cursor: "pointer",
-  },
-  mobileMenu: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    width: "250px",
-    height: "100vh",
-    backgroundColor: "coral",
-    padding: "20px 30px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    zIndex: 1000,
-  },
-  mobileLink: {
-    color: "white",
-    margin: "20px 0",
-    textDecoration: "none",
-    fontSize: "18px",
-  },
-};
-
-export default Header;
+export default Header; 

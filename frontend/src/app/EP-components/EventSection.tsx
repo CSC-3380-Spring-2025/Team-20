@@ -1,4 +1,4 @@
-import { EventCardProps } from '../types/eventTypes'; // Import the correct type
+import { Event } from '../types/eventTypes'; // Import the correct type
 import DivContainer from './containers';
 import {headerStyle} from '../styles/eventstyle'
 
@@ -6,10 +6,12 @@ const EventSection = ({
   title,
   events,
   deleteEvent,
+  isPopular,
 }: {
   title: string;
-  events: EventCardProps[];
+  events: Event[];
   deleteEvent: (index: number) => void;
+  isPopular: boolean; 
 }) => (
   <DivContainer padding="2px" width="100%" marginTop="10px">
     <DivContainer display="flex" justifyContent="space-between" padding="40px 20px 10px 10px" width="100%">
@@ -29,24 +31,26 @@ const EventSection = ({
               position: 'relative', 
             }}
           >
-            {/* Delete Button (x) */}
-            <button
-              onClick={() => deleteEvent(index)} 
-              style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: '#ff0000',
-                fontSize: '20px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                padding: '0',
-              }}
-            >
-              × 
-            </button>
+            
+            {!isPopular && (
+              <button
+                onClick={() => deleteEvent(index)} 
+                style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: '#ff0000',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  padding: '0',
+                }}
+              >
+                × 
+              </button>
+            )}
 
             <h1>{event.title}</h1>
             <small>{event.totalInterested}</small> 
@@ -56,6 +60,6 @@ const EventSection = ({
       </DivContainer>
     </DivContainer>
   </DivContainer>
-);
+);  
 
 export default EventSection;
