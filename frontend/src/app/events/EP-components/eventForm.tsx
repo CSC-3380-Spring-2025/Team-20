@@ -8,7 +8,7 @@ import {Event} from "../types/eventTypes";
 interface EventForm {
     onSave: (event: Event) => void;
     onDelete: () => void;
-  }
+}
   
 
 /**
@@ -30,9 +30,13 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
         //use new event object when saved
 
+        if (!title.trim() || !description.trim()) {
+            return; 
+        }
+
         const newEvent: Event = {
-            title,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             totalInterested:0,
           };
 
@@ -74,6 +78,8 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
                 style={styles.input}
             >
             </input>
+
+            
 
             <div style={styles.buttonContainer}>
                 <button type="submit" style={styles.submitButton}>Submit</button>

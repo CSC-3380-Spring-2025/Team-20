@@ -1,81 +1,84 @@
-import { Event } from '../types/eventTypes'; // Import the correct type
-import { headerStyle } from '../styles/eventstyle';
-import * as styles from "../styles/eventformstyle";
+import DivContainer from "../../components/containers";
+import { Event } from "../types/eventTypes";
+import * as estyle from "../styles/eventstyle";
 
-import DivContainer from "./containers";
-
-const EventSection = ({
-  title,
-  events,
-  deleteEvent,
-  isPopular,
-  joinEvent,
-}: {
+interface EventSectionProps {
   title: string;
   events: Event[];
-  deleteEvent: (index: number) => void;
-  isPopular: boolean;
-  joinEvent: (index: number) => void; 
-}) => (
-  <DivContainer padding="2px" width="100%" marginTop="10px">
-    <DivContainer display="flex" justifyContent="space-between" padding="40px 20px 10px 10px" width="100%">
-      <p style={headerStyle}>{title}</p>
-    </DivContainer>
+  onDelete?: (index: number) => void;
+  onLeave?: (index: number) => void;
+  onJoin?: (index: number) => void;
+  isPopular?: boolean;
+}
 
-    <DivContainer width="100%" backgroundColor="#F2F2F7" marginTop="10px" borderRadius="10px" height="300px" overflowY="auto">
-      <DivContainer width="100%" padding="6px">
+export default function EventSection({
+  title,
+  events,
+  onDelete,
+  onLeave,
+  onJoin,
+  isPopular = false,
+}: EventSectionProps) {
+  return (
+    <DivContainer padding="15px" margin="20px 0" backgroundColor="#f9f9f9" borderRadius="8px">
+
+
+    <h2 style={estyle.headerStyle}>{title}</h2>
+    
+    {events.length === 0 ?
+     (<p style={estyle.defaultText}>No events available.</p>) :
+     
+     (<div style={isPopular ? { 
+        maxHeight: '400px', 
+        overflowY: 'auto',
+        paddingRight: '8px'
+      } : {}}>
+
+
+
         {events.map((event, index) => (
-          <DivContainer
-            key={index}
-            style={{
-              backgroundColor: 'white',
-              padding: '10px',
-              marginBottom: '10px',
-              borderRadius: '5px',
-              position: 'relative',
-            }}
-          >
-            {/* Delete button for non-popular events */}
-            {!isPopular && (
-              <button
-                onClick={() => deleteEvent(index)} 
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: '#ff0000',
-                  fontSize: '20px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  padding: '0',
-                }}
-              >
-                × 
-              </button>
-            )}
+          <DivContainer key={`${event.title}-${index}`} style={estyle.container}>
+            
+            
+            <div>
 
-           
-            <DivContainer display="flex" justifyContent="space-between" alignItems="center">
-              <h1>{event.title}</h1>
-              {isPopular && (
-                <button
-                  onClick={() => joinEvent(index)} 
-                  style={styles.joinButton}
-                >
+              <h3 style={{ margin: '2px 0 5px 0', color: '#333', display: 'inline-block' }}> {event.title}</h3>
+
+              <p style={{ color: '#555', margin: '8px 0', fontSize: '14px' }}>{event.description}</p>
+
+              <p style={{ color: '#666', fontSize: '13px', margin: '5px 0' }}>
+                <strong>Interested:</strong> {event.totalInterested} </p>
+
+            </div>
+
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              
+              {isPopular && onJoin && (
+                <button  style={estyle.joinButton} onClick={() => onJoin(index)}>
                   Join
                 </button>
               )}
-            </DivContainer>
 
-            <small>{event.totalInterested} people interested</small>
-            <p>{event.description}</p>
+             
+              {!isPopular && (
+                 <button style={title === "Joined Events" ? {
+                    ...estyle.cancelButton,
+                    backgroundColor: '#ffc107'
+                  } : 
+                    estyle.cancelButton}
+                    onClick={() => 
+                    title === "Joined Events" ? onLeave?.(index) : onDelete?.(index)
+                  }>
+
+                  {title === "Joined Events" ? "Leave" : "Delete"}
+                </button>
+              )}
+            </div>
           </DivContainer>
         ))}
-      </DivContainer>
+        </div>
+    )}
     </DivContainer>
-  </DivContainer>
-);
-
-export default EventSection;
+  );
+}

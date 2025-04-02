@@ -1,58 +1,96 @@
 'use client';
-import Button from "./EP-components/button";
+import { useState } from "react"; 
+import Button from "../components/button";
 import Header from "../components/header";
-import DivContainer from "./EP-components/containers";
+import DivContainer from "../components/containers";
 import EventSection from "./EP-components/EventSection";
 import EventForm from "./EP-components/eventForm";
 import useEvents from "../events/hooks/useEvents";
 import Link from "next/link";
-import popularEvents from "./types/populareventsTypes";
-import { useState } from "react";
-import { titleStyle, linkStyle } from "./styles/eventstyle";
+import * as styles from "./styles/eventstyle";
 import { Event } from "./types/eventTypes";
 
-
 export default function Events() {
-  const { events, addEvent, deleteEvent } = useEvents();
-
-  const [popularEventsState, setPopularEventsState] = useState<Event[]>(popularEvents);
-
+  const { 
+    myEvents, 
+    popularEvents, 
+    joinedEvents, 
+    addEvent, 
+    deleteMyEvent, 
+    joinEvent, 
+    leaveEvent 
+  } = useEvents();
+  
   const [showForm, setShowForm] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
-  const handleAddEvent = () => {
-    setShowForm(true);
-  }
-
-  const handleCancelEvent = () => {
-    setShowForm(false);
-  }
+  const handleAddEvent = () => setShowForm(true);
+  const handleCancelEvent = () => setShowForm(false);
 
   const handleSubmitEvent = (event: Event) => {
-    addEvent(event); 
-    setShowForm(false); 
-  }
-
-
-  //will be VERY VERY important for the matching algorithm
-  const joinEvent = (index: number) => {
-    setPopularEventsState((prevState) => {
-      const updatedEvents = [...prevState];
-      const event = updatedEvents[index];
-      event.totalInterested += 1;
-      return updatedEvents;
-    });
+    addEvent(event);
+    setShowForm(false);
+    setAlertMessage(`Created ${event.title}`);
+    setTimeout(() => setAlertMessage(null), 2000);
   };
 
+  const joinEventHandler = (index: number) => {
+    const event = popularEvents[index];
+    if (event) {
+      joinEvent(index);
+      setAlertMessage(`Joined ${event.title}`);
+      setTimeout(() => setAlertMessage(null), 2000);
+    }
+  };
+
+  const leaveEventHandler = (index: number) => {
+    const event = joinedEvents[index];
+    if (event) {
+      leaveEvent(index);
+      setAlertMessage(`Left ${event.title}`);
+      setTimeout(() => setAlertMessage(null), 2000);
+    }
+  };
+
+  const deleteEventHandler = (index: number) => {
+    const event = myEvents[index];
+    if (event) {
+      deleteMyEvent(index);
+      setAlertMessage(`Deleted ${event.title}`);
+      setTimeout(() => setAlertMessage(null), 2000);
+    }
+  };
 
   return (
-    <main>
+    <main style={{marginBottom: '40px'}}>
       <Header />
+
+      {/* Alert message */}
+      {alertMessage && (
+        <DivContainer
+          position="fixed"
+          top="20px"
+          left="50%"
+          transform="translateX(-50%)"
+          backgroundColor="#24a0ed"
+          color="white"
+          padding="10px 20px"
+          borderRadius="8px"
+          fontSize="14px"
+          fontWeight="bold"
+          boxShadow="0px 4px 6px rgba(0, 0, 0, 0.1)"
+          transition="opacity 0.5s ease-in-out"
+          zIndex="10000"
+        >
+          {alertMessage}
+        </DivContainer>
+      )}
 
       <DivContainer padding="2px" width="100%">
         <DivContainer display="flex" justifyContent="space-between" padding="40px 20px 10px 10px" width="100%">
-          <p style={titleStyle}>My Events</p>
+          <p style={styles.titleStyle}>Events</p>
           <Button
-            backgroundColor="#24a0ed"    
+            backgroundColor="#24a0ed"
             color="white"
             fontSize="12px"
             padding="2px 10px"
@@ -65,21 +103,36 @@ export default function Events() {
         </DivContainer>
 
         {showForm && (
-          <EventForm
-            onSave={handleSubmitEvent}
-            onDelete={handleCancelEvent}
-          />
+          <EventForm onSave={handleSubmitEvent} onDelete={handleCancelEvent} />
         )}
 
-        <EventSection title="My Events" events={events} deleteEvent={deleteEvent} isPopular={false} joinEvent = {joinEvent} /> 
+        {/* My Events */}
+        <EventSection
+          title="My Events"
+          events={myEvents}
+          onDelete={deleteEventHandler}
+        />
+
+        {/* Joined Events*/}
+        <EventSection
+          title="Joined Events"
+          events={joinedEvents}
+          onLeave={leaveEventHandler}
+        />
+
+        {/* Current Events */}
+        <EventSection
+          title="Current Events"
+          events={popularEvents}
+          onJoin={joinEventHandler}
+          isPopular={true}
+        />
       </DivContainer>
 
-      <EventSection title="Popular Events" events={popularEventsState} deleteEvent={deleteEvent} isPopular={true} joinEvent={joinEvent} />
-
       <Link href="/campus-outside">
-        <p style={linkStyle}>Leaving LSU?</p>
+        <p style={styles.linkStyle}>Leaving LSU?</p>
       </Link>
-
+      
     </main>
   );
 }
