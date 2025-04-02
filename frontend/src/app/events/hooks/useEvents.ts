@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Event } from "../types/eventTypes";
 
+
+//dummy events. used in popularEvents hook.
 const initialEvents: Event[] = [
   { title: "Yoga at U-Rec", description: "Join us for a 1 hour session! All are welcome :)", totalInterested: 12 },
   { title: "Music Fest with Classical Club", description: "Enjoy live performances from local bands and artists.", totalInterested: 6 },
@@ -9,17 +11,23 @@ const initialEvents: Event[] = [
   { title: "Hangout near Nicholson", description: "Anyone welcome!", totalInterested: 10 },
 ];
 
+
 export default function useEvents() {
+
+  //user has acess to their own events and current events (popular is interchangable).
+  //current and joined events are interchangable. 
   const [myEvents, setMyEvents] = useState<Event[]>([]);
   const [popularEvents, setPopularEvents] = useState<Event[]>(initialEvents);
   const [joinedEvents, setJoinedEvents] = useState<Event[]>([]);
 
+  //add event function
   const addEvent = (newEvent: Event) => {
     if (newEvent.title && newEvent.description) {
       setMyEvents(prev => [...prev, newEvent]);
     }
   };
 
+  //join event function
   const joinEvent = (index: number) => {
     const eventToJoin = popularEvents[index];
     const updatedPopularEvents = popularEvents.filter((_, i) => i !== index);
@@ -31,10 +39,13 @@ export default function useEvents() {
     }]);
   };
 
+  //delete user's own event
   const deleteMyEvent = (index: number) => {
     setMyEvents(prev => prev.filter((_, i) => i !== index));
   };
 
+
+  //leave joined event
   const leaveEvent = (index: number) => {
     const eventToLeave = joinedEvents[index];
     const updatedJoinedEvents = joinedEvents.filter((_, i) => i !== index);

@@ -75,3 +75,12 @@ export const defaultText: CSSProperties = {
   paddingLeft: '10px',
   marginTop: '8px' 
 }
+
+
+export const eventCard: CSSProperties = {
+      backgroundColor: "white",
+      padding: "10px",
+      marginBottom: "10px",
+      borderRadius: "5px",
+      width: "100%",
+}

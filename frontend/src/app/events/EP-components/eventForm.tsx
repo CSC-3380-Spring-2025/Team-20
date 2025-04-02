@@ -4,21 +4,11 @@ import * as styles from "../styles/eventformstyle";
 import {Event} from "../types/eventTypes";
 
 //listen to event from eventtypes
-
 interface EventForm {
     onSave: (event: Event) => void;
     onDelete: () => void;
 }
   
-
-/**
- * 
- * export interface Event {
-  title: string;
-  description: string;
-  totalInterested: string; 
-}
- */
 const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
     const [title, setTitle] = useState("");
@@ -30,10 +20,8 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
         //use new event object when saved
 
-        if (!title.trim() || !description.trim()) {
-            return; 
-        }
-
+    
+        //creates new object of user's own event
         const newEvent: Event = {
             title: title.trim(),
             description: description.trim(),

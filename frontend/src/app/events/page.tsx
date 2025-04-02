@@ -92,8 +92,8 @@ export default function Events() {
           <Button
             backgroundColor="#24a0ed"
             color="white"
-            fontSize="12px"
-            padding="2px 10px"
+            fontSize="14px"
+            padding="2px 8px"
             borderRadius="5px"
             fontWeight="bold"
             onClick={handleAddEvent}
