@@ -1,146 +1,58 @@
 import { useState } from "react";
-import { useAuth } from "../auth-context";
-import Image from "next/image";
+import { useAuth } from "../context/auth-context";
 import UserCard from "./userCard"; // Import UserCard from same directory
+import { GoogleButton } from "./googleButton";
+
+
+
 
 export default function Login() {
-  const { user, signInWithGoogle, signInWithEmail } = useAuth();
+  const { user, signInWithEmail } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // Store error in state
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(""); 
+
     try {
       await signInWithEmail(email, password);
     } catch {
       setError("Login failed. Check your credentials.");
     }
+
+
   };
 
   // If user exists, show UserCard instead
   if (user) {
-    return <UserCard />;
-    
+    return (
+      <UserCard />
+    );
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.header}>Login</h2>
-      {error && <p style={styles.error}>{error}</p>}
+    <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">
+
+
+
+      <h2 className="text-2xl font-semibold mb-5 text-gray-800">Login</h2>
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
       
-      <form onSubmit={handleEmailLogin} style={styles.form}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <button type="submit" style={styles.submitButton}>
+      <form onSubmit={handleEmailLogin} className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg mb-5">
+        <input  type="email"  placeholder="Email" value={email}  onChange={(e) => setEmail(e.target.value)} required className="w-full p-3 mb-4 border border-gray-300 rounded-lg text-lg"/>
+
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full p-3 mb-4 border border-gray-300 rounded-lg text-lg" />
+        
+        <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-lg transition hover:bg-blue-600">
           Sign In
         </button>
       </form>
 
-      <button 
-        onClick={signInWithGoogle} 
-        style={styles.googleButton}
-      >
-        <Image 
-          src="https://www.svgrepo.com/show/475656/google-color.svg" 
-          alt="Google logo" 
-          width={20} 
-          height={20} 
-        />
-        <span>Continue with Google</span>
-      </button>
+
+      <GoogleButton text="Sign in with Google" />
     </div>
   );
 }
-
-// Explicitly typing styles as React.CSSProperties
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    padding: "20px",
-  },
-  header: {
-    fontSize: "2rem",
-    fontWeight: "600",
-    marginBottom: "20px",
-    color: "#333",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
-    backgroundColor: "white",
-    padding: "30px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    marginBottom: "20px"
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "15px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    fontSize: "1rem",
-  },
-  submitButton: {
-    backgroundColor: "#3498db",
-    color: "white",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    borderRadius: "4px",
-    border: "none",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-    width: "100%",
-  },
-  googleButton: {
-    backgroundColor: "#db4437",
-    color: "white",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    borderRadius: "4px",
-    border: "none",
-    cursor: "pointer",
-    marginTop: "15px",
-    width: "100%",
-  },
-  error: {
-    color: "red",
-    marginBottom: "15px",
-  },
-  welcome: {
-    fontSize: "1.2rem",
-    color: "#333",
-    marginBottom: "20px",
-  },
-  button: {
-    backgroundColor: "#3498db",
-    color: "white",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    borderRadius: "4px",
-    border: "none",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-  },
-};

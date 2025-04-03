@@ -1,11 +1,17 @@
 "use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User,
-    signInWithEmailAndPassword,  // already created user
-    createUserWithEmailAndPassword // new user
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut as firebaseSignOut,
+  User,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../config/firebase";
 
+//all provided from firebase SDK
 interface AuthContextType {
   user: User | null;
   signInWithGoogle: () => Promise<void>;
@@ -20,8 +26,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
     });
     return () => unsubscribe();
   }, []);
@@ -52,15 +58,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logOut = async () => {
-    await signOut(auth);
+    try {
+      await firebaseSignOut(auth);
+      setUser(null); 
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   const handleError = (error: unknown) => {
     if (error instanceof Error) {
-      // General error case
       console.error("Error: ", error.message);
-    } else if (error && typeof error === "object" && "code" in error && "message" in error) {
-      // Firebase specific error case
+    } else if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      "message" in error
+    ) {
       const firebaseError = error as { code: string; message: string };
       console.error("Firebase Error Code:", firebaseError.code);
       console.error("Firebase Error Message:", firebaseError.message);
@@ -70,7 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signInWithEmail, signUpWithEmail, signInWithGoogle, logOut }}>
+    <AuthContext.Provider
+      value={{ user, signInWithEmail, signUpWithEmail, signInWithGoogle, logOut }}
+    >
       {children}
     </AuthContext.Provider>
   );
