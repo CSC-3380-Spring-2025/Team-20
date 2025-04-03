@@ -1,0 +1,21 @@
+//notes to add for tmr
+
+
+
+Fixed 
+- when they click join, the button must go away and it should alert saying joined! 
+- change the css strucutre on eventSection to be more like event styles etc. 
+- change how popular events adds only one interested instead of 2. 
+future
+- also for future it should have a database for whose events they have joined and if that user that created that event deleted it it would also update that
+- add link for map usage
+
+
+
+
+Dev2
+- add map button to both form and dummy events (using Link tag)
+- add tags to distinguish each
+
+- set up middleware
+- set up firebase, play with dummy set
