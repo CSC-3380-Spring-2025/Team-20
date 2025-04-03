@@ -65,22 +65,6 @@ export default function Home() {
     ]
   };
 
-  // Add a list of trending items for each category
-  const trendingItems = {
-    Hobbies: ["Reading", "Gaming", "Photography"],
-    Sports: ["Soccer", "Basketball", "Tennis"],
-    Food: ["Pizza", "Sushi", "Burgers"],
-    Movies: ["Action", "Comedy", "Horror"],
-    Colors: ["Red", "Blue", "Green"],
-    Animals: ["Dogs", "Cats", "Birds"],
-    Career: ["Engineering", "Medicine", "Art"],
-    Fashion: ["Streetwear", "Casual", "Luxury"],
-    Personality: ["Introvert", "Extrovert", "Optimist"],
-    Music: ["Rock", "Pop", "Hip-Hop"],
-    Books: ["Fiction", "Non-Fiction", "Biography"],
-    Travel: ["Beach", "Mountains", "City"]
-  };
-
   const categoryNames = Object.keys(categories);
   const MAX_SELECTION = 20;
 
@@ -88,34 +72,63 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [savedMessage, setSavedMessage] = useState("");
+  const [clickCounts, setClickCounts] = useState({});
 
+  // Load saved selections and click counts from localStorage on page load
   useEffect(() => {
     const savedSelections = localStorage.getItem("selectedInterests");
+    const savedClicks = localStorage.getItem("clickCounts");
     if (savedSelections) {
       setSelectedButtons(JSON.parse(savedSelections));
     }
+    if (savedClicks) {
+      setClickCounts(JSON.parse(savedClicks));
+    }
   }, []);
 
+  // Handle category click to set the selected category
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
     setSearchQuery("");
   };
 
+  // Handle button click to select or deselect a button
   const handleButtonClick = (buttonName) => {
-    if (selectedButtons.length >= MAX_SELECTION && !selectedButtons.includes(buttonName)) {
-      alert("You have reached the maximum number of selections (20). Please deselect some before selecting more.");
-      return;
-    }
-
     setSelectedButtons((prevState) => {
-      const newSelected = prevState.includes(buttonName)
-        ? prevState.filter(name => name !== buttonName)
-        : [...prevState, buttonName];
-
-      localStorage.setItem("selectedInterests", JSON.stringify(newSelected));
-
-      return newSelected;
+      if (prevState.includes(buttonName)) {
+        return prevState.filter(name => name !== buttonName);
+      } else {
+        return prevState.length < MAX_SELECTION ? [...prevState, buttonName] : prevState;
+      }
     });
+
+    setClickCounts((prevCounts) => {
+      const newCounts = { ...prevCounts, [buttonName]: (prevCounts[buttonName] || 0) + 1 };
+      localStorage.setItem("clickCounts", JSON.stringify(newCounts));
+      return newCounts;
+    });
+  };
+
+  // Function to handle saving the selected interests to localStorage
+  const handleSave = () => {
+    localStorage.setItem("selectedInterests", JSON.stringify(selectedButtons)); // Save selected interests
+    setSavedMessage("Your interests have been saved!");
+    setTimeout(() => {
+      setSavedMessage("");
+    }, 3000);
+  };
+
+  const getTrendingItemsByCategory = (category) => {
+    const categoryItems = categories[category] || [];
+    const categoryClickCounts = categoryItems.reduce((acc, item) => {
+      acc[item] = clickCounts[item] || 0;
+      return acc;
+    }, {});
+
+    return Object.entries(categoryClickCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(item => item[0]);
   };
 
   const filteredButtons = searchQuery
@@ -125,32 +138,16 @@ export default function Home() {
           .map(item => ({ name: item, category }))
       )
     : selectedCategory
-    ? [
-        ...trendingItems[selectedCategory].map(item => ({ name: item, category: selectedCategory })),
-        ...categories[selectedCategory].filter(item => !trendingItems[selectedCategory].includes(item))
-          .map(item => ({ name: item, category: selectedCategory }))
-      ]
+    ? categories[selectedCategory].map(item => ({ name: item, category: selectedCategory }))
     : categoryNames.map(name => ({ name, category: null }));
 
-  const handleSave = () => {
-    setSavedMessage("Your interests have been saved!");
-    setTimeout(() => {
-      setSavedMessage("");
-    }, 3000);
-  };
+  const trendingItems = selectedCategory ? getTrendingItemsByCategory(selectedCategory) : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-blue-300 pb-36">
       <header className="bg-blue-300 text-gray-500 py-4 shadow-md">
         <div className="flex justify-between items-center px-8">
           <div className="text-left text-3xl font-semibold">UniFriendSync</div>
-          <nav className="flex space-x-9">
-            {["Home", "Events", "Map", "Interests", "Mini Games"].map((item, index) => (
-              <a key={index} href={`#${item.toLowerCase()}`} className="text-2xl font-semibold hover:text-gray-800">
-                {item}
-              </a>
-            ))}
-          </nav>
         </div>
       </header>
 
@@ -190,29 +187,35 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex justify-center px-8 mt-4">
-        <div className="text-xl font-semibold">
-          {selectedButtons.length}/{MAX_SELECTION} selected
-        </div>
-      </div>
-
-      {selectedButtons.length >= MAX_SELECTION && (
-        <div className="flex justify-center px-8 mt-2">
-          <div className="text-red-600 font-semibold">You have reached the maximum of 20 selections!</div>
-        </div>
-      )}
-
       <main className="flex-grow flex justify-center items-center">
         <div className="grid grid-cols-3 gap-4">
+          {/* Trending Items moved to the top */}
+          {trendingItems.length > 0 && (
+            trendingItems.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => handleButtonClick(item)}
+                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
+                  selectedButtons.includes(item) ? "bg-blue-700" : ""
+                }`}
+              >
+                {item}
+                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  Trending
+                </span>
+              </button>
+            ))
+          )}
+
+          {/* Other Category Buttons */}
           {filteredButtons.length > 0 ? (
             filteredButtons.map(({ name, category }, index) => (
               <button
                 key={index}
                 onClick={() => selectedCategory ? handleButtonClick(name) : handleCategoryClick(name)}
-                className={`bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
+                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
                   selectedButtons.includes(name) ? "bg-blue-700" : ""
                 }`}
-                disabled={selectedButtons.length >= MAX_SELECTION && !selectedButtons.includes(name)}
               >
                 {name} {category && <span className="text-sm text-gray-300">({category})</span>}
               </button>
@@ -223,23 +226,28 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="bg-blue-400 py-4 fixed bottom-0 left-0 w-full shadow-md">
-        <div className="flex flex-wrap justify-center items-center gap-2 px-4">
-          {selectedButtons.length > 0 ? (
-            selectedButtons.map((name, index) => (
+      <footer className="fixed bottom-0 left-0 w-full bg-blue-600 text-white py-3 shadow-md">
+        <div className="text-center">
+          {selectedButtons.length >= MAX_SELECTION && (
+            <p className="text-red-400 font-semibold">You can only select up to {MAX_SELECTION} interests.</p>
+          )}
+
+          <p className="text-lg">Selected Interests ({selectedButtons.length}/{MAX_SELECTION}):</p>
+
+          <div className="flex flex-wrap justify-center mt-2 px-4">
+            {selectedButtons.map((item, index) => (
               <span
                 key={index}
-                className="bg-white text-blue-500 px-4 py-2 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
-                onClick={() => handleButtonClick(name)}
+                className="bg-white text-blue-600 px-3 py-1 rounded-full mx-1 my-1 cursor-pointer"
+                onClick={() => handleButtonClick(item)}
               >
-                {name} ✖
+                {item} <span className="ml-2 text-red-500">x</span>
               </span>
-            ))
-          ) : (
-            <span className="text-white text-lg">No buttons selected</span>
-          )}
+            ))}
+          </div>
         </div>
       </footer>
     </div>
   );
 }
+
