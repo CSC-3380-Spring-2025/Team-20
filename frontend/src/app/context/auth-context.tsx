@@ -8,15 +8,15 @@ import {
   User,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../config/firebase";
 
-//all provided from firebase SDK
 interface AuthContextType {
   user: User | null;
   signInWithGoogle: () => Promise<void>;
   logOut: () => Promise<void>;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
 }
 
@@ -41,17 +41,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
+  const signUpWithEmail = async (email: string, password: string, firstName: string, lastName: string): Promise<void> => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (user) {
+        await updateProfile(user, {
+          displayName: `${firstName} ${lastName}`,
+        });
+      }
     } catch (error) {
       handleError(error);
+      throw error;
     }
   };
 
   const signInWithEmail = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+
     } catch (error) {
       handleError(error);
     }

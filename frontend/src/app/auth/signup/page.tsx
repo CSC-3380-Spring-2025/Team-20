@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import UserCard from "@/app/components/userCard";
 import { GoogleButton } from "@/app/components/googleButton";
 import AuthToggle from "@/app/components/authToggle";
+import {setDoc, doc} from "firebase/firestore";
+import { db } from "@/app/config/firebase";
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -20,24 +22,31 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     try {
-      await signUpWithEmail(email, password);
-      router.push("/dashboard");
+      await signUpWithEmail(email, password, firstName, lastName);
+      if (user) {
+        await setDoc(doc(db, "users", user.uid), {
+          name: `${firstName} ${lastName}`,
+          email,
+        });
+        router.push("/dashboard");
+      }
     } catch {
       setError("Failed to create an account. Check email and password.");
     }
   };
 
   useEffect(() => {
-      if (user) {
-        router.push("/dashboard");
-      }
-    }, [user, router]);
-  
-  
     if (user) {
-      return <UserCard />;
+      router.push("/dashboard");
     }
+  }, [user, router]);
+
+  if (user) {
+    return <UserCard />;
+  }
+    
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">

@@ -10,12 +10,13 @@ future
 - also for future it should have a database for whose events they have joined and if that user that created that event deleted it it would also update that
 - add link for map usage
 
-
-
-
 Dev2
+
+Events Page
 - add map button to both form and dummy events (using Link tag)
 - add tags to distinguish each
 
+Login/SignUp
 - set up middleware
 - set up firebase, play with dummy set
+- when actually setting up database, make sure to add save option for Login on auth-context
