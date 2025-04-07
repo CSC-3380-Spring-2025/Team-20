@@ -1,47 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
-import Login from "./components/login";
-import SignUp from "./components/signup";
-import UserCard from "./components/userCard";
-import { useAuth } from "./context/auth-context";
+import { useAuth } from "@/app/context/auth-context";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Home() { 
-  const [choice, setChoice] = useState<string>("Log In");
+export default function Landing() {
   const { user } = useAuth();
+  const router = useRouter();
 
-  const handleChoice = (option: string) => {
-    setChoice(option);
-  };
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  }, [user,router]);
 
   return (
-    <div className="flex flex-col items-center p-2">
-
-      {/* Show UserCard if logged in */}
-      {user ? (
-        <UserCard />
-      ) : (
-        <>
-          <div className="flex gap-3">
-
-
-            <button onClick={() => handleChoice("Log In")}  className="px-6  border border-gray-300 rounded-lg bg-white text-black hover:bg-gray-100 transition duration-150">
-              Log In
-            </button>
-
-
-            <button onClick={() => handleChoice("Sign Up")}className="px-6 py-2 border border-gray-300 rounded-lg bg-white text-black hover:bg-gray-100 transition duration-150">
-              Sign Up
-            </button>
-
-
-
-          </div>
-
-        
-          {choice === "Log In" ? <Login /> : <SignUp />}
-        </>
-      )}
-    </div>
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-4xl font-bold">UNI-Friend Sync</h1>
+      <div className="flex gap-4 mt-6">
+        <button   className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={() => router.push("/auth/login")}>Log In</button>
+        <button  className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600" onClick={() => router.push("/auth/signup")}>Sign Up</button>
+      </div>
+    </main>
   );
 }
