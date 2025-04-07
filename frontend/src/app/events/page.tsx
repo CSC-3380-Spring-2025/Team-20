@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useState } from "react"; 
 import Button from "../components/button";
 import Header from "../components/header";
@@ -6,9 +6,9 @@ import DivContainer from "../components/containers";
 import EventSection from "./EP-components/EventSection";
 import EventForm from "./EP-components/eventForm";
 import useEvents from "../events/hooks/useEvents";
-import Link from "next/link";
 import * as styles from "./styles/eventstyle";
 import { Event } from "./types/eventTypes";
+import { useRouter } from "next/navigation";
 
 export default function Events() {
   const { 
@@ -26,6 +26,7 @@ export default function Events() {
 
   const handleAddEvent = () => setShowForm(true);
   const handleCancelEvent = () => setShowForm(false);
+  const router = useRouter();
 
   const handleSubmitEvent = (event: Event) => {
     addEvent(event);
@@ -60,6 +61,7 @@ export default function Events() {
       setTimeout(() => setAlertMessage(null), 2000);
     }
   };
+
 
   return (
     <main style={{marginBottom: '40px'}}>
@@ -129,9 +131,11 @@ export default function Events() {
         />
       </DivContainer>
 
-      <Link href="/campus-outside">
-        <p style={styles.linkStyle}>Leaving LSU?</p>
-      </Link>
+     
+
+      <button style={styles.linkStyle} onClick={() =>   router.push("/campus-outside")}>
+        Leaving LSU?
+      </button>
       
     </main>
   );

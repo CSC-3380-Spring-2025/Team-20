@@ -1,7 +1,9 @@
 // replace whatever is in page.tsx inside this
+"use client";
 import { FC, useState } from "react";
 import * as styles from "../styles/eventformstyle";
 import {Event} from "../types/eventTypes";
+import { useRouter } from "next/navigation";
 
 //listen to event from eventtypes
 interface EventForm {
@@ -13,6 +15,7 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const router = useRouter();
     
 
     const handleSave = (e: React.FormEvent) => {
@@ -66,8 +69,13 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
                 style={styles.input}
             >
             </input>
+           
 
-            
+            {/**TODO: Replace Link with Map*/}
+            <label htmlFor="Map"  style={styles.subtitleHeaders}>Add Location </label>
+            <button className="bg-red-300 rounded-md hover:bg-red-400" onClick={() => router.push("/campus-outside")}>
+                Go to Map
+            </button>
 
             <div style={styles.buttonContainer}>
                 <button type="submit" style={styles.submitButton}>Submit</button>

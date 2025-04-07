@@ -4,10 +4,11 @@ import Header from "../components/header";
 import * as styles from "./styles/oc-style";
 import { useHover } from "./hooks/useHover";
 import OptionsBar from "./oc-components/optionsBar";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function OutsideCampus() {
   const [Hovered, listener] = useHover();
+  const router = useRouter();
 
 
   return (
@@ -16,11 +17,10 @@ export default function OutsideCampus() {
 
       <main>
         <div style={styles.container}>
-          <Link href="/events">  <button
-              style={{...styles.backbutton,
-                textDecoration: Hovered ? "underline" : "none",}}{...listener}>
+          <button
+            style={{...styles.backbutton,textDecoration: Hovered ? "underline" : "none",}}{...listener} onClick={() => router.push("/events")}>
               ← Events
-            </button></Link>
+          </button>
         </div>
 
         <OptionsBar/>
