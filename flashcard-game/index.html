@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #game {
+            display: none;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #questions {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Welcome to the Flashcard Game!</h1>
+
+<div id="start-screen">
+    <h2>Enter your interests and questions:</h2>
+    <div>
+        <label for="category">Interest Category:</label>
+        <input type="text" id="category" placeholder="e.g., Sports" required>
+    </div>
+    <div>
+        <label for="questions">Questions (comma separated):</label>
+        <textarea id="questions" placeholder="e.g., Do you like soccer?, Do you play basketball?" required></textarea>
+    </div>
+    <button class="btn" id="add-category">Add Category</button>
+    <button class="btn" id="start-game">Start Game</button>
+</div>
+
+<div id="game">
+    <h2>Category: <span id="category-name"></span></h2>
+    <p id="question"></p>
+    <button class="btn" id="yes-btn">Yes</button>
+    <button class="btn" id="no-btn">No</button>
+    <p>Question <span id="current-question-index">0</span> of <span id="total-questions">0</span></p>
+</div>
+
+<script src="bundle.js"></script>
+</body>
+</html>
