@@ -1,8 +1,8 @@
+//handles all the functionalities/listeners for any event in general. 
 import { useState } from "react";
 import { Event } from "../types/eventTypes";
 
-
-//dummy events. used in popularEvents hook.
+//dummy events. used in current events container, will be replaced with actual events people have created
 const initialEvents: Event[] = [
   { title: "Yoga at U-Rec", description: "Join us for a 1 hour session! All are welcome :)", totalInterested: 12 },
   { title: "Music Fest with Classical Club", description: "Enjoy live performances from local bands and artists.", totalInterested: 6 },

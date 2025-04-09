@@ -1,3 +1,4 @@
+//handles all the containers for user's own events, joined events, and current evetns
 import DivContainer from "../../components/containers";
 import { Event } from "../types/eventTypes";
 import * as estyle from "../styles/eventstyle";

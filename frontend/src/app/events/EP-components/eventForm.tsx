@@ -1,4 +1,4 @@
-// replace whatever is in page.tsx inside this
+//the form for user's to add their own events
 "use client";
 import { FC, useState } from "react";
 import * as styles from "../styles/eventformstyle";
@@ -22,8 +22,6 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
         e.preventDefault();
 
         //use new event object when saved
-
-    
         //creates new object of user's own event
         const newEvent: Event = {
             title: title.trim(),
@@ -49,26 +47,12 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
             
             <label htmlFor="title" style={styles.subtitleHeaders}>Title of Event</label>
-            <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                style={styles.input}
-            >
-            </input>
+            <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} style={styles.input}></input>
 
             
 
             <label htmlFor="description"  style={styles.subtitleHeaders}>Description </label>
-            <input
-                type="text"
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                style={styles.input}
-            >
-            </input>
+            <input type="text" id="description" value={description} onChange={(e) => setDescription(e.target.value)} style={styles.input}></input>
            
 
             {/**TODO: Replace Link with Map*/}
@@ -76,6 +60,7 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
             <button className="bg-red-300 rounded-md hover:bg-red-400" onClick={() => router.push("/campus-outside")}>
                 Go to Map
             </button>
+
 
             <div style={styles.buttonContainer}>
                 <button type="submit" style={styles.submitButton}>Submit</button>
