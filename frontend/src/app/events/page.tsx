@@ -29,7 +29,7 @@ export default function Events() {
     setShowForm(false);
 
     setAlertMessage(`Created ${event.title}`);
-    setTimeout(() => setAlertMessage(null));
+    setTimeout(() => setAlertMessage(null),2000);
   };
 
   const deleteEventHandler = (index: number) => {
@@ -38,7 +38,7 @@ export default function Events() {
     if (event) {
       deleteMyEvent(index);
       setAlertMessage(`Deleted ${event.title}`);
-      setTimeout(() => setAlertMessage(null));
+      setTimeout(() => setAlertMessage(null),2000);
     }
 
   };
@@ -49,7 +49,7 @@ export default function Events() {
     if (event) {
       joinEvent(index);
       setAlertMessage(`Joined ${event.title}`);
-      setTimeout(() => setAlertMessage(null));
+      setTimeout(() => setAlertMessage(null), 2000);
     }
 
   };
@@ -59,7 +59,7 @@ export default function Events() {
     if (event) {
       leaveEvent(index);
       setAlertMessage(`Left ${event.title}`);
-      setTimeout(() => setAlertMessage(null));
+      setTimeout(() => setAlertMessage(null),2000);
     }
   };
 

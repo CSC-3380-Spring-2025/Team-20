@@ -29,6 +29,8 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
             totalInterested:0,
           };
 
+          
+
         //call the function
         onSave(newEvent);
 
