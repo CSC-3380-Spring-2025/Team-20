@@ -1,10 +1,11 @@
 "use client";
-import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import * as styles from "../styles/headerstyle"
+import { useRouter } from "next/navigation";
 
 function Header() {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
+  const router = useRouter();
 
   // Toggle hamburger menu visibility
   const toggleHamburger = () => {
@@ -33,7 +34,7 @@ function Header() {
       <nav style={styles.nav}>
         <ul style={styles.navLeft}>
           <li style={styles.navItem}>
-            <Link href="/bio-page">UNIFRIEND-SYNC</Link>
+            <button onClick={()=>router.push("/bio-page")}>UNIFRIEND-SYNC</button>
           </li>
         </ul>
 
@@ -48,28 +49,22 @@ function Header() {
             </button>
           </li>
           <li style={styles.navItem}>
-            <Link href="/landing">Log Out</Link>
+            <button onClick={()=>router.push("/landing")}>Log Out</button>
           </li>
         </ul>
       </nav>
 
       {isHamburgerOpen && (
         <div ref={mobileMenuRef} style={styles.mobileMenu}>
-          <Link href="/bio-page" style={styles.mobileLink} aria-label="Go to my page">
-            My Page
-          </Link>
-          <Link href="/" style={styles.mobileLink} aria-label="Go to events page">
-            Events
-          </Link>
-          <Link href="/campus-map" style={styles.mobileLink} aria-label="Go to campus map">
-            My Map
-          </Link>
-          <Link href="/interests" style={styles.mobileLink} aria-label="Go to interests page">
-            Interests
-          </Link>
-          <Link href="/settings-page" style={styles.mobileLink} aria-label="Go to settings page">
-            Settings
-          </Link>
+         
+          <button onClick={()=>router.push("/bio-page")}  style={styles.mobileLink} aria-label="Go to my page">My Page</button>
+
+          <button onClick={()=>router.push("/events")}  style={styles.mobileLink} aria-label="Go to Events page">Events</button>
+
+          <button onClick={()=>router.push("/campus-map")}  style={styles.mobileLink} aria-label="Go to campus map">My Map</button>
+
+          <button onClick={()=>router.push("/interest")}  style={styles.mobileLink} aria-label="Go to interests page">Interests</button>
+          <button onClick={()=>router.push("/settings")}  style={styles.mobileLink} aria-label="Go to settings page">Settings</button>
         </div>
       )}
     </header>
