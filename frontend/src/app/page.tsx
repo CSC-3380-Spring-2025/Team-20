@@ -1,13 +1,3 @@
-//import Image from "next/image";
-
-/**
- * 
- * 
- *  <div className= "grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      
-        H
-      </div>
- */
 //this is landing
 "use client"
 export default function LandingPage() {
@@ -29,7 +19,7 @@ export default function LandingPage() {
       boxSizing: "border-box",
       fontFamily: "sans-serif"
     }}>
-      // Header 
+      {/*Header*/} 
       <div style={{
         display: "flex",
         justifyContent: "space-between",
@@ -66,7 +56,7 @@ export default function LandingPage() {
           TRY NEW ACTIVITIES TOGETHER
         </p>
 
-        // Login Button
+        {/*Login Button*/}
         <a href="/login">
           <button style={{
             backgroundColor: "#8b5cf6",
@@ -84,7 +74,7 @@ export default function LandingPage() {
           </button>
         </a>
 
-        // What is this?
+        {/*What is this?*/}
         <div style={{ marginTop: "2rem" }}>
           <button
             onClick={toggleDescription}
