@@ -22,6 +22,6 @@
       "@/*": ["./src/app/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/map.tsx", "src/components/header.tsx", "src/components/mapcontrols.tsx", "src/components/searchbar.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/map/mapcomponents/mapdisplay.tsx", "src/app/header.tsx", "src/app/map/mapcomponents/mapcontrols.tsx", "src/app/map/searchbar.tsx"],
   "exclude": ["node_modules"]
 }

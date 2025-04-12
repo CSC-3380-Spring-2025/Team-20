@@ -1,13 +1,12 @@
 "use client";
 
-import Header from "../components/header";
-import Map from "../components/map";
+import Header from "./header";
 
 export default function MapPage() {
   return (
     <div>
       <Header />
-      <Map />
+      <h1>Home Page In Development</h1>
     </div>
   );
 }

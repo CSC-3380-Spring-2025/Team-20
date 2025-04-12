@@ -1,10 +1,14 @@
+"use client";
+
 import "leaflet/dist/leaflet.css"; 
-import style from "../../styles/home.module.css";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import L from "leaflet";
 import { useState } from "react";
 
-import { HomeButton, SearchBar } from "./mapcontrols";
+//INTERNAL IMPORT
+import Header from "../header";
+import { HomeButton, SearchBar } from "./components/mapcontrols";
+import styles from "../../../styles/map.module.css";
 
 export default function Map() {
   const position: [number, number] = [30.413436, -91.180144];
@@ -209,8 +213,13 @@ export default function Map() {
 };
 
   return (
-    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={style.map}>
+  <div className={styles.headerstyle}>
+    <Header />
+    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
       
+      {/* Display Header */}
+      <Header />
+
       {/* Display Home Button */}
       <HomeButton center={position} zoom={17} />
 
@@ -234,5 +243,6 @@ export default function Map() {
         })}
       />
     </MapContainer>
+  </div>
   );
 }
