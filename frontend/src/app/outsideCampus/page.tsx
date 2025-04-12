@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import Header from "../header";
 import * as styles from "../outsideCampus/styles/ocstyle";
@@ -9,7 +10,6 @@ import { useRouter } from "next/navigation";
 export default function OutsideCampus() {
   const [Hovered, listener] = useHover();
   const router = useRouter();
-
 
   return (
     <>

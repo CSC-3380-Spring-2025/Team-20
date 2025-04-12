@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useHover } from "../hooks/usehover"; // Keep the custom hook here
 import * as styles from "../styles/ocstyle";

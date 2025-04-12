@@ -35,7 +35,7 @@ function Header() {
       <nav style={styles.nav}>
         <ul style={styles.navLeft}>
           <li style={styles.navItem}>
-            <button onClick={()=>router.push("/bio")}>UNIFRIEND-SYNC</button>
+            <button onClick={()=>router.push("/landing")}>UNIFRIEND-SYNC</button>
           </li>
         </ul>
 
@@ -58,15 +58,17 @@ function Header() {
       {isHamburgerOpen && (
         <div ref={mobileMenuRef} style={styles.mobileMenu}>
          
-          <button onClick={()=>router.push("/bio")}  style={styles.mobileLink} aria-label="Go to my page">Profile</button>
+          <button onClick={()=>router.push("/bio")}  style={styles.mobileLink} aria-label="Go to My Page">Profile</button>
 
-          <button onClick={()=>router.push("/event")}  style={styles.mobileLink} aria-label="Go to Events page">Events</button>
+          <button onClick={()=>router.push("/event")}  style={styles.mobileLink} aria-label="Go to Event Page">Events</button>
 
-          <button onClick={()=>router.push("/map")}  style={styles.mobileLink} aria-label="Go to Map page">Map</button>
+          <button onClick={()=>router.push("/map")}  style={styles.mobileLink} aria-label="Go to Map Page">Map</button>
 
-          <button onClick={()=>router.push("/interest")}  style={styles.mobileLink} aria-label="Go to Interests page">Interests</button>
+          <button onClick={()=>router.push("/interest")}  style={styles.mobileLink} aria-label="Go to Interest Page">Interests</button>
 
-          <button onClick={()=>router.push("/settings")}  style={styles.mobileLink} aria-label="Go to Settings page">Settings</button>
+          <button onClick={()=>router.push("/game")}  style={styles.mobileLink} aria-label="Go to Game Page">Game</button>
+
+          <button onClick={()=>router.push("/settings")}  style={styles.mobileLink} aria-label="Go to Settings Page">Settings</button>
         </div>
       )}
     </header>

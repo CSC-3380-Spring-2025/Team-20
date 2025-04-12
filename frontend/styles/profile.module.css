@@ -15,6 +15,7 @@
   border: 2px solid #c1bfbf;
   border-radius: 50%; 
   cursor: pointer;
+  background-color: #ffffff;
 }
   
 .profileImageUpload {
@@ -30,6 +31,7 @@
   margin: 10px 0 0 40px;
   border: 2px solid #c1bfbf;
   border-radius: 10px; 
+  background-color: #ffffff;
 } 
 
 .nameInput {
@@ -46,6 +48,7 @@
   margin: 10px 0 0 40px;
   border: 2px solid #c1bfbf;
   border-radius: 10px; 
+  background-color: #ffffff;
 }
 
 .bioInput {
@@ -63,6 +66,7 @@
   margin: 10px 0 0 40px;
   border: 2px solid #c1bfbf;
   border-radius: 10px; 
+  background-color: #ffffff;
 }
 
 .socialAccountsInput {
