@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 
 //INTERAL IMPORT
-import Header from "../header"; 
+import Header from "../components/header"; 
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'next/navigation';
 
 interface Flashcard {
   question: string;
@@ -16,6 +18,25 @@ interface InterestCategory {
 }
 
 export default function Game() {
+  const {user} = useAuth();
+  const router = useRouter();
+
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
+
+
+
   const [interests, setInterests] = useState<InterestCategory[]>([]);
   const [currentFlashcards, setCurrentFlashcards] = useState<Flashcard[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);

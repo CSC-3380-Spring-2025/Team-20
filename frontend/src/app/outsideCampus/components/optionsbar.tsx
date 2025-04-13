@@ -1,62 +1,59 @@
 "use client";
 
 import React, { useState } from "react";
-import { useHover } from "../hooks/usehover"; // Keep the custom hook here
+import { useHover } from "../hooks/usehover";
 import * as styles from "../styles/ocstyle";
 
-// Define the options
-const options = [
-  "Restaurants",
-  "Bars and Cafes",
-  "Parks and Recreation",
-  "Arcades",
-  "Monthly Events",
-];
+const options = [ "Restaurants", "Bars and Cafes", "Parks and Recreation", "Arcades", "Monthly Events"] as const;
+
+
+//passes an index value of our options. easier to maneuver
+export type InterestsIndex = typeof options[number];
 
 // Create a HoverButton component to handle the hover functionality
-const HoverButton = ({ option, onClick }: { option: string, onClick: () => void }) => {
+const HoverButton = (
+  { option, isEventSelected, onClick }:
+  { option: string, isEventSelected:boolean; onClick: () => void }
+) => {
   const [Hovered, listener] = useHover();
 
   return (
     <button
       onClick={onClick}
-      style={{
-        ...styles.backbutton,
-        backgroundColor: Hovered ? "lightblue" : "#f1f0ef",
-      }}
-      {...listener} // Apply the hover listeners
-    >
-      {option}
+      
+      style={{...styles.optionButton, backgroundColor: 
+          Hovered ? "lightblue" : "#f1f0ef",}}
+          {...listener} // Apply the hover listeners 
+      >
+
+      {option.charAt(0).toUpperCase() + option.slice(1)}
     </button>
   );
 };
 
-function OptionsBar() {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  function OptionsBar(
+      { selectedOption, setSelectedOption,}: 
+      { selectedOption: "" | InterestsIndex; setSelectedOption: (interest: "" | InterestsIndex) => void; }
+  ) {
 
-  const handleSelectedOption = (option: string) => {
-    setSelectedOption(option);
-  };
 
   return (
     <>
-      <div style={styles.optionsContainer}>
-        {options.map((option, index) => (
-          <HoverButton
-            key={index}
-            option={option}
-            onClick={() => handleSelectedOption(option)} // Pass the option to the handler
-          />
-        ))}
-      </div>
+      <div  style={styles.optionsContainer}>
 
-      {selectedOption && (
-        <div style={{ ...styles.optionsContainer, backgroundColor: "white" }}>
-          <p style={{ ...styles.optionsContainer, backgroundColor: "white" }}>
-            No current events for {selectedOption}
-          </p>
-        </div>
-      )}
+
+      {options.map((option, index) => (
+
+
+        <HoverButton
+          key={index} option={option} isEventSelected={selectedOption === option}
+          onClick={() => setSelectedOption(option)} />
+
+
+      ))}
+
+
+    </div>
     </>
   );
 }

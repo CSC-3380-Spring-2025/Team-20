@@ -1,20 +1,22 @@
 //event's page
 "use client";
 import { useState } from "react"; 
-import Button from "../EP-components/button";
-import Header from "../header";
-import DivContainer from "../EP-components/containers";
+import Button from "../components/button";
+import Header from "../components/header";
+import DivContainer from "../components/containers";
 import EventSection from "./components/eventSection";
 import EventForm from "./components/eventForm";
 import useEvents from "./hooks/useEvents";
 import * as styles from "./styles/eventStyle";
 import { Event } from "./types/eventTypes";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
 export default function Events() {
   const [showForm, setShowForm] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const router = useRouter();
+  const {user} = useAuth();
 
   const { myEvents, popularEvents, joinedEvents, 
     addEvent, deleteMyEvent, joinEvent, leaveEvent } = useEvents();
@@ -62,6 +64,20 @@ export default function Events() {
       setTimeout(() => setAlertMessage(null));
     }
   };
+
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <main style={{marginBottom: '40px'}}>
@@ -111,7 +127,7 @@ export default function Events() {
 
       </DivContainer>
 
-      <button style={styles.linkStyle} onClick={() =>   router.push("/campus-outside")}>
+      <button style={styles.linkStyle} onClick={() =>   router.push("/outsideCampus")}>
         Leaving LSU?
       </button>
       

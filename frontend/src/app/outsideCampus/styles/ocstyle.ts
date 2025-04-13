@@ -1,27 +1,31 @@
 export const backbutton = {
     border: "none",
-    padding: "15px 10px",
+    padding: "10px 15px",
     borderRadius: "4px",
     fontSize: "20px",
     transition: "all 0.3s ease",
     cursor: "pointer",
+    Color: "lightblue",
+    
   };
   
   export const container = {
     paddingTop: "3%",
     paddingLeft: "2%",
     display: "flex",
+    backgroundColor: "orange"
    
   };
   
   export const optionButton = {
-    padding: "5px 5px",
+    padding: "5px 2px",
     fontSize: "18px",
     borderRadius: "5px",
-    margin: "0 2%",
+    margin: "0 1%",
     cursor: "pointer",
     transition: "background-color 0.3s ease, color 0.3s ease",
     width: "auto",
+    color: "blue"
   };
   
 
@@ -33,7 +37,7 @@ export const backbutton = {
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    marginBottom: "100px",
+    marginBottom: "20px",
     gap: "5%",
     maxWidth: "96%",
     backgroundColor: "#f1f0ef",

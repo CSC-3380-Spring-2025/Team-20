@@ -3,9 +3,26 @@
 import { useState, useEffect } from 'react';
 
 //INTERNAL IMPORTS
-import Header from "../header";
+import Header from "../components/header";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 
 export default function Interest() {
+  const {user} = useAuth();
+  const router = useRouter();
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
   const categories = {
     Hobbies: [
       "Reading", "Gaming", "Painting", "Drawing", "Writing", "Photography", 
@@ -97,13 +114,13 @@ export default function Interest() {
 
   // Handle button click to select or deselect a button
   const handleButtonClick = (buttonName: string) => {
-    setSelectedButtons((prevState: any[]) => {
+    setSelectedButtons((prevState) => {
       if (prevState.includes(buttonName)) {
-        return prevState.filter(name => name !== buttonName);
+        return prevState.filter((name) => name !== buttonName);
       } else {
         return prevState.length < MAX_SELECTION ? [...prevState, buttonName] : prevState;
       }
-    });
+  });
 
     setClickCounts((prevCounts) => {
       const newCounts = { ...prevCounts, [buttonName]: (prevCounts[buttonName] || 0) + 1 };
@@ -122,11 +139,11 @@ export default function Interest() {
   };
 
   const getTrendingItemsByCategory = (category: keyof typeof categories) => {
-      const categoryItems = categories[category] || [];
-    const categoryClickCounts = categoryItems.reduce((acc: { [x: string]: any; }, item: string | number) => {
+    const categoryItems = categories[category] || [];
+    const categoryClickCounts = categoryItems.reduce((acc: Record<string, number>, item: string) => {
       acc[item] = clickCounts[item] || 0;
       return acc;
-    }, {});
+  }, {});
 
     return Object.entries(categoryClickCounts)
       .sort((a, b) => b[1] - a[1])

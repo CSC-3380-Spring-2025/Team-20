@@ -55,9 +55,9 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
             <input type="text" id="description" value={description} onChange={(e) => setDescription(e.target.value)} style={styles.input}></input>
            
 
-            {/**TODO: Replace Link with Map*/}
+            {/**Map page should pass out some toggle*/}
             <label htmlFor="Map"  style={styles.subtitleHeaders}>Add Location </label>
-            <button className="bg-red-300 rounded-md hover:bg-red-400" onClick={() => router.push("/outsideCampus")}>
+            <button className="bg-red-300 rounded-md hover:bg-red-400" onClick={() => router.push("/map")}>
                 Go to Map
             </button>
 

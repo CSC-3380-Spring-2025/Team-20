@@ -1,28 +1,24 @@
 "use client";
 
-import "leaflet/dist/leaflet.css"; 
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+//import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import L from "leaflet";
-import { useState } from "react";
 
 //INTERNAL IMPORT
-import Header from "../header";
-import { HomeButton, SearchBar } from "./components/mapcontrols";
-import styles from "../../../styles/map.module.css";
+import Header from "../components/header";
+import styles from "../map/styles/map.module.css";
+import { useAuth } from "@/context/auth-context";
 
-export default function Map() {
-  const position: [number, number] = [30.413436, -91.180144];
-  const [pin, setPin] = useState<{ x: number; y: number; coords: [number, number] }[]>([]);
+interface BuildingShape {
+  name: string;
+  description: string;
+}
 
-  //Used to Customize Building Shape
-  interface BuildingShape {
-    name: string;
-    description: string;
-  }
+const position: [number, number] = [30.413436, -91.180144];
 
-  //Coordinates Starts from the Top Left to the Right, then Right Down to Left
-  //Buildings On Campus
-  const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
+ const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
     "type": "FeatureCollection",
     "features": [
       {
@@ -90,159 +86,136 @@ export default function Map() {
     ]
   };
 
-  //Toggle Popup & Pin, Save, Reset, & Share Buttons Styling/Position
+export default function Map() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // If user is not logged in, redirect to login page
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
+
+  // const [pinPosition, setPinPosition] = useState<{ x: number; y: number } | null>(null);
+
+  // useEffect(() => {
+  //   // Retrieve pin position from localStorage if exists
+  //   const savedPin = localStorage.getItem("pin-Middleton Library");
+  //   if (savedPin) {
+  //     setPinPosition(JSON.parse(savedPin));
+  //   }
+  // }, []);
+
+  // const handlePinDrag = (event: React.DragEvent<HTMLDivElement>, featureName: string) => {
+  //   const rect = event.currentTarget.getBoundingClientRect();
+  //   const offsetX = event.clientX - rect.left;
+  //   const offsetY = event.clientY - rect.top;
+  //   setPinPosition({ x: offsetX, y: offsetY });
+
+  //   // Save pin position to localStorage
+  //   localStorage.setItem(
+  //     `pin-${featureName}`,
+  //     JSON.stringify({ left: offsetX, top: offsetY })
+  //   );
+  // };
+
   const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer) => {
-    layer.on('click', () => {
+    layer.on("click", () => {
       const { name, description } = feature.properties as BuildingShape;
-      const map = (layer as any)._map;
+      
+      // Access the map from the layer (this is a Leaflet internal property)
+      const map = (layer as L.Polygon & { _map: L.Map })._map;
       const center = (layer as L.Polygon).getBounds().getCenter();
+      
       L.popup({
         maxWidth: 2200,
         maxHeight: 4400,
       })
-      .setLatLng(center)
-      .setContent(`
-        <div style="position: relative; width: 500px; height: 300px;">
-          <h3>${name}</h3>
-          <p>Drag your pin to where you are!</p>
-          <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;"/>
-          <div id="pin" 
-            style="
-            position: absolute; 
-            width: 12px; 
-            height: 12px; 
-            top: 80px; 
-            left: 450px;
-            background-color: red; 
-            border-radius: 100%; 
-            cursor: grab;
-          " draggable="true">
+        .setLatLng(center)
+        .setContent(`
+          <div style="position: relative; width: 500px; height: 300px;">
+            <h3>${name}</h3>
+            <p>Drag your pin to where you are!</p>
+            <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;"/>
+            <div id="pin" 
+              style="
+              position: absolute; 
+              width: 12px; 
+              height: 12px; 
+              top: 80px; 
+              left: 450px;
+              background-color: red; 
+              border-radius: 100%; 
+              cursor: grab;
+            " draggable="true">
+            </div>
+  
+            <div style="margin-top: 20px;">
+              <button id="saveButton" 
+              style="padding: 10px 20px; 
+              background-color: green; 
+              color: white; 
+              border: none; 
+              border-radius: 5px; 
+              cursor: pointer;
+              ">Save
+              </button>
+  
+              <button id="resetButton" 
+              style="padding: 10px 20px; 
+              background-color: red; 
+              color: white; 
+              border: none; 
+              border-radius: 5px; 
+              cursor: pointer; 
+              ">Reset
+              </button>
+            
+              <button id="Share" 
+              style="padding: 10px 20px; 
+              background-color: blue; 
+              color: white; 
+              border: none; 
+              border-radius: 5px; 
+              cursor: pointer; 
+              ">Share
+              </button>
+            </div>
+  
           </div>
-
-          <div style="margin-top: 20px;">
-            <button id="saveButton" 
-            style="padding: 10px 20px; 
-            background-color: green; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer;
-            ">Save
-            </button>
-
-            <button id="resetButton" 
-            style="padding: 10px 20px; 
-            background-color: red; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            ">Reset
-            </button>
-          
-            <button id="Share" 
-            style="padding: 10px 20px; 
-            background-color: blue; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            ">Share
-            </button>
-          </div>
-
-        </div>
-      `)
-      .openOn(map);
-
-  //Drag & Drop Pin
-  const pin = document.getElementById("pin");
-    
-  pin?.addEventListener("dragstart", (e) => {
-    e.dataTransfer?.setData("text/plain", "");
-  });
-    
-    document.addEventListener("dragover", (e) => {
-      e.preventDefault();
+        `)
+        .openOn(map);
     });
-
-    document.addEventListener("drop", (e) => {
-      e.preventDefault();
-        
-      const rect = pin!.parentElement!.getBoundingClientRect();
-     
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      
-      pin!.style.left = `${offsetX - 10}px`;
-      pin!.style.top = `${offsetY - 10}px`;
-
-      const x = (offsetX / rect.width) * 100;
-      const y = (offsetY / rect.height) * 100;
-
-  //Save Pin Position
-  const saveButton = document.getElementById("saveButton");
-    if (saveButton) {
-      saveButton.addEventListener('click', () => {
-        if (pin) {
-          const pinLeft = pin.style.left;
-          const pinTop = pin.style.top;
-        
-          localStorage.setItem(`pin-${name}`, JSON.stringify({ left: pinLeft, top: pinTop }));
-        }
-      });
-    }
-    
-  //Connect share button to save button; will work on next
-  const shareButton = document.getElementById("Share");
-    
-  //Reset Pin Position
-  const resetButton = document.getElementById("resetButton");
-    if (resetButton) {
-      resetButton.addEventListener('click', () => {
-        if (pin) {
-        pin.style.left = '450px';
-        pin.style.top = '80px';
-      
-        localStorage.removeItem(`pin-${name}`);
-      }
-    });
-  }
-});
-});
-};
+  };
 
   return (
-  <div className={styles.headerstyle}>
-    <Header />
-    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
-      
-      {/* Display Header */}
+    <div className={styles.headerstyle}>
       <Header />
+      <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        />
 
-      {/* Display Home Button */}
-      <HomeButton center={position} zoom={17} />
-
-      {/* Display Search Bar */}
-      <SearchBar />
-
-      {/* Display Map */}
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      />
-
-      {/* Display Building */}
-      <GeoJSON
-        data={buildingBlueprint}
-        onEachFeature={buildingPopup}
-        style={() => ({
-          color: "purple",
-          weight: 1,
-          fillOpacity: 0.4
-        })}
-      />
-    </MapContainer>
-  </div>
+        <GeoJSON
+          data={buildingBlueprint}
+          onEachFeature={buildingPopup}
+          style={() => ({
+            color: "purple",
+            weight: 1,
+            fillOpacity: 0.4,
+          })}
+        />
+      </MapContainer>
+    </div>
   );
 }

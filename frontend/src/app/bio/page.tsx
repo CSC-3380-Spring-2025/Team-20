@@ -2,18 +2,22 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-
+import { useAuth } from "../context/auth-context";
+import { useRouter } from "next/navigation"; // Import useRouter for redirect
 // INTERNAL IMPORT
-import styles from "../../../styles/profile.module.css";
-import Header from "../header";
+import styles from "../bio/styles/profile.module.css";
+import Header from "../components/header";
 
 const Profile: React.FC = () => {
+  const { user } = useAuth();
+  const router = useRouter(); // Used for navigation
+
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
-  const maxLength = 160; //Maximum length for bio
+  const maxLength = 160; // Maximum length for bio
   const [bio, setBio] = useState("");
   const [socialAccounts, setSocialAccounts] = useState<string[]>(["", "", ""]);
-  const [save, setSave] = useState(false); 
+  const [save, setSave] = useState(false);
   const [interest, setInterest] = useState<string[]>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -38,18 +42,32 @@ const Profile: React.FC = () => {
     setSocialAccounts(newSocialAccounts);
   };
 
-  //Need To Add Functionality To Save Profile Changes
   const handleSave = () => {
     setSave(true);
   };
 
-  //Connects Interest Sections To Profile
+  // Connects Interest Sections To Profile
   useEffect(() => {
     const savedInterests = localStorage.getItem("selectedInterests");
     if (savedInterests) {
       setInterest(JSON.parse(savedInterests));
     }
   }, []);
+
+  // If no user, show the login message
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -113,11 +131,7 @@ const Profile: React.FC = () => {
       <button onClick={handleSave} className={styles.saveButton}>
         Save
       </button>
-      {save && (
-        <div>
-          Profile saved!
-        </div>
-      )}
+      {save && <div>Profile saved!</div>}
 
       {/* Interests */}
       <div className={styles.interestsContainer}>
