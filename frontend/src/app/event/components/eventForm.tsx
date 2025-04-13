@@ -57,7 +57,7 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
             {/**Map page should pass out some toggle*/}
             <label htmlFor="Map"  style={styles.subtitleHeaders}>Add Location </label>
-            <button className="bg-red-300 rounded-md hover:bg-red-400" onClick={() => router.push("/map")}>
+            <button className="bg-red-300 rounded-md hover:bg-red-400 font-semibold px-3 py-1" onClick={() => router.push("/map")}>
                 Go to Map
             </button>
 
