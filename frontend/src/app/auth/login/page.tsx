@@ -9,24 +9,14 @@ import { useEffect } from "react";
 import { GoogleButton } from "../components/googleButton";
 import AuthToggle from "../components/authToggle";
 
-
-
 export default function Login() {
   const { user, signInWithEmail } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); 
-
-
   const router = useRouter();
 
-  useEffect(() => {
-    if (user) {
-      router.push("/bio");
-    }
-  }, [user, router]);
-
-
+  
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +29,12 @@ export default function Login() {
       setError("Login failed. Check your credentials.");
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      router.push("/bio");
+    }
+  }, [user, router]);
 
   
 

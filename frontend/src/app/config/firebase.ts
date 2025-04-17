@@ -15,6 +15,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app); // Make sure this is defined here
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
@@ -24,16 +25,13 @@ const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    //make sure to have function here
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid, 
       name: user.displayName,
       email: user.email,
     });
 
-    return user; 
-
-
+    return user;
   } catch (error) {
     console.error("Google Sign-In Error:", error);
   }
@@ -47,6 +45,4 @@ const logout = async () => {
   }
 };
 
-const db = getFirestore(app);
-
-export {auth, db, signInWithGoogle, logout};
+export { auth, db, signInWithGoogle, logout };

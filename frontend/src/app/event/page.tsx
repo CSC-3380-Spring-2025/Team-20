@@ -1,32 +1,66 @@
-//event's page
 "use client";
-import { useState } from "react"; 
+
+//react components
+import { useState } from "react";
+
+
+//components
 import Button from "../components/button";
 import Header from "../components/header";
 import DivContainer from "../components/containers";
 import EventSection from "./components/eventSection";
 import EventForm from "./components/eventForm";
 import useEvents from "./hooks/useEvents";
+
+//styles
 import * as styles from "./styles/eventStyle";
 import { Event } from "./types/eventTypes";
+
+//router and navigation
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 
-export default function Events() {
-  const [showForm, setShowForm] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const router = useRouter();
-  const {user} = useAuth();
+//database
+//import { collection, getDocs, query, where, DocumentData } from "firebase/firestore";
+//import { db } from "../config/firebase";
 
-  const { myEvents, popularEvents, joinedEvents, 
-    addEvent, deleteMyEvent, joinEvent, leaveEvent } = useEvents();
-    
+export default function Events() {
+  //event form
+  const [showForm, setShowForm] = useState(false);
+
+  //alert when joined, add, delete, leave
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+
+  //default. DELETE LATER
+
+  //const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const {
+    myEvents,
+    popularEvents,
+    joinedEvents,
+    addEvent,
+    deleteMyEvent,
+    joinEvent,
+    leaveEvent
+  } = useEvents();
+
+  
+
+
+
+  //handleEvents
+
   const handleAddEvent = () => setShowForm(true);
+
   const handleCancelEvent = () => setShowForm(false);
 
-
-  {/**alert that shows if user joined, left; added or deleted individual events*/}
   const handleSubmitEvent = (event: Event) => {
+    //functionality (add the event then show it for around 2000 and create the event)
     addEvent(event);
     setShowForm(false);
 
@@ -37,27 +71,33 @@ export default function Events() {
   const deleteEventHandler = (index: number) => {
     const event = myEvents[index];
 
+    //only if there's an option 
     if (event) {
       deleteMyEvent(index);
       setAlertMessage(`Deleted ${event.title}`);
       setTimeout(() => setAlertMessage(null), 1000);
     }
 
+
   };
 
   const joinEventHandler = (index: number) => {
-    const event = popularEvents[index];
 
+    //joined events. 
+    const event = popularEvents[index];
     if (event) {
       joinEvent(index);
       setAlertMessage(`Joined ${event.title}`);
       setTimeout(() => setAlertMessage(null), 1000);
     }
-
   };
 
+
   const leaveEventHandler = (index: number) => {
+
+    //leave events. 
     const event = joinedEvents[index];
+
     if (event) {
       leaveEvent(index);
       setAlertMessage(`Left ${event.title}`);
@@ -65,6 +105,11 @@ export default function Events() {
     }
   };
 
+  
+  
+
+
+  // must do this before creating
   if (!user) {
     return (
       <div>
@@ -80,13 +125,15 @@ export default function Events() {
   }
 
   return (
-    <main style={{marginBottom: '40px'}}>
+
+    <main style={{ marginBottom: "40px" }}>
       <Header />
 
-      {/* Alert message */}
+
+      
+
       {alertMessage && (
-        <DivContainer
-          position="fixed"
+        <DivContainer position="fixed"
           top="20px"
           left="50%"
           transform="translateX(-50%)"
@@ -98,39 +145,47 @@ export default function Events() {
           fontWeight="bold"
           boxShadow="0px 4px 6px rgba(0, 0, 0, 0.1)"
           transition="opacity 0.5s ease-in-out"
-          zIndex="10001"
+          zIndex="1000"
         >
           {alertMessage}
         </DivContainer>
       )}
 
       <DivContainer padding="2px" width="100%">
-
-
-        <DivContainer display="flex" justifyContent="space-between" padding="40px 20px 10px 10px" width="100%">
+        <DivContainer
+          display="flex"
+          justifyContent="space-between"
+          padding="40px 20px 10px 10px"
+          width="100%"
+        >
           <p style={styles.titleStyle}>Events</p>
-          <Button backgroundColor="blue" color="white" fontSize="14px" padding="2px 8px" borderRadius="5px" fontWeight="bold" onClick={handleAddEvent}>
+          <Button
+            backgroundColor="blue"
+            color="white"
+            fontSize="14px"
+            padding="2px 8px"
+            borderRadius="5px"
+            fontWeight="bold"
+            onClick={handleAddEvent}
+          >
             ➕ Add Event
           </Button>
         </DivContainer>
 
-        {showForm && (<EventForm onSave={handleSubmitEvent} onDelete={handleCancelEvent} />)}
+        {showForm && (
+          <EventForm onSave={handleSubmitEvent} onDelete={handleCancelEvent} />
+        )}
 
-        {/* My Events */}
-        <EventSection title="My Events" events={myEvents} onDelete={deleteEventHandler}/>
-
-        {/* Joined Events*/}
-        <EventSection title="Joined Events" events={joinedEvents} onLeave={leaveEventHandler}/>
-
-        {/* Current Events */}
-        <EventSection title="Current Events" events={popularEvents} onJoin={joinEventHandler} isPopular={true}/>
-
+        <EventSection title="My Events" events={myEvents} onDelete={deleteEventHandler} />
+        <EventSection title="Joined Events" events={joinedEvents} onLeave={leaveEventHandler} />
+        <EventSection title="Current Events" events={popularEvents} onJoin={joinEventHandler} isPopular={true} />
       </DivContainer>
 
-      <button style={styles.linkStyle} onClick={() =>   router.push("/outsideCampus")}>
+      <button style={styles.linkStyle} onClick={() => router.push("/outsideCampus")}>
         Leaving LSU?
+
+        
       </button>
-      
     </main>
   );
 }

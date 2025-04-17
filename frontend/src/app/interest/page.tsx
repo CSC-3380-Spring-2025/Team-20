@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
+import { db } from '@/config/firebase';
+import {doc, setDoc} from "firebase/firestore";
+
 //INTERNAL IMPORTS
 import Header from "../components/header";
 import { useRouter } from 'next/navigation';
@@ -10,19 +13,7 @@ import { useAuth } from '@/context/auth-context';
 export default function Interest() {
   const {user} = useAuth();
   const router = useRouter();
-  if (!user) {
-    return (
-      <div>
-        <h2>You need to log in to access this page.</h2>
-        <button
-          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
-          onClick={() => router.push("/auth/login")}
-        >
-          Return to Login
-        </button>
-      </div>
-    );
-  }
+
   const categories = {
     Hobbies: [
       "Reading", "Gaming", "Painting", "Drawing", "Writing", "Photography", 
@@ -94,17 +85,28 @@ export default function Interest() {
   const [savedMessage, setSavedMessage] = useState("");
   const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
 
-  // Load saved selections and click counts from localStorage on page load
+  //load click counts from localStorage on page load **termparoy must fix
   useEffect(() => {
-    const savedSelections = localStorage.getItem("selectedInterests");
     const savedClicks = localStorage.getItem("clickCounts");
-    if (savedSelections) {
-      setSelectedButtons(JSON.parse(savedSelections));
-    }
     if (savedClicks) {
       setClickCounts(JSON.parse(savedClicks));
     }
   }, []);
+
+//handles redirect if bypassing auth
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
 
   // Handle category click to set the selected category
   const handleCategoryClick = (category: keyof typeof categories | null) => {
@@ -130,12 +132,27 @@ export default function Interest() {
   };
 
   // Function to handle saving the selected interests to localStorage
-  const handleSave = () => {
-    localStorage.setItem("selectedInterests", JSON.stringify(selectedButtons)); // Save selected interests
-    setSavedMessage("Your interests have been saved!");
+  const handleSave = async () => {
+    if (!user)  return; 
+
+    try {
+      const userDoc = doc(db, "users", user.uid);
+
+      await setDoc(userDoc, { interests: selectedButtons }, { merge: true });
+
+      setSavedMessage("Your interests have been saved!");
+
+
+    } catch {
+      setSavedMessage("Failed to save interests. Try again!");
+    }
+
     setTimeout(() => {
       setSavedMessage("");
     }, 3000);
+
+    // localStorage.setItem("selectedInterests", JSON.stringify(selectedButtons)); // Save selected interests
+    // setSavedMessage("Your interests have been saved!");
   };
 
   const getTrendingItemsByCategory = (category: keyof typeof categories) => {

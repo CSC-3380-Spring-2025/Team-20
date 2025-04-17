@@ -12,13 +12,9 @@ interface EventSectionProps {
   isPopular?: boolean;
 }
 
-export default function EventSection({
-  title,
-  events,
-  onDelete,
-  onLeave,
-  onJoin,
-  isPopular = false,
+export default function EventSection({ title,
+events,onDelete,
+  onLeave,onJoin,isPopular = false,
 }: EventSectionProps) {
   return (
     <DivContainer padding="15px" margin="20px 0" backgroundColor="#f9f9f9" borderRadius="8px">

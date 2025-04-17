@@ -1,39 +1,5 @@
 "use client";
 
-// import React from "react";
-// import Header from "../components/header";
-// import * as styles from "../outsideCampus/styles/ocstyle";
-// import { useHover } from "../outsideCampus/hooks/usehover";
-// import OptionsBar from "../outsideCampus/components/optionsbar";
-// import { useRouter } from "next/navigation";
-
-// export default function OutsideCampus() {
-//   const [Hovered, listener] = useHover();
-//   const router = useRouter();
-
-//   return (
-//     <>
-//       <Header />
-
-//       <main>
-//         <div style={styles.container}>
-//           <button
-//             style={{...styles.backbutton,textDecoration: Hovered ? "underline" : "none",}}{...listener} onClick={() => router.push("/events")}>
-//               ← Events
-//           </button>
-//         </div>
-
-//         <OptionsBar/>
-       
-
-//       </main>
-
-    
-//     </>
-//   );
-// }
-
-
 "use client";
 
 import React, { useState } from "react";
@@ -42,6 +8,7 @@ import * as styles from "../outsideCampus/styles/ocstyle";
 import { useHover } from "../outsideCampus/hooks/usehover";
 import OptionsBar from "../outsideCampus/components/optionsbar";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
 type InterestCategory =
   | "Restaurants"
@@ -156,19 +123,27 @@ const mockCards: EventCard[] = [
   },
 ];
 
-const interestOptions: InterestCategory[] = [
-  "Restaurants",
-  "Bars and Cafes",
-  "Parks and Recreation",
-  "Arcades",
-  "Monthly Events",
-];
-
 export default function OutsideCampus() {
   const [Hovered, listener] = useHover();
   const router = useRouter();
   const [selectedInterest, setSelectedInterest] = useState<InterestCategory | "">("");
   const [events, setEvents] = useState<EventCard[]>(mockCards);
+
+  const {user} = useAuth();
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
+
 
   const handleCardClick = (index: number) => {
     const newEvents = [...filteredEvents];
@@ -192,7 +167,7 @@ export default function OutsideCampus() {
               textDecoration: Hovered ? "underline" : "none",
             }}
             {...listener}
-            onClick={() => router.push("/events")}
+            onClick={() => router.push("/event")}
           >
             ← Events
           </button>

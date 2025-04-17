@@ -3,7 +3,7 @@
 import { FC, useState } from "react";
 import * as styles from "../styles/eventFormStyle";
 import {Event} from "../types/eventTypes";
-import { useRouter } from "next/navigation";
+import Map from "@/map/page";
 
 //listen to event from eventtypes
 interface EventForm {
@@ -15,8 +15,12 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const router = useRouter();
     
+    const handleMap = () => {
+        return(
+            <Map/>
+        );
+    }
 
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,9 +61,9 @@ const EventForm: FC<EventForm> = ({onSave, onDelete}) => {
 
             {/**Map page should pass out some toggle*/}
             <label htmlFor="Map"  style={styles.subtitleHeaders}>Add Location </label>
-            <button className="bg-red-300 rounded-md hover:bg-red-400 font-semibold px-3 py-1" onClick={() => router.push("/map")}>
-                Go to Map
-            </button>
+
+            <button className="bg-red-300 rounded-md hover:bg-red-400 font-semibold px-3 py-1"
+            onClick={handleMap}> Go to Map</button>
 
 
             <div style={styles.buttonContainer}>
