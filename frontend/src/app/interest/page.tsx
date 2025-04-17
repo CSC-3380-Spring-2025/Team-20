@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { db } from '@/config/firebase';
-import {doc, setDoc} from "firebase/firestore";
+import {doc, setDoc, getDoc} from "firebase/firestore";
 
 //INTERNAL IMPORTS
 import Header from "../components/header";
@@ -133,20 +133,30 @@ export default function Interest() {
 
   // Function to handle saving the selected interests to localStorage
   const handleSave = async () => {
-    if (!user)  return; 
+    if (!user) return;
 
     try {
       const userDoc = doc(db, "users", user.uid);
-
-      await setDoc(userDoc, { interests: selectedButtons }, { merge: true });
-
+      const userSnapshot = await getDoc(userDoc);
+  
+      let existingInterests: string[] = [];
+  
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        existingInterests = userData.interests || [];
+      }
+  
+      // Merge existing and newly selected interests
+      const updatedInterests = Array.from(new Set([...existingInterests, ...selectedButtons]));
+  
+      await setDoc(userDoc, { interests: updatedInterests }, { merge: true });
+  
       setSavedMessage("Your interests have been saved!");
-
-
-    } catch {
+    } catch (error) {
+      console.error(error);
       setSavedMessage("Failed to save interests. Try again!");
     }
-
+  
     setTimeout(() => {
       setSavedMessage("");
     }, 3000);
@@ -237,9 +247,9 @@ export default function Interest() {
                   selectedButtons.includes(item) ? "bg-blue-700" : ""
                 }`}
               >
-                {item}
-                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  Trending
+                 {item}
+                <span className="absolute top-2 right-2 bg-red-400 text-white text-xs px-2 py-1 rounded-full">
+                   🔥Trending
                 </span>
               </button>
             ))
@@ -247,20 +257,26 @@ export default function Interest() {
 
           {/* Other Category Buttons */}
           {filteredButtons.length > 0 ? (
-            filteredButtons.map(({ name, category }, index) => (
-              <button
-                key={index}
-                onClick={() => selectedCategory ? handleButtonClick(name) : handleCategoryClick(name as keyof typeof categories)}
-                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
-                  selectedButtons.includes(name) ? "bg-blue-700" : ""
-                }`}
-              >
-                {name} {category && <span className="text-sm text-gray-300">({category})</span>}
-              </button>
-            ))
+          filteredButtons.map(({ name, category }, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (category === null) {
+                  handleCategoryClick(name as keyof typeof categories);
+                } else {
+                  handleButtonClick(name);
+                }
+              }}
+              className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
+                selectedButtons.includes(name) ? "bg-blue-700" : ""
+              }`}
+            >
+              {name} {category && <span className="text-sm text-gray-300">({category})</span>}
+            </button>
+          ))
           ) : (
             <p className="text-white text-lg col-span-3">No results found</p>
-          )}
+        )}
         </div>
       </main>
 

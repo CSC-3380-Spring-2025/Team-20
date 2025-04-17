@@ -78,7 +78,7 @@ export default function LandingPage() {
               fontSize: "1rem"
             }}
           >
-            What is this?
+            <strong>What is UniFriend-Sync?</strong>
           </button>
 
           <p id="description" style={{
@@ -92,8 +92,8 @@ export default function LandingPage() {
           }}>
             Uni-Friend Sync helps students connect with classmates based on shared interests.
             Whether you`re looking for study buddies, event partners, or simply new friends on campus,
-            this platform makes it easy to find your people and explore activities together.
-          </p>
+            this platform makes it easy to find your people and explore activities together. <strong>Sign Up to meet new people!
+            </strong> </p>
         </div>
       </div>
     </div>
