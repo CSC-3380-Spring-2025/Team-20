@@ -1,7 +1,9 @@
 //this is landing
 "use client"
+import { useRouter } from "next/navigation";
 export default function LandingPage() {
   let showDescription = false;
+  const router = useRouter();
 
   function toggleDescription() {
     const para = document.getElementById("description");
@@ -30,10 +32,8 @@ export default function LandingPage() {
           <b>Uni-Friend sync</b>
         </h2>
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "1rem" }}>
-          <a href="/main"><p style={{ margin: 0, cursor: "pointer" }}>Main</p></a>
-          <a href="/about"><p style={{ margin: 0, cursor: "pointer" }}>About</p></a>
-          <a href="/browse"><p style={{ margin: 0, cursor: "pointer" }}>Browse</p></a>
-          <a href="/join"><p style={{ margin: 0, cursor: "pointer" }}>Join</p></a>
+          <p style={{ margin: 0, cursor: "pointer" }}onClick={()=>router.push("/about")}>About</p>
+          <p style={{ margin: 0, cursor: "pointer" }}onClick={()=>router.push("/login")}>Join</p>
         </div>
       </div>
 
@@ -57,7 +57,8 @@ export default function LandingPage() {
         </p>
 
         {/*Login Button*/}
-        <a href="/login">
+
+        
           <button style={{
             backgroundColor: "#8b5cf6",
             color: "white",
@@ -69,18 +70,18 @@ export default function LandingPage() {
             marginTop: "2rem",
             boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
             cursor: "pointer"
-          }}>
+          }} onClick={()=>router.push("/login")}>
             Login
           </button>
-        </a>
+        
 
         {/*What is this?*/}
         <div style={{ marginTop: "2rem" }}>
           <button
             onClick={toggleDescription}
             style={{
-              backgroundColor: "#fff",
-              border: "1px solid #ccc",
+              backgroundColor: "#fccab2",
+              border: "1px solid #white",
               borderRadius: "1rem",
               padding: "0.5rem 1rem",
               cursor: "pointer",
@@ -108,3 +109,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
