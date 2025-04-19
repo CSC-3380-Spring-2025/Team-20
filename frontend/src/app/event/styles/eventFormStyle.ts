@@ -6,7 +6,7 @@ export const container: CSSProperties = {
   padding: '25px',
   backgroundColor: '#f9f9f9',
   borderRadius: '8px',
-  zIndex: 10000, 
+  zIndex: 1000, 
   position: 'fixed', // no need for the "as" cast here
   top: '50%',
   left: '50%',

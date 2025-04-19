@@ -2,10 +2,12 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+import Link from "next/link";
 
 // INTERNAL IMPORT
 import styles from "../../../styles/profile.module.css";
 import Header from "../header";
+import useEvents from "../event/hooks/useEvents";
 
 const Profile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -50,6 +52,9 @@ const Profile: React.FC = () => {
       setInterest(JSON.parse(savedInterests));
     }
   }, []);
+
+  //Fetch User's Created Events
+  const {myEvents} = useEvents();
 
   return (
     <div>
@@ -134,7 +139,28 @@ const Profile: React.FC = () => {
           <p className="text-gray-600">No interests selected yet.</p>
         )}
       </div>
+
+      {/* Created Events */}
+      <div className={styles.eventContainer}>
+        <div className={styles.eventBox}>
+          <h3> My Created Events </h3>
+          {myEvents.length > 0 ? (
+            <ul className={styles.eventList}>
+              {myEvents.map((event, index) => (
+                <li key={index} className={styles.eventItem}>
+                  <Link href={`/events/${encodeURIComponent(event.title)}`}>
+                    {event.title} (Description: {event.description})
+                    {event.title} ({event.totalInterested} interested)
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.noEvents}>No events are created yet</p>
+          )}
+      </div>
     </div>
+  </div>
   );
 };
 

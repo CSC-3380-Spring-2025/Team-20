@@ -18,7 +18,7 @@ export default function OutsideCampus() {
       <main>
         <div style={styles.container}>
           <button
-            style={{...styles.backbutton,textDecoration: Hovered ? "underline" : "none",}}{...listener} onClick={() => router.push("/events")}>
+            style={{...styles.backbutton,textDecoration: Hovered ? "underline" : "none",}}{...listener} onClick={() => router.push("/event")}>
               ← Events
           </button>
         </div>

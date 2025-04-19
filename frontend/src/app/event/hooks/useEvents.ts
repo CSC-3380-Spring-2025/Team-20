@@ -1,5 +1,5 @@
 //handles all the functionalities/listeners for any event in general. 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Event } from "../types/eventTypes";
 
 //dummy events. used in current events container, will be replaced with actual events people have created
@@ -16,7 +16,18 @@ export default function useEvents() {
 
   //user has acess to their own events and current events (popular is interchangable).
   //current and joined events are interchangable. 
-  const [myEvents, setMyEvents] = useState<Event[]>([]);
+  const [myEvents, setMyEvents] = useState<Event[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('myEvents');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('myEvents', JSON.stringify(myEvents));
+  }, [myEvents]);
+  
   const [popularEvents, setPopularEvents] = useState<Event[]>(initialEvents);
   const [joinedEvents, setJoinedEvents] = useState<Event[]>([]);
 

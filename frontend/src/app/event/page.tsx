@@ -111,7 +111,7 @@ export default function Events() {
 
       </DivContainer>
 
-      <button style={styles.linkStyle} onClick={() =>   router.push("/campus-outside")}>
+      <button style={styles.linkStyle} onClick={() =>   router.push("/outsideCampus")}>
         Leaving LSU?
       </button>
       
