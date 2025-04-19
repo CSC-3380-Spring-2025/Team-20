@@ -1,7 +1,7 @@
 export const header  = {
-    backgroundColor: "purple",
+    backgroundColor: "#461D7C",
     color: "white",
-    padding: "10px 20px",
+    padding: "17px 20px",
     fontWeight: "bold",
   };
   
@@ -31,7 +31,7 @@ export const header  = {
     background: "none",
     border: "none",
     fontSize: "30px",
-    color: "white",
+    color: "#FDD023",
     cursor: "pointer",
   };
   
@@ -41,7 +41,7 @@ export const header  = {
     right: 0,
     width: "250px",
     height: "100vh",
-    backgroundColor: "coral",
+    backgroundColor: "#FDD023",
     padding: "20px 30px",
     display: "flex",
     flexDirection:  "column" as 'column',

@@ -4,46 +4,39 @@ import React, { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import { Home } from "lucide-react";
 import 'leaflet-control-geocoder';
-import 'leaflet-control-geocoder/dist/Control.Geocoder.css'; 
-import L from "leaflet";
+import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
+import L, { Control, ControlOptions, Marker } from "leaflet";
 
-interface HomeButtonProps {
-  center: [number, number];
-  zoom: number;
-}
-
-// Type definitions for leaflet-control-geocoder
-declare module 'leaflet' {
-  interface ControlStatic {
-    geocoder(options?: GeocoderOptions): GeocoderControl;
-  }
-}
-
+// --- Augment Leaflet types properly ---
 interface GeocoderOptions {
   defaultMarkGeocode?: boolean;
   placeholder?: string;
   errorMessage?: string;
   showResultIcons?: boolean;
-  expand?: 'touch' | 'click' | false;
-  position?: 'topleft' | 'topright' | 'bottomleft' | 'bottomright';
-  [key: string]: unknown; // For any additional options
 }
 
+declare module "leaflet" {
+  namespace Control {
+    function geocoder(options?: GeocoderOptions): Control;
+  }
+}
+
+// --- Define correct event type ---
 interface GeocodeResult {
-  geocode: {
-    center: L.LatLngLiteral;
-    name: string;
-    bbox?: L.LatLngBoundsLiteral;
-    properties?: Record<string, unknown>;
-  };
+  center: L.LatLng;
+  name: string;
 }
 
-interface GeocoderControl extends L.Control {
-  on(event: 'markgeocode', callback: (result: GeocodeResult) => void): this;
-  on(event: string, callback: (event: unknown) => void, context?: unknown): this;
+interface GeocodeEvent {
+  geocode: GeocodeResult;
 }
 
-// Home Button Component
+// --- HomeButton Component ---
+interface HomeButtonProps {
+  center: [number, number];
+  zoom: number;
+}
+
 const HomeButton: React.FC<HomeButtonProps> = ({ center, zoom }) => {
   const map = useMap();
 
@@ -59,21 +52,20 @@ const HomeButton: React.FC<HomeButtonProps> = ({ center, zoom }) => {
         top: "80px",
         left: "10px",
         height: "35px",
-        width: "35px",  
+        width: "35px",
         backgroundColor: "white",
         padding: "5px",
         border: "1px solid gray",
         borderRadius: "5px",
-        zIndex: 1000
+        zIndex: 1000,
       }}
-      aria-label="Center map to home position"
     >
       <Home size={24} />
     </button>
   );
 };
 
-// Search Bar Component
+// --- SearchBar Component ---
 const SearchBar: React.FC = () => {
   const map = useMap();
 
@@ -83,20 +75,16 @@ const SearchBar: React.FC = () => {
       placeholder: 'Search Maps',
       errorMessage: 'Maps cannot find',
       showResultIcons: true,
-    }) as GeocoderControl;
-
-    const handleMarkGeocode = (e: GeocodeResult) => {
-      const { center } = e.geocode;
-      map.flyTo(center, 17);
-      L.marker(center).addTo(map).bindPopup(e.geocode.name).openPopup();
-    };
-
-    searchControl.on("markgeocode", handleMarkGeocode);
-    searchControl.addTo(map);
+    })
+      .on("markgeocode", (e: GeocodeEvent) => {
+        const { center, name } = e.geocode;
+        map.flyTo(center, 17);
+        L.marker(center).addTo(map).bindPopup(name).openPopup();
+      })
+      .addTo(map);
 
     return () => {
       map.removeControl(searchControl);
-      searchControl.off("markgeocode", handleMarkGeocode);
     };
   }, [map]);
 

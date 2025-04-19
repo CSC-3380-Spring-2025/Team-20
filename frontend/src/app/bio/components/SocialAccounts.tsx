@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../../bio/styles/profile.module.css";
 
+//similar to bio. mostly copy paste of other text fields
 interface SocialAccountsSectionProps {
   socialAccounts: string[];
   setSocialAccounts: (accounts: string[]) => void;

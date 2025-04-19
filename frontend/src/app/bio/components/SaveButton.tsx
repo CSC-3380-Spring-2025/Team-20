@@ -1,6 +1,8 @@
 import React from "react";
 import styles from "../../bio/styles/profile.module.css";
 
+
+//basic save button. will send to main page for it to update database and visual. 
 interface SaveButtonProps {
   onSave: () => void;
   saveStatus: {

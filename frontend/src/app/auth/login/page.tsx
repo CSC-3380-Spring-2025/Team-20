@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react";
 
 
+
 import { GoogleButton } from "../components/googleButton";
 import AuthToggle from "../components/authToggle";
 
@@ -39,6 +40,7 @@ export default function Login() {
   
 
   return (
+  
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">
         <AuthToggle/>
         <h2 className="text-2xl font-semibold mb-5 text-gray-800">Login</h2>

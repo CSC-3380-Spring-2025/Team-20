@@ -2,24 +2,32 @@
 
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-//import { useState, useEffect } from "react";
+import L, { Map as LeafletMap } from "leaflet";
+import { useState } from "react";
+import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
-import L from "leaflet";
-
 
 //INTERNAL IMPORT
 import Header from "../components/header";
-import styles from "../map/styles/map.module.css";
-import { useAuth } from "@/context/auth-context";
+import { HomeButton, SearchBar } from "./components/mapcontrols";
+import styles from "./styles/map.module.css";
 
-interface BuildingShape {
-  name: string;
-  description: string;
-}
+export default function CampusMap() { 
+  //default position
+  const position: [number, number] = [30.413436, -91.180144];
 
-const position: [number, number] = [30.413436, -91.180144];
+  
+  const [pin, setPin] = useState<{ x: number; y: number; coords: [number, number] }[]>([]);
+  const { user } = useAuth();
+  const router = useRouter();
 
- const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
+  interface BuildingShape {
+    name: string;
+    description: string;
+  }
+
+
+  const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
     "type": "FeatureCollection",
     "features": [
       {
@@ -87,12 +95,116 @@ const position: [number, number] = [30.413436, -91.180144];
     ]
   };
 
-export default function Map() {
-  const { user } = useAuth();
-  const router = useRouter();
-  
+  //Toggle Popup & Pin, Save, Reset, & Share Buttons Styling/Position
+  const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer, setPin: React.Dispatch<React.SetStateAction<{ x: number; y: number; coords: [number, number] }[]>>) => {
+    layer.on('click', () => {
+      const { name, description } = feature.properties as BuildingShape;
+      const center = (layer as L.Polygon).getBounds().getCenter();
+      L.popup({
+        maxWidth: 2200,
+        maxHeight: 4400,
+      })
+      .setLatLng(center)
+      .setContent(`
+        <div style="position: relative; width: 500px; height: 300px;">
+          <h3>${name}</h3>
+          <p>Drag your pin to where you are!</p>
+          <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;"/>
+          <div id="pin" 
+            style="
+            position: absolute; 
+            width: 12px; 
+            height: 12px; 
+            top: 80px; 
+            left: 450px;
+            background-color: red; 
+            border-radius: 100%; 
+            cursor: grab;
+          " draggable="true">
+          </div>
 
-  // If user is not logged in, redirect to login page
+          <div style="margin-top: 20px;">
+            <button id="saveButton" style="padding: 10px 20px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;">Save</button>
+            <button id="resetButton" style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">Reset</button>
+            <button id="shareButton" style="padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">Share</button>
+          </div>
+        </div>
+      `)
+      .openOn((layer as unknown as {_map: LeafletMap})._map);
+
+      const pin = document.getElementById("pin");
+
+      function setPinCoords(coords: { lat: number; lng: number }) {
+        setPin(prev => [...prev, {
+          x: coords.lng,
+          y: coords.lat,
+          coords: [coords.lat, coords.lng]
+        }]);
+      }
+
+      if (pin) {
+        pin.addEventListener("dragstart", (e) => {
+          e.dataTransfer?.setData("text/plain", "");
+        });
+
+        document.addEventListener("dragover", (e) => {
+          e.preventDefault();
+        });
+
+        document.addEventListener("drop", (e) => {
+          e.preventDefault();
+
+          const rect = pin.parentElement!.getBoundingClientRect();
+          const offsetX = e.clientX - rect.left;
+          const offsetY = e.clientY - rect.top;
+
+          pin.style.left = `${offsetX - 10}px`;
+          pin.style.top = `${offsetY - 10}px`;
+
+          const xPercent = (offsetX / rect.width) * 100;
+          const yPercent = (offsetY / rect.height) * 100;
+
+          setPinCoords({ lat: yPercent, lng: xPercent });
+        });
+
+        const saveButton = document.getElementById("saveButton");
+        const resetButton = document.getElementById("resetButton");
+        const shareButton = document.getElementById("shareButton");
+
+
+        if (saveButton) {
+          saveButton.addEventListener("click", () => {
+            const pinLeft = pin.style.left;
+            const pinTop = pin.style.top;
+            localStorage.setItem("pinLeft", pinLeft);
+            localStorage.setItem("pinTop", pinTop);
+            alert("Pin position saved!");
+          });
+        }
+
+        if (resetButton) {
+          resetButton.addEventListener("click", () => {
+            pin.style.left = "450px";
+            pin.style.top = "80px";
+            alert("Pin position reset!");
+          });
+        }
+
+        if (shareButton) {
+          shareButton.addEventListener("click", () => {
+            const left = localStorage.getItem("pinLeft");
+            const top = localStorage.getItem("pinTop");
+            if (left && top) {
+              alert(`Share this pin position: Left ${left}, Top ${top}`);
+            } else {
+              alert("No pin saved yet!");
+            }
+          });
+        }
+      }
+    });
+  };
+
   if (!user) {
     return (
       <div>
@@ -107,112 +219,28 @@ export default function Map() {
     );
   }
 
-  const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer) => {
-    layer.on("click", () => {
-      const { name, description } = feature.properties as BuildingShape;
-      const map = (layer as L.Polygon & { _map: L.Map })._map;
-      const center = (layer as L.Polygon).getBounds().getCenter();
-
-      const pinKey = `pin-${name}`;
-      const savedPin = localStorage.getItem(pinKey);
-      let pinStyle = "top: 80px; left: 450px;";
-
-      if (savedPin) {
-        const { top, left } = JSON.parse(savedPin);
-        pinStyle = `top: ${top}px; left: ${left}px;`;
-      }
-
-      const popupContent = `
-        <div style="position: relative; width: 500px; height: 300px;">
-          <h3>${name}</h3>
-          <p>Drag your pin to where you are!</p>
-          <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;" />
-          <div id="pin" style="position: absolute; width: 12px; height: 12px; ${pinStyle} background-color: red; border-radius: 100%; cursor: grab;"></div>
-
-          <div style="margin-top: 20px;">
-            <button id="saveButton" style="padding: 10px 20px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;">Save</button>
-            <button id="resetButton" style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">Reset</button>
-            <button id="Share" style="padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">Share</button>
-          </div>
-        </div>
-      `;
-
-      L.popup({ maxWidth: 2200, maxHeight: 4400 })
-        .setLatLng(center)
-        .setContent(popupContent)
-        .openOn(map);
-
-      setTimeout(() => {
-        const pin = document.getElementById("pin") as HTMLDivElement;
-        let isDragging = false;
-
-        pin?.addEventListener("mousedown", (e) => {
-          isDragging = true;
-
-          const startX = e.clientX;
-          const startY = e.clientY;
-
-          const origLeft = parseInt(pin.style.left);
-          const origTop = parseInt(pin.style.top);
-
-          const onMouseMove = (moveEvent: MouseEvent) => {
-            if (!isDragging) return;
-
-            const dx = moveEvent.clientX - startX;
-            const dy = moveEvent.clientY - startY;
-
-            pin.style.left = `${origLeft + dx}px`;
-            pin.style.top = `${origTop + dy}px`;
-          };
-
-          const onMouseUp = () => {
-            isDragging = false;
-            document.removeEventListener("mousemove", onMouseMove);
-            document.removeEventListener("mouseup", onMouseUp);
-          };
-
-          document.addEventListener("mousemove", onMouseMove);
-          document.addEventListener("mouseup", onMouseUp);
-        });
-
-        document.getElementById("saveButton")?.addEventListener("click", () => {
-          localStorage.setItem(
-            pinKey,
-            JSON.stringify({
-              top: parseInt(pin.style.top),
-              left: parseInt(pin.style.left),
-            })
-          );
-          alert("Pin position saved!");
-        });
-
-        document.getElementById("resetButton")?.addEventListener("click", () => {
-          pin.style.top = "80px";
-          pin.style.left = "450px";
-          localStorage.removeItem(pinKey);
-        });
-      }, 0);
-    });
-  };
-
   return (
-    <div className={styles.headerstyle}>
-      <Header />
-      <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <GeoJSON
-          data={buildingBlueprint}
-          onEachFeature={buildingPopup}
-          style={() => ({
-            color: "purple",
-            weight: 1,
-            fillOpacity: 0.4,
-          })}
-        />
-      </MapContainer>
-    </div>
+  <div className={styles.headerstyle}>
+    <Header />
+    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
+    
+      <HomeButton center={position} zoom={17} />
+      <SearchBar />
+   
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      />
+
+      <GeoJSON data={buildingBlueprint} 
+      style={{
+        color: "purple",
+        fillColor: "purple",
+        fillOpacity: 0.3,
+      }}
+      
+      onEachFeature={(feature, layer) => buildingPopup(feature, layer, setPin)} />
+    </MapContainer>
+  </div>
   );
 }

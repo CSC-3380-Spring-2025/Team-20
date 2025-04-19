@@ -173,7 +173,7 @@ export default function Events() {
         </DivContainer>
 
         {showForm && (
-          <EventForm onSave={handleSubmitEvent} onDelete={handleCancelEvent} />
+          <EventForm onSave={handleSubmitEvent} onDelete={handleCancelEvent}  />
         )}
 
         <EventSection title="My Events" events={myEvents} onDelete={deleteEventHandler} />
