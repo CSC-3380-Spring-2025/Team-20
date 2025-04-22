@@ -10,8 +10,14 @@ interface BuildingShape {
   description: string;
 }
 
+var l = 'hello';
+
 // Coordinates Start from the Top Left to the Right, then Right Down to Left
 // Buildings On Campus
+
+//this new sdfwefawf
+
+
 const buildingBlueprint: GeoJSON.FeatureCollection<
   GeoJSON.Geometry,
   BuildingShape
