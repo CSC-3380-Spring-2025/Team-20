@@ -1,60 +1,115 @@
-//handles all the functionalities/listeners for any event in general. 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Event } from "../types/eventTypes";
-
-//dummy events. used in current events container, will be replaced with actual events people have created
-const initialEvents: Event[] = [
-  { title: "Yoga at U-Rec", description: "Join us for a 1 hour session! All are welcome :)", totalInterested: 12 },
-  { title: "Music Fest with Classical Club", description: "Enjoy live performances from local bands and artists.", totalInterested: 6 },
-  { title: "Hackathon 2025", description: "A 24-hour coding challenge with exciting prizes.", totalInterested: 3 },
-  { title: "Board Game Night in Magnolia Room", description: "Join us for a fun evening of board games and snacks.", totalInterested: 5 },
-  { title: "Hangout near Nicholson", description: "Anyone welcome!", totalInterested: 10 },
-];
-
+import { db } from "@/config/firebase";
+import { 
+  collection, doc, addDoc, deleteDoc, updateDoc, getDocs, 
+   arrayUnion, arrayRemove 
+} from "firebase/firestore";
+import { useAuth } from "../../context/auth-context";
 
 export default function useEvents() {
-
-  //user has acess to their own events and current events (popular is interchangable).
-  //current and joined events are interchangable. 
   const [myEvents, setMyEvents] = useState<Event[]>([]);
-  const [popularEvents, setPopularEvents] = useState<Event[]>(initialEvents);
+  const [popularEvents, setPopularEvents] = useState<Event[]>([]);
   const [joinedEvents, setJoinedEvents] = useState<Event[]>([]);
+  
+  const eventsCollectionRef = collection(db, "events");
+  const { user } = useAuth();
 
-  //add event function
-  const addEvent = (newEvent: Event) => {
-    if (newEvent.title && newEvent.description) {
-      setMyEvents(prev => [...prev, newEvent]);
+  useEffect(() => {
+    fetchEventsCollection();
+  }, []);
+
+  const fetchEventsCollection = async () => {
+    try {
+      const eventData = await getDocs(eventsCollectionRef);
+      const events = eventData.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+      }) as Event);
+
+      // Filter events based on type
+      setPopularEvents(events.filter(e => e.eventType === "current"));
+      setMyEvents(events.filter(e => e.eventType === "own" && e.createdBy === user?.displayName));
+      setJoinedEvents(events.filter(e => e.eventType === "joined"));
+    } catch (error) {
+      console.error("Error fetching events:", error);
     }
   };
 
-  //join event function
-  const joinEvent = (index: number) => {
-    const eventToJoin = popularEvents[index];
-    const updatedPopularEvents = popularEvents.filter((_, i) => i !== index);
-    
-    setPopularEvents(updatedPopularEvents);
-    setJoinedEvents(prev => [...prev, {
-      ...eventToJoin,
-      totalInterested: eventToJoin.totalInterested + 1
-    }]);
+
+  //maybe taking in id causing issue
+  const addEvent = async (newEvent: Omit<Event, 'id'>) => {
+    if (!user) return;
+
+    try {
+      const docRef = await addDoc(eventsCollectionRef, {
+        ...newEvent,
+        createdBy: user.displayName, // Store displayName directly
+        eventType: "own",
+        totalInterested: 0 // Start with 0, creator isn't automatically interested
+      });
+
+      // Update user's createdEvents
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, {
+        createdEvents: arrayUnion(docRef.id)
+      });
+
+      fetchEventsCollection(); // Refresh all events
+    } catch (error) {
+      console.error("Error adding event:", error);
+    }
   };
 
-  //delete user's own event
-  const deleteMyEvent = (index: number) => {
-    setMyEvents(prev => prev.filter((_, i) => i !== index));
+  const joinEvent = async (eventId: string) => {
+    if (!user) return;
+
+    try {
+      const eventDocRef = doc(db, "events", eventId);
+      await updateDoc(eventDocRef, {
+        eventType: "joined",
+        totalInterested: arrayUnion(user.uid) // Track interested users by UID
+      });
+
+      fetchEventsCollection();
+    } catch (error) {
+      console.error("Error joining event:", error);
+    }
   };
 
+  const deleteMyEvent = async (eventId: string) => {
+    if (!user) return;
 
-  //leave joined event
-  const leaveEvent = (index: number) => {
-    const eventToLeave = joinedEvents[index];
-    const updatedJoinedEvents = joinedEvents.filter((_, i) => i !== index);
-    
-    setJoinedEvents(updatedJoinedEvents);
-    setPopularEvents(prev => [...prev, {
-      ...eventToLeave,
-      totalInterested: Math.max(0, eventToLeave.totalInterested - 1)
-    }]);
+    try {
+      // Delete event
+      await deleteDoc(doc(db, "events", eventId));
+
+      // Remove from user's createdEvents
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, {
+        createdEvents: arrayRemove(eventId)
+      });
+
+      fetchEventsCollection();
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
+
+  const leaveEvent = async (eventId: string) => {
+    if (!user) return;
+
+    try {
+      const eventDocRef = doc(db, "events", eventId);
+      await updateDoc(eventDocRef, {
+        eventType: "current",
+        totalInterested: arrayRemove(user.uid)
+      });
+
+      fetchEventsCollection();
+    } catch (error) {
+      console.error("Error leaving event:", error);
+    }
   };
 
   return { 

@@ -1,246 +1,138 @@
-"use client";
+// "use client";
 
-import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import L, { Map as LeafletMap } from "leaflet";
-import { useState } from "react";
-import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
+// import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+// import L from "leaflet";
+// import { Marker, Popup } from "react-leaflet";
+// import { useCallback, useMemo, useRef, useState } from "react";
 
-//INTERNAL IMPORT
-import Header from "../components/header";
-import { HomeButton, SearchBar } from "./components/mapcontrols";
-import styles from "./styles/map.module.css";
+// // INTERNAL IMPORT
+// import Header from "../components/header";
+// import { HomeButton, SearchBar } from "./components/mapcontrols";
+// import { buildingBlueprint, buildingPopup } from "./components/popups";
+// import styles from "../../../styles/map.module.css";
 
-export default function CampusMap() { 
-  //default position
-  const position: [number, number] = [30.413436, -91.180144];
+// export default function Map() {
+//   const position: [number, number] = [30.413436, -91.180144];
 
-  
-  const [pin, setPin] = useState<{ x: number; y: number; coords: [number, number] }[]>([]);
-  const { user } = useAuth();
-  const router = useRouter();
+//   const pin = {
+//     lat: 30.413436,
+//     lng: -91.180144,
+//   };
 
-  interface BuildingShape {
-    name: string;
-    description: string;
-  }
+//   const pinIcon = new L.Icon({
+//     iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+//     shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+//     iconSize: [25, 41],
+//     iconAnchor: [12, 41],
+//     popupAnchor: [1, -34],
+//     shadowSize: [41, 41],
+//   });
 
+//   function DraggableMarker() {
+//     const [draggable, setDraggable] = useState(false);
+//     const [position, setPosition] = useState(pin);
+//     const markerRef = useRef<L.Marker | null>(null);
 
-  const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [-91.180616, 30.414672],[-91.179581, 30.414708],[-91.179552, 30.414168],[-91.180589, 30.414131],[-91.180616, 30.414672]
-            ]
-          ]
-        },
-        "properties": {
-          "name": "Middleton Library",
-          "description": "https://lib.lsu.edu/sites/default/files/2024-01/ccs_coffee_first_floor.jpg"
-        }
-      },
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [-91.179668, 30.413655],[-91.179463, 30.41366],[-91.179453, 30.41344],[-91.179151, 30.413451],[-91.179145, 30.413354],
-              [-91.178929, 30.413363],[-91.178936, 30.41346],[-91.178638, 30.413474],[-91.178631, 30.413348],[-91.178681, 30.413347],
-              [-91.178665, 30.413035],[-91.178611, 30.413037],[-91.178606, 30.412924],[-91.178901, 30.412913],[-91.178906, 30.413015],
-              [-91.179125, 30.413006],[-91.179119, 30.412904],[-91.179426, 30.412893],[-91.179416, 30.412674],[-91.17962, 30.412666],
-              [-91.179668, 30.413655]
-            ]
-          ]
-        },
-        "properties": {
-          "name": "Coates Hall",
-          "description": "https://www.hollyandsmith.com/wp-content/uploads/portfolio/LSU%20Coates%20Hall%20Interior%20Renovation_x_Floorplan%20-%20LSU%20Coates%20Hall-scaled.jpg"
-        }
-      },
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [-91.180341, 30.408311],[-91.180253, 30.408287],[-91.180248, 30.408301],[-91.180193, 30.408285],[-91.180175, 30.408336],
-              [-91.180045, 30.408301],[-91.180064, 30.408251],[-91.179974, 30.408226],[-91.179963, 30.408253], [-91.179928, 30.408244],
-              [-91.179876, 30.408386],[-91.179075, 30.408171],
+//     const eventHandlers = useMemo(
+//       () => ({
+//         drag(e: L.LeafletEvent) {
+//           const marker = markerRef.current;
+//           if (marker != null) {
+//             const latlng = marker.getLatLng();
+//             document.getElementById("coordinates")!.innerText = `Dragging: Lat ${latlng.lat.toFixed(
+//               5
+//             )}, Lng ${latlng.lng.toFixed(5)}`;
+//           }
+//         },
+//         dragend() {
+//           const marker = markerRef.current;
+//           if (marker != null) {
+//             const latlng = marker.getLatLng();
+//             setPosition(latlng);
+//             document.getElementById("coordinates")!.innerText = `Pin Location: Lat ${latlng.lat.toFixed(
+//               5
+//             )}, Lng ${latlng.lng.toFixed(5)}`;
+//           }
+//         },
+//       }),
+//       []
+//     );
 
-              [-91.179118, 30.408053],[-91.179068, 30.408039],[-91.179094, 30.407964],[-91.179109, 30.407968],[-91.179223, 30.407655],
-              [-91.179197, 30.407647],[-91.179269, 30.407453],[-91.179301, 30.40746],[-91.179309, 30.407433],[-91.179281, 30.407424],
-              [-91.179350, 30.407231],[-91.179378, 30.40724],[-91.179388, 30.407212],[-91.17936, 30.407203],[-91.179429, 30.407012],
+//     const toggleDraggable = useCallback(() => {
+//       setDraggable((d) => !d);
+//     }, []);
 
-              [-91.179672, 30.407078],[-91.179655, 30.407131],[-91.179683, 30.407138],[-91.179688, 30.407124],[-91.180057, 30.407223],
-              [-91.180052, 30.40724],[-91.180084, 30.407249],[-91.180106, 30.407191],[-91.180347, 30.407258],[-91.180341, 30.407275],
-              [-91.180406, 30.407292],[-91.180416, 30.407262],[-91.180455, 30.407272],[-91.180465, 30.407244],[-91.180658, 30.407298],
+//     return (
+//       <div>
+//         <Marker
+//           draggable={draggable}
+//           eventHandlers={eventHandlers}
+//           position={position}
+//           ref={markerRef}
+//           icon={pinIcon}
+//         >
+//           <Popup minWidth={90}>
+//             <span onClick={toggleDraggable}>
+//               {draggable 
+//               ? "Pin is currently draggable"
+//               : "Click the popup to make pin draggable"}
+//             </span>
+//           </Popup>
+//         </Marker>
+//       </div>
+//     );
+//   }
 
-              [-91.180649, 30.407322],[-91.180667, 30.407327],[-91.180636, 30.407410],[-91.180666, 30.407418],[-91.180607, 30.407576],
-              [-91.180671, 30.407595],[-91.180577, 30.407849],[-91.180516, 30.407832],[-91.180341, 30.408311]
-            ]
-          ]
-        },
-        "properties": {
-          "name": "Patrick F. Taylor Hall",
-          "description": "https://marvel-b1-cdn.bc0a.com/f00000000290274/www.lsu.edu/eng/images/selfguidedtourmp3sandimages/tour-final-version-1.jpg"
-        }
-      }
-    ]
-  };
+//   return (
+//     <div className={styles.headerstyle}>
+//       <Header />
+//       <MapContainer
+//         center={position}
+//         zoom={17}
+//         scrollWheelZoom={true}
+//         className={styles.map}
+//       >
+//         {/* Display Draggable Marker */}
+//         <DraggableMarker />
 
-  //Toggle Popup & Pin, Save, Reset, & Share Buttons Styling/Position
-  const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer, setPin: React.Dispatch<React.SetStateAction<{ x: number; y: number; coords: [number, number] }[]>>) => {
-    layer.on('click', () => {
-      const { name, description } = feature.properties as BuildingShape;
-      const center = (layer as L.Polygon).getBounds().getCenter();
-      L.popup({
-        maxWidth: 2200,
-        maxHeight: 4400,
-      })
-      .setLatLng(center)
-      .setContent(`
-        <div style="position: relative; width: 500px; height: 300px;">
-          <h3>${name}</h3>
-          <p>Drag your pin to where you are!</p>
-          <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;"/>
-          <div id="pin" 
-            style="
-            position: absolute; 
-            width: 12px; 
-            height: 12px; 
-            top: 80px; 
-            left: 450px;
-            background-color: red; 
-            border-radius: 100%; 
-            cursor: grab;
-          " draggable="true">
-          </div>
+//         {/* Display Coordinates */}
+//         <div
+//           id="coordinates"
+//           style={{
+//             position: "absolute",
+//             bottom: "40px",
+//             left: "10px",
+//             zIndex: 1000,
+//             backgroundColor: "white",
+//             padding: "8px",
+//             border: "1px solid gray",
+//             borderRadius: "5px",
+//           }}
+//         ></div>
 
-          <div style="margin-top: 20px;">
-            <button id="saveButton" style="padding: 10px 20px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;">Save</button>
-            <button id="resetButton" style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">Reset</button>
-            <button id="shareButton" style="padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">Share</button>
-          </div>
-        </div>
-      `)
-      .openOn((layer as unknown as {_map: LeafletMap})._map);
+//         {/* Display Home Button */}
+//         <HomeButton center={position} zoom={17} />
 
-      const pin = document.getElementById("pin");
+//         {/* Display Search Bar */}
+//         <SearchBar />
 
-      function setPinCoords(coords: { lat: number; lng: number }) {
-        setPin(prev => [...prev, {
-          x: coords.lng,
-          y: coords.lat,
-          coords: [coords.lat, coords.lng]
-        }]);
-      }
+//         {/* Display Map */}
+//         <TileLayer
+//           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+//         />
 
-      if (pin) {
-        pin.addEventListener("dragstart", (e) => {
-          e.dataTransfer?.setData("text/plain", "");
-        });
-
-        document.addEventListener("dragover", (e) => {
-          e.preventDefault();
-        });
-
-        document.addEventListener("drop", (e) => {
-          e.preventDefault();
-
-          const rect = pin.parentElement!.getBoundingClientRect();
-          const offsetX = e.clientX - rect.left;
-          const offsetY = e.clientY - rect.top;
-
-          pin.style.left = `${offsetX - 10}px`;
-          pin.style.top = `${offsetY - 10}px`;
-
-          const xPercent = (offsetX / rect.width) * 100;
-          const yPercent = (offsetY / rect.height) * 100;
-
-          setPinCoords({ lat: yPercent, lng: xPercent });
-        });
-
-        const saveButton = document.getElementById("saveButton");
-        const resetButton = document.getElementById("resetButton");
-        const shareButton = document.getElementById("shareButton");
-
-
-        if (saveButton) {
-          saveButton.addEventListener("click", () => {
-            const pinLeft = pin.style.left;
-            const pinTop = pin.style.top;
-            localStorage.setItem("pinLeft", pinLeft);
-            localStorage.setItem("pinTop", pinTop);
-            alert("Pin position saved!");
-          });
-        }
-
-        if (resetButton) {
-          resetButton.addEventListener("click", () => {
-            pin.style.left = "450px";
-            pin.style.top = "80px";
-            alert("Pin position reset!");
-          });
-        }
-
-        if (shareButton) {
-          shareButton.addEventListener("click", () => {
-            const left = localStorage.getItem("pinLeft");
-            const top = localStorage.getItem("pinTop");
-            if (left && top) {
-              alert(`Share this pin position: Left ${left}, Top ${top}`);
-            } else {
-              alert("No pin saved yet!");
-            }
-          });
-        }
-      }
-    });
-  };
-
-  if (!user) {
-    return (
-      <div>
-        <h2>You need to log in to access this page.</h2>
-        <button
-          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
-          onClick={() => router.push("/auth/login")}
-        >
-          Return to Login
-        </button>
-      </div>
-    );
-  }
-
-  return (
-  <div className={styles.headerstyle}>
-    <Header />
-    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
-    
-      <HomeButton center={position} zoom={17} />
-      <SearchBar />
-   
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      />
-
-      <GeoJSON data={buildingBlueprint} 
-      style={{
-        color: "purple",
-        fillColor: "purple",
-        fillOpacity: 0.3,
-      }}
-      
-      onEachFeature={(feature, layer) => buildingPopup(feature, layer, setPin)} />
-    </MapContainer>
-  </div>
-  );
-}
+//         {/* Display Building */}
+//         <GeoJSON
+//           data={buildingBlueprint}
+//           onEachFeature={buildingPopup}
+//           style={() => ({
+//             color: "purple",
+//             weight: 1,
+//             fillOpacity: 0.4,
+//           })}
+//         />
+//       </MapContainer>
+//     </div>
+//   );
+// }

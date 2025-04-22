@@ -39,13 +39,14 @@ export const interestedStyle: CSSProperties = {
 
 export const joinButton: CSSProperties = {
   padding: '2px 10px',
-  backgroundColor: 'lightgreen',
   color: 'white',
   border: 'none',
   borderRadius: '4px',
   cursor: 'pointer',
   fontWeight: 'bold',
 };
+
+
 
 export const cancelButton: CSSProperties = {
   padding: '2px 10px',

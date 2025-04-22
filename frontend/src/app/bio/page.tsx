@@ -25,6 +25,7 @@ const Profile: React.FC = () => {
   const [bio, setBio] = useState("");
   const [socialAccounts, setSocialAccounts] = useState<string[]>(["", "", ""]);
   const [interest, setInterest] = useState<string[]>([]);
+  const [pronouns, setPronouns] = useState("");
   //const [events, setEvents] = useState<string[]>([]);
   const [saveStatus, setSaveStatus] = useState<{ success: boolean; error: boolean }>({ 
     success: false, 
@@ -35,7 +36,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (!user) return; // makes sure update occurs
 
-    //retrieval function
+    //retrieval function.
     const getUserData = async () => {
       try {
         const docRef = doc(db, "users", user.uid);
@@ -43,20 +44,13 @@ const Profile: React.FC = () => {
 
         if (docSnap.exists()) {
           
-          const userData = docSnap.data();
           setBio(docSnap.data().bio || "");
           setDisplayName(docSnap.data().displayName || "");
           setSocialAccounts(docSnap.data().socialAccounts || ["", "", ""]);
           setInterest(docSnap.data().interests || []);
           setProfileImage(docSnap.data().profileImage || null);
+          setPronouns(docSnap.data().pronouns || "");
 
-          
-          if ((userData.interests?? []).length === 0 ){
-            const anyinterests = localStorage.getItem("selectedInterests");
-            if (anyinterests){
-              setInterest(JSON.parse(anyinterests));
-            }
-          }
 
 
         } else {
@@ -66,7 +60,8 @@ const Profile: React.FC = () => {
             socialAccounts: ["", "", ""], 
             interests: [], 
             displayName: "", 
-            profileImage: null 
+            profileImage: null,
+            pronouns: ""
           });
         }
 
@@ -80,7 +75,7 @@ const Profile: React.FC = () => {
     
   }, [user]);
 
-  // Handle save functionality
+  // Saving any edits
   const handleSave = async () => {
     if (!user?.uid) {
       alert("User not logged in");
@@ -94,6 +89,7 @@ const Profile: React.FC = () => {
         interests: interest,
         displayName,
         profileImage,
+        pronouns
       }, { merge: true });
 
       setSaveStatus({ success: true, error: false });  // debugging . useful if it doesn't save full data
@@ -136,6 +132,13 @@ const Profile: React.FC = () => {
       
       <div className={styles.nameContainer}>
       <input className={styles.nameInput}type="text" placeholder="Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)}/>
+      </div>
+
+      <br/>
+      <label className={styles.labelNames}>Pronouns</label>
+      
+      <div className={styles.nameContainer}>
+      <input className={styles.nameInput}type="text" placeholder="e.g she/her" value={pronouns} onChange={(e) => setPronouns(e.target.value)}/>
       </div>
 
 

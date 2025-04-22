@@ -1,6 +1,16 @@
-//what information the event card will have
+
+import {Timestamp } from "firebase/firestore";
+
 export interface Event {
-    title: string;
-    description: string;
-    totalInterested: number; 
+  id? : string,
+  title: string;
+  description: string;
+  coordinates: {
+    lat: number;
+    lng: number;
   }
+  dateTime: Timestamp;
+  createdBy: string;
+  totalInterested: number;
+  eventType: "own" | "current" | "joined";
+}

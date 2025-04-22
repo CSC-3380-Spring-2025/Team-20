@@ -1,68 +1,108 @@
 import { CSSProperties } from 'react';
 
+//cool background when the user clicks this
+export const overlay: CSSProperties = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0,0,0,0.2)',
+  zIndex: 9,
+};
+
+//eventform container
 export const container: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  padding: '25px',
-  backgroundColor: '#f9f9f9',
-  borderRadius: '8px',
-  zIndex: 10000, 
-  position: 'fixed', // no need for the "as" cast here
+  position: 'fixed',
+
+  padding: '30px',
+  borderRadius: '12px',
+  
+  
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '500px',
-  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+  width: '450px',
+  maxHeight: '90%',
+
+ 
+  backgroundColor: '#ffffff',
+  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+
+  zIndex: 10,
 };
 
-export const header: CSSProperties = {
+//header
+export const Titleheader: CSSProperties = {
+  textAlign: 'center',
+  marginBottom: '20px',
   fontWeight: 'bold',
-  fontSize: '20px',
+  fontSize: '24px',
+
 };
 
-export const overlay: CSSProperties = {
-  position: 'fixed',
-  top: '0',
-  left: '0',
-  width: '100%',
-  height: '100%',
-  zIndex: 9999, 
+//input containers
+export const inputContainers: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '20px',
 };
 
-export const subtitleHeaders: CSSProperties = {
-  marginTop: '20px',
+
+//the actual label text
+export const label: CSSProperties = {
+  marginBottom: '6px',
+  fontSize: '14px',
+  fontWeight: '600',
+  color: '#333',
 };
 
+//input areas
 export const input: CSSProperties = {
-  marginBottom: '10px',
-  padding: '20px',
-  fontSize: '16px',
-  borderRadius: '4px',
-  border: '1px solid #ddd',
+  padding: '12px 15px',
+  fontSize: '14px',
+  borderRadius: '6px',
+  border: '1px solid #ccc',
+  outline: 'none',
 };
 
+//create and cancel containers
 export const buttonContainer: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
-  marginTop: '30px',
+  marginTop: '25px',
 };
 
 export const submitButton: CSSProperties = {
-  padding: '10px 20px',
-  backgroundColor: 'lightgreen',
-  color: 'white',
+  flex: 1,
+
   border: 'none',
-  borderRadius: '4px',
+  borderRadius: '6px',
+
   cursor: 'pointer',
   fontWeight: 'bold',
+
+  marginRight: '10px',
+  backgroundColor: ' #FDD023',
+  color: 'white',
+  transition: 'background-color 0.3s ease',
 };
 
 export const cancelButton: CSSProperties = {
-  padding: '10px 20px',
-  backgroundColor: 'red',
+  flex: 1,
+  padding: '12px',
+  borderRadius: '6px',
+
+
+  backgroundColor: '#461D7C',
   color: 'white',
   border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
   fontWeight: 'bold',
+ 
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
 };
+
+
