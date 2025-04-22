@@ -146,6 +146,36 @@ const buildingBlueprint: GeoJSON.FeatureCollection<
           "https://marvel-b1-cdn.bc0a.com/f00000000290274/www.lsu.edu/eng/images/selfguidedtourmp3sandimages/tour-final-version-1.jpg",
       },
     },
+    {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [-91.17806, 30.41298],
+            [-91.17670, 30.41307],
+            [-91.17798, 30.41256],
+            [-91.17669, 30.41293],
+            [-91.17655, 30.41293],
+            [-91.17652, 30.41237],
+            [-91.17757, 30.41250],
+            [-91.17761, 30.41250],
+            [-91.17760, 30.41225],
+            [-91.17739, 30.41225],
+            [-91.17738, 30.41221],
+            [-91.17684, 30.41222],
+            [-91.17685, 30.41227],
+            [-91.17665, 30.41229],
+            [-91.17664, 30.41236],
+          ],
+        ],
+      },
+      properties: {
+        name: "Student Union",
+        description:
+          
+      },
+    },
   ],
 };
 
