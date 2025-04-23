@@ -17,6 +17,7 @@ import * as styles from "./styles/eventStyle";
 export default function Events() {
   const [showForm, setShowForm] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
 
@@ -33,15 +34,25 @@ export default function Events() {
   const handleAddEvent = () => setShowForm(true);
   const handleCancelEvent = () => setShowForm(false);
 
-  const handleSubmitEvent = (event: Parameters<typeof addEvent>[0]) => {
-    addEvent({
-      ...event,
-      dateTime: event.dateTime instanceof Timestamp 
-        ? event.dateTime 
-        : Timestamp.fromDate(new Date(event.dateTime))
-    });
-    setShowForm(false);
-    showTemporaryAlert(`Created ${event.title}`);
+  const handleSubmitEvent = async (event: Parameters<typeof addEvent>[0]) => {
+    if (isSubmitting) return; // Prevent duplicate submissions
+    
+    setIsSubmitting(true); // Start submission
+    try {
+      await addEvent({
+        ...event,
+        dateTime: event.dateTime instanceof Timestamp 
+          ? event.dateTime 
+          : Timestamp.fromDate(new Date(event.dateTime))
+      });
+      setShowForm(false);
+      showTemporaryAlert(`Created ${event.title}`);
+    } catch (error) {
+      console.error("Failed to create event:", error);
+      showTemporaryAlert("Failed to create event");
+    } finally {
+      setIsSubmitting(false); // End submission
+    }
   };
 
   const showTemporaryAlert = (message: string) => {
@@ -106,20 +117,22 @@ export default function Events() {
             style={styles.joinButton} 
             className=" bg-purple-950 hover:bg-purple-700"
             onClick={handleAddEvent}
+            disabled={isSubmitting}
           >
             ➕ Add Event
           </button>
         </DivContainer>
 
-        {/* Event Form */}
+    
         {showForm && (
           <EventForm
             onSave={handleSubmitEvent}
             onDelete={handleCancelEvent}
+            isSubmitting={isSubmitting}
           />
         )}
 
-        {/* Event Sections */}
+     
         <EventSection
           title="My Events"
           events={myEvents}

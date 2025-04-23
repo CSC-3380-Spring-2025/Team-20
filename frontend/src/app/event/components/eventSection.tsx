@@ -58,7 +58,7 @@ export default function EventSection({
                     </span>
                     
                     <div>
-                      {event.eventType === "current" && onJoin && (
+                      { onJoin && (
                         <button 
                           style={estyle.joinButton} 
                           onClick={() => onJoin(eventId)}
@@ -67,7 +67,7 @@ export default function EventSection({
                         </button>
                       )}
                       
-                      {event.eventType === "joined" && onLeave && (
+                      {onLeave && (
                         <button 
                           style={estyle.cancelButton} 
                           onClick={() => onLeave(eventId)}
@@ -76,7 +76,7 @@ export default function EventSection({
                         </button>
                       )}
                       
-                      {event.eventType === "own" && onDelete && (
+                      {onDelete && (
                         <button 
                           style={estyle.cancelButton} 
                           onClick={() => onDelete(eventId)}

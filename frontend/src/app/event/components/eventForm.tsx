@@ -1,18 +1,22 @@
 "use client";
 import { useState } from 'react';
 import { db } from '../../config/firebase';
-import { addDoc, collection, Timestamp, updateDoc, getDoc, doc, arrayUnion, GeoPoint } from 'firebase/firestore';
+import { Timestamp, getDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import * as styles from '../styles/eventFormStyle';
 import { Event } from '../types/eventTypes';
 
+interface EventFormProps {
+  onSave: (event: Omit<Event, 'id'>) => Promise<void> | void;
+  onDelete: () => void;
+  isSubmitting?: boolean;
+}
+
 const EventForm = ({
   onSave, 
-  onDelete 
-}: { 
-  onSave: (event: Event) => void; 
-  onDelete: () => void 
-}) => {
+  onDelete,
+  isSubmitting = false
+}: EventFormProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dateTime, setDateTime] = useState<Timestamp>(Timestamp.now());
@@ -23,6 +27,9 @@ const EventForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) return;
+    
     setError(null);
     
     const user = auth.currentUser;
@@ -41,47 +48,28 @@ const EventForm = ({
       }
 
       const userData = userDocSnap.data();
-      const newEvent = {
+      const newEvent: Omit<Event, 'id'> = {
         title,
         description,
-        coordinates: new GeoPoint(coordinates.lat, coordinates.lng),
-        dateTime,
-        totalInterested: 1,
-        createdBy: userData.displayName || user.uid,
-        eventType: "own" as const, 
-        attendees: [user.uid]
-      };
-
-      const eventRef = await addDoc(collection(db, "events"), newEvent);
-      await updateDoc(userDocRef, {
-        createdEvents: arrayUnion(eventRef.id)
-      });
-
-      // Create the Event object with correct types
-      const savedEvent: Event = {
-        id: eventRef.id,
-        title,
-        description,
-        coordinates, // Original {lat, lng} format
+        coordinates,
         dateTime,
         totalInterested: 0,
-        createdBy: userData.displayName || user.uid,
-        eventType: "own"
+        createdBy: userData.displayName,
+       
+        userid: user.uid,
+       
       };
 
-      onSave(savedEvent);
+      await onSave(newEvent);
       
       setTitle("");
       setDescription("");
       setDateTime(Timestamp.now());
       setCoordinates({ lat: 0, lng: 0 });
       
-      
-    } catch  {
-      alert("Event creation failed");
-
-      //takes title, description, weirdly takes dateTime
-
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Failed to create event");
     }
   };
 
@@ -122,6 +110,7 @@ const EventForm = ({
             style={styles.input}
             required
             minLength={3}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -133,6 +122,7 @@ const EventForm = ({
             style={styles.input}
             required
             minLength={10}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -144,6 +134,7 @@ const EventForm = ({
             onChange={handleDateTimeChange}
             style={styles.input}
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -156,9 +147,10 @@ const EventForm = ({
             onChange={(e) => handleCoordinateChange('lat', e.target.value)}
             style={styles.input}
             required
-            min="-500"
-            max="500"
+            min="-90"
+            max="90"
             step="0.0001"
+            disabled={isSubmitting}
           />
           <input
             type="number"
@@ -170,14 +162,24 @@ const EventForm = ({
             min="-180"
             max="180"
             step="0.0001"
+            disabled={isSubmitting}
           />
         </div>
 
         <div style={styles.buttonContainer}>
-          <button type="submit" style={styles.submitButton}>
-            Create Event
+          <button 
+            type="submit" 
+            style={styles.submitButton}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating..." : "Create Event"}
           </button>
-          <button type="button" onClick={onDelete} style={styles.cancelButton}>
+          <button 
+            type="button" 
+            onClick={onDelete} 
+            style={styles.cancelButton}
+            disabled={isSubmitting}
+          >
             Cancel
           </button>
         </div>

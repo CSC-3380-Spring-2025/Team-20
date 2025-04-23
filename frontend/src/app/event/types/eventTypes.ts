@@ -12,5 +12,5 @@ export interface Event {
   dateTime: Timestamp;
   createdBy: string;
   totalInterested: number;
-  eventType: "own" | "current" | "joined";
+  userid: string; 
 }

@@ -85,3 +85,74 @@ export const eventCard: CSSProperties = {
       borderRadius: "5px",
       width: "100%",
 }
+
+export const loadingContainer: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100vh'
+};
+
+export const loginContainer: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100vh',
+  gap: '20px'
+};
+
+export const buttonLoadingText: CSSProperties = {
+  display: 'inline-block',
+  minWidth: '80px'
+};
+
+export const linkButton: CSSProperties = {
+  ...linkStyle,
+  display: 'block',
+  margin: '20px auto',
+  textAlign: 'center'
+};
+
+export const mainContainer: CSSProperties = {
+  marginBottom: '40px',
+  position: 'relative'
+};
+
+export const contentContainer: CSSProperties = {
+  padding: '2px',
+  width: '100%',
+  maxWidth: '1200px',
+  margin: '0 auto'
+};
+
+export const alertContainer: CSSProperties = {
+  position: 'fixed',
+  top: '20px',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  backgroundColor: 'blue',
+  color: 'white',
+  padding: '10px 20px',
+  borderRadius: '8px',
+  fontSize: '14px',
+  fontWeight: 'bold',
+  zIndex: 1000
+};
+
+export const pageContainer: CSSProperties = {
+  padding: "2px", 
+  width: "100%"
+};
+
+export const headerContainer: CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  padding: "40px 20px 10px 10px",
+  width: "100%"
+};
+
+export const addButton: CSSProperties = {
+  ...joinButton,
+  backgroundColor: 'purple',
+};

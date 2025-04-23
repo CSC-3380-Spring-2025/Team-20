@@ -1,100 +1,161 @@
+//hook to handle all functionality like add events, delete, join, leave, and fetching all of this to distinguish between sections
+
 import { useState, useEffect } from "react";
 import { Event } from "../types/eventTypes";
+
 import { db } from "@/config/firebase";
-import { 
-  collection, doc, addDoc, deleteDoc, updateDoc, getDocs, 
-   arrayUnion, arrayRemove 
-} from "firebase/firestore";
+import {collection, doc, addDoc, deleteDoc, updateDoc, getDocs, getDoc, GeoPoint, Timestamp, increment} from "firebase/firestore";
 import { useAuth } from "../../context/auth-context";
 
 export default function useEvents() {
+  //user's own, joined and then current stored as an object array
   const [myEvents, setMyEvents] = useState<Event[]>([]);
-  const [popularEvents, setPopularEvents] = useState<Event[]>([]);
   const [joinedEvents, setJoinedEvents] = useState<Event[]>([]);
-  
+  const [popularEvents, setPopularEvents] = useState<Event[]>([]);
+
+  //retrieve  + auth
   const eventsCollectionRef = collection(db, "events");
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchEventsCollection();
-  }, []);
+  //helper to display user's name. h
+  const fetchUserDisplayName = async (uid: string): Promise<string> => {
+    const userDocRef = doc(db, "users", uid);
+    const userDocSnap = await getDoc(userDocRef);
+    return userDocSnap.exists() ? userDocSnap.data()?.displayName || "" : "";
+  };
 
-  const fetchEventsCollection = async () => {
-    try {
-      const eventData = await getDocs(eventsCollectionRef);
-      const events = eventData.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-      }) as Event);
-
-      // Filter events based on type
-      setPopularEvents(events.filter(e => e.eventType === "current"));
-      setMyEvents(events.filter(e => e.eventType === "own" && e.createdBy === user?.displayName));
-      setJoinedEvents(events.filter(e => e.eventType === "joined"));
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
+  //validating coordinates are actual numbers. will fix later for map function
+  const areCoordinatesValid = (
+    coordinates: { lat: number; lng: number } | undefined | null): boolean => {
+    return coordinates !== undefined && coordinates !== null && typeof coordinates.lat === "number" && typeof coordinates.lng === "number";
   };
 
 
-  //maybe taking in id causing issue
-  const addEvent = async (newEvent: Omit<Event, 'id'>) => {
+
+  //fetching events
+  useEffect(() => {
+    if (user) {
+      fetchEvents();
+    }
+  }, [user]);
+
+  //my fetch events (this took so long). 
+  //explanation:
+    //handling only if this user signed in. implemetned try catch for easy debugging
+   
+  const fetchEvents = async () => {
     if (!user) return;
 
     try {
-      const docRef = await addDoc(eventsCollectionRef, {
-        ...newEvent,
-        createdBy: user.displayName, // Store displayName directly
-        eventType: "own",
-        totalInterested: 0 // Start with 0, creator isn't automatically interested
-      });
 
-      // Update user's createdEvents
-      const userDocRef = doc(db, "users", user.uid);
-      await updateDoc(userDocRef, {
-        createdEvents: arrayUnion(docRef.id)
-      });
+      const eventData = await getDocs(eventsCollectionRef);
 
-      fetchEventsCollection(); // Refresh all events
-    } catch (error) {
-      console.error("Error adding event:", error);
+      const events = await Promise.all(
+        eventData.docs.map(async (docSnap) => {
+          const event = docSnap.data() as Event;
+
+          // Handle coordinates. change with map 
+          if (event.coordinates instanceof GeoPoint) {
+            event.coordinates = {
+              lat: event.coordinates.latitude,
+              lng: event.coordinates.longitude,
+            };
+          } else if (!areCoordinatesValid(event.coordinates)) {
+            event.coordinates = { lat: 0, lng: 0 };
+            console.warn(`Event with id ${docSnap.id} has invalid or missing coordinates.`);
+          }
+
+          // Handle createdBy displayName
+          let createdByDisplayName = "";
+          let createdByUid = "";
+
+          if (event.createdBy) {
+            createdByUid = event.createdBy;
+            createdByDisplayName = await fetchUserDisplayName(createdByUid) || createdByUid;
+          }
+
+          return {
+            ...event,
+            createdBy: createdByDisplayName,
+            createdByUid,
+            id: docSnap.id,
+          };
+        })
+      );
+
+
+      //after retireving 
+      const myOwnEvents = events.filter((e) => e.userid === user.uid);
+      const othersEvents = events.filter((e) => e.userid !== user.uid);
+      const myJoinedEvents = othersEvents.filter((e) => e.totalInterested && e.totalInterested > 0);
+
+      setMyEvents(myOwnEvents);
+      setJoinedEvents(myJoinedEvents);
+      setPopularEvents(othersEvents);
+
+    } catch {
+      alert("Error fetching events:");
     }
   };
 
+
+
+
+
+  const addEvent = async (newEvent: Omit<Event, "id" | "createdBy" | "totalInterested">) => {
+    if (!user) return;
+
+    try {
+
+      //change with map function
+      if (!areCoordinatesValid(newEvent.coordinates)) {
+        alert("Invalid coordinates provided for event:");
+        return;
+      }
+
+      const displayName = await fetchUserDisplayName(user.uid);
+
+      const eventToAdd = {
+        ...newEvent,
+        coordinates: new GeoPoint(newEvent.coordinates.lat, newEvent.coordinates.lng),
+        createdBy: displayName,
+        totalInterested: 0,
+        dateTime: Timestamp.fromDate(new Date()),
+        userid: user.uid,
+      };
+
+      const docRef = await addDoc(eventsCollectionRef, eventToAdd);
+      const uiEvent: Event = {
+        ...eventToAdd,
+        id: docRef.id,
+        coordinates: { lat: eventToAdd.coordinates.latitude, lng: eventToAdd.coordinates.longitude },
+      };
+
+      setMyEvents((prev) => [...prev, uiEvent]);
+    } catch {
+      alert("Error adding event");
+    }
+  };
+
+
+
+
+//join and leave both increment and decrement totalinterested. then refresh
   const joinEvent = async (eventId: string) => {
     if (!user) return;
 
     try {
       const eventDocRef = doc(db, "events", eventId);
       await updateDoc(eventDocRef, {
-        eventType: "joined",
-        totalInterested: arrayUnion(user.uid) // Track interested users by UID
+        totalInterested: increment(1),
       });
 
-      fetchEventsCollection();
-    } catch (error) {
-      console.error("Error joining event:", error);
+      fetchEvents();
+    } catch {
+      alert("Error joining event:");
     }
   };
 
-  const deleteMyEvent = async (eventId: string) => {
-    if (!user) return;
-
-    try {
-      // Delete event
-      await deleteDoc(doc(db, "events", eventId));
-
-      // Remove from user's createdEvents
-      const userDocRef = doc(db, "users", user.uid);
-      await updateDoc(userDocRef, {
-        createdEvents: arrayRemove(eventId)
-      });
-
-      fetchEventsCollection();
-    } catch (error) {
-      console.error("Error deleting event:", error);
-    }
-  };
 
   const leaveEvent = async (eventId: string) => {
     if (!user) return;
@@ -102,23 +163,38 @@ export default function useEvents() {
     try {
       const eventDocRef = doc(db, "events", eventId);
       await updateDoc(eventDocRef, {
-        eventType: "current",
-        totalInterested: arrayRemove(user.uid)
+        totalInterested: increment(-1),
       });
 
-      fetchEventsCollection();
-    } catch (error) {
-      console.error("Error leaving event:", error);
+      fetchEvents();
+    } catch {
+      alert("Error adding event");
     }
   };
 
-  return { 
-    myEvents, 
-    popularEvents, 
-    joinedEvents, 
-    addEvent, 
-    deleteMyEvent, 
-    joinEvent, 
-    leaveEvent 
+  const deleteMyEvent = async (eventId: string) => {
+    if (!user) return;
+
+    try {
+      await deleteDoc(doc(db, "events", eventId));
+      setMyEvents((prev) => prev.filter((event) => event.id !== eventId));
+      fetchEvents();
+    } catch {
+      alert("Error adding event");
+    }
   };
+
+
+
+//page.tsx
+  return {
+    myEvents,
+    popularEvents,
+    joinedEvents,
+    addEvent,
+    deleteMyEvent,
+    joinEvent,
+    leaveEvent,
+  };
+
 }

@@ -198,11 +198,11 @@ export default function Interest() {
   return (
     <div>
       <Header />
-      <div className="min-h-screen flex flex-col bg-blue-300 pb-36">
+      <div className="min-h-screen flex flex-col bg-purple-100 pb-36">
       <div className="flex justify-start px-8 mt-4">
         <button
           onClick={handleSave}
-          className="bg-green-500 text-white px-8 py-2 rounded-md shadow-lg hover:bg-green-700"
+          className="bg-yellow-500 text-white px-8 py-2 rounded-md shadow-lg hover:bg-green-700"
         >
           Save Interests
         </button>
@@ -243,7 +243,7 @@ export default function Interest() {
               <button
                 key={index}
                 onClick={() => handleButtonClick(item)}
-                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
+                className={`relative bg-white text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
                   selectedButtons.includes(item) ? "bg-blue-700" : ""
                 }`}
               >
