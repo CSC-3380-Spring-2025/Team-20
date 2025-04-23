@@ -22,7 +22,7 @@ const HoverButton = (
       onClick={onClick}
       
       style={{...styles.optionButton, backgroundColor: 
-          Hovered ? "lightblue" : "#f1f0ef",}}
+          Hovered ? "yellow" : "#f1f0ef",}}
           {...listener} // Apply the hover listeners 
       >
 

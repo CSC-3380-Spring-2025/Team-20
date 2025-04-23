@@ -1,5 +1,5 @@
 export const header  = {
-    backgroundColor: "purple",
+    backgroundColor: "#461D7C",
     color: "white",
     padding: "10px 20px",
     fontWeight: "bold",

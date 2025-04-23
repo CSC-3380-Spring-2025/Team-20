@@ -159,7 +159,7 @@ export default function OutsideCampus() {
     <>
       <Header />
       <main>
-        <div className="bg-orange-100 px-5 py-5 flex" >
+        <div className="bg-yellow-100 px-5 py-5 flex" >
 
           <button
             style={{
@@ -179,12 +179,12 @@ export default function OutsideCampus() {
           setSelectedOption={setSelectedInterest}
         />
 
-          <div className="p-4 bg-orange-100 rounded-xl max-w-3xl mx-auto mt-4"> {/* mt-4 added */}
+          <div className="p-4 bg-yellow-100 rounded-xl max-w-3xl mx-auto mt-4"> {/* mt-4 added */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredEvents.map((event, index) => (
-              <div key={event.name} className="bg-white shadow rounded-lg p-4 cursor-pointer hover:bg-blue-200" onClick={() => handleCardClick(index)}
+              <div key={event.name} className="bg-white shadow rounded-lg p-4 cursor-pointer hover:bg-yellow-200" onClick={() => handleCardClick(index)}
             >
-              <h3 className="text-lg font-semibold text-blue-600">
+              <h3 className="text-lg font-semibold text-purple-600">
                 <a href={event.link} target="_blank" rel="noopener noreferrer">
                   {event.name}
                 </a>
@@ -202,7 +202,7 @@ export default function OutsideCampus() {
                   {event.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+                      className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
                     >
                       #{tag}
                     </span>

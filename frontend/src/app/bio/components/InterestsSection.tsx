@@ -38,11 +38,11 @@ const InterestsSection: React.FC<InterestsSectionProps> = ({
       <div className="mb-3 gap-1">
 
         {!editInterests ? (
-          <button onClick={() => setEditInterests(true)} className="bg-blue-400 text-white rounded px-3 py-2 hover:bg-blue-600">
+          <button onClick={() => setEditInterests(true)} className="bg-purple-400 text-white rounded px-3 py-2 hover:bg-blue-600">
             Edit
           </button>
         ) : (
-          <button onClick={handleSaveInterests} className="bg-blue-400 text-white rounded px-3 py-2 hover:bg-blue-600">
+          <button onClick={handleSaveInterests} className="bg-purple-400 text-white rounded px-3 py-2 hover:bg-blue-600">
             Save Changes
           </button>
         )}

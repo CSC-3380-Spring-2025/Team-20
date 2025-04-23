@@ -5,7 +5,7 @@ export const backbutton = {
     fontSize: "20px",
     transition: "all 0.3s ease",
     cursor: "pointer",
-    Color: "lightblue",
+    Color: "purple",
     
   };
   
@@ -13,19 +13,21 @@ export const backbutton = {
     paddingTop: "3%",
     paddingLeft: "2%",
     display: "flex",
-    backgroundColor: "orange"
+    backgroundColor: "yellow"
    
   };
-  
+  //bar containing res,barsncafes, arc,and monthly
   export const optionButton = {
     padding: "5px 2px",
     fontSize: "18px",
+    fontweight: "bold",
+    fontFamily: `"Copperplate", "Fantasy"`,
     borderRadius: "5px",
     margin: "0 1%",
     cursor: "pointer",
     transition: "background-color 0.3s ease, color 0.3s ease",
     width: "auto",
-    color: "blue"
+    color: "purple"
   };
   
 
@@ -40,6 +42,6 @@ export const backbutton = {
     marginBottom: "20px",
     gap: "5%",
     maxWidth: "96%",
-    backgroundColor: "#f1f0ef",
+    backgroundColor: "#fffff",
     borderRadius: "5px"
   };

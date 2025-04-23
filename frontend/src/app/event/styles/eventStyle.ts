@@ -11,7 +11,9 @@ export const titleStyle: CSSProperties = {
 export const linkStyle: CSSProperties = {
   fontSize: '30px',
   marginTop: '50px',
-  color: 'black',
+  color: 'blue',
+  borderRadius: '8px',
+  backgroundColor:"black" ,
   padding: '1px 12px',
   fontWeight: 'bold',
 };
@@ -39,7 +41,7 @@ export const interestedStyle: CSSProperties = {
 
 export const joinButton: CSSProperties = {
   padding: '2px 10px',
-  backgroundColor: 'lightgreen',
+  backgroundColor: 'purple',
   color: 'white',
   border: 'none',
   borderRadius: '4px',

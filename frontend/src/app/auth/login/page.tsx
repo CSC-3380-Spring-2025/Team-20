@@ -41,7 +41,7 @@ export default function Login() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">
         <AuthToggle/>
-        <h2 className="text-2xl font-semibold mb-5 text-gray-800">Login</h2>
+        <h2 className="text-2xl font-semibold mb-5 text-black-800">Login</h2>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -64,7 +64,7 @@ export default function Login() {
             />
             <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-2 rounded-lg transition hover:bg-blue-600"
+            className="w-full bg-purple-500 text-white font-bold py-2 rounded-lg transition hover:bg-yellow-400"
             >
             Sign In
             </button>

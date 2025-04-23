@@ -13,6 +13,7 @@ import { useAuth } from '@/context/auth-context';
 export default function Interest() {
   const {user} = useAuth();
   const router = useRouter();
+  
 
   const categories = {
     Hobbies: [
@@ -99,7 +100,7 @@ export default function Interest() {
       <div>
         <h2>You need to log in to access this page.</h2>
         <button
-          className="bg-green-500 border-r-5 font-serif hover:bg-green-300"
+          className="bg-purple-400 border-r-5 font-serif hover:bg-yellow-300"
           onClick={() => router.push("/auth/login")}
         >
           Return to Login
@@ -198,15 +199,23 @@ export default function Interest() {
   return (
     <div>
       <Header />
-      <div className="min-h-screen flex flex-col bg-blue-300 pb-36">
-      <div className="flex justify-start px-8 mt-4">
-        <button
-          onClick={handleSave}
-          className="bg-green-500 text-white px-8 py-2 rounded-md shadow-lg hover:bg-green-700"
-        >
-          Save Interests
-        </button>
-      </div>
+      <div className="min-h-screen flex flex-col bg-purple-300 pb-36">
+      <div className="flex flex-col sm:flex-row justify-between items-center px-8 mt-4 gap-4">
+  <input
+    type="text"
+    placeholder="Search..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="w-full sm:w-2/3 p-2 border border-gray-400 rounded-lg shadow-md text-gray-900"
+  />
+  <button
+    onClick={handleSave}
+    className="bg-yellow-500 text-black px-6 py-2 rounded-md shadow-lg hover:bg-yellow-400"
+  >
+    Save Interests
+   </button>
+   </div>
+
 
       {savedMessage && (
         <div className="flex justify-center mt-2">
@@ -214,37 +223,30 @@ export default function Interest() {
         </div>
       )}
 
-      <div className="flex justify-end px-8 mt-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-64 p-2 border border-gray-400 rounded-lg shadow-md text-gray-900"
-        />
-      </div>
+
 
       {selectedCategory && (
         <div className="flex justify-start px-8 mt-4">
           <button
             onClick={() => setSelectedCategory(null)}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-800"
+            className=" text-white px-4 py-2 rounded-md hover:bg-gray-800"
           >
             ← Back to Categories
           </button>
         </div>
       )}
 
-      <main className="flex-grow flex justify-center items-center">
-        <div className="grid grid-cols-3 gap-4">
+<main className="flex-grow flex justify-center items-center px-4 sm:px-8 mt-8">
+  <div className="grid gap-4 w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+
           {/* Trending Items moved to the top */}
           {trendingItems.length > 0 && (
             trendingItems.map((item, index) => (
               <button
                 key={index}
                 onClick={() => handleButtonClick(item)}
-                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
-                  selectedButtons.includes(item) ? "bg-blue-700" : ""
+                className={`relative bg-white text-black px-12 py-10 text-bold rounded-md shadow-lg hover:bg-yellow-400 ${
+                  selectedButtons.includes(item) ? "bg-purple-700" : ""
                 }`}
               >
                  {item}
@@ -255,44 +257,64 @@ export default function Interest() {
             ))
           )}
 
-          {/* Other Category Buttons */}
-          {filteredButtons.length > 0 ? (
-          filteredButtons.map(({ name, category }, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                if (category === null) {
-                  handleCategoryClick(name as keyof typeof categories);
-                } else {
-                  handleButtonClick(name);
-                }
-              }}
-              className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
-                selectedButtons.includes(name) ? "bg-blue-700" : ""
-              }`}
-            >
-              {name} {category && <span className="text-sm text-gray-300">({category})</span>}
-            </button>
-          ))
-          ) : (
-            <p className="text-white text-lg col-span-3">No results found</p>
-        )}
+         {/* Other Category Buttons */}
+{filteredButtons.length > 0 ? (
+  filteredButtons.map(({ name, category }, index) => {
+    const isCategory = category === null;
+
+    // Use corresponding image file from /icons folder (e.g., hobbies.jpg, sports.jpg, etc.)
+    const backgroundImage = isCategory ? `/icons/${name.toLowerCase()}.jpg` : '';
+
+    return (
+      <button
+        key={index}
+        onClick={() => {
+          if (isCategory) {
+            handleCategoryClick(name as keyof typeof categories);
+          } else {
+            handleButtonClick(name);
+          }
+        }}
+        className={`relative text-black px-6 py-20 text-lg font-semibold rounded-xl shadow-lg hover:bg-yellow-300 ${
+          selectedButtons.includes(name) && !isCategory ? "bg-yellow-300 text-black" : "bg-white text-black"
+        }`}
+        style={isCategory
+          ? {
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              color: 'black',
+              textShadow: '1px 1px 4px rgba(0,0,0,0.8)'
+            }
+          : {}
+        }
+      >
+        {name}
+        {category && <span className="text-sm text-gray-300"> ({category})</span>}
+      </button>
+    );
+  })
+) : (
+  <p className="text-white text-lg col-span-3">No results found</p>
+)}
+
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 w-full bg-blue-600 text-white py-3 shadow-md">
+      <footer className="fixed bottom-0 left-0 w-full bg-purple-800 text-white py-3 shadow-md">
         <div className="text-center">
           {selectedButtons.length >= MAX_SELECTION && (
             <p className="text-red-400 font-semibold">You can only select up to {MAX_SELECTION} interests.</p>
           )}
 
-          <p className="text-lg">Selected Interests ({selectedButtons.length}/{MAX_SELECTION}):</p>
+          <p className="text-lg" >Selected Interests ({selectedButtons.length}/{MAX_SELECTION}):</p>
 
           <div className="flex flex-wrap justify-center mt-2 px-4">
             {selectedButtons.map((item, index) => (
               <span
                 key={index}
-                className="bg-white text-blue-600 px-3 py-1 rounded-full mx-1 my-1 cursor-pointer"
+                className="bg-white text-purple-600 px-3 py-1 rounded-full mx-1 my-1 cursor-pointer"
                 onClick={() => handleButtonClick(item)}
               >
                 {item} <span className="ml-2 text-red-500">x</span>

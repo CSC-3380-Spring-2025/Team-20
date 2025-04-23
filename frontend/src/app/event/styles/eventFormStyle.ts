@@ -17,6 +17,7 @@ export const container: CSSProperties = {
 
 export const header: CSSProperties = {
   fontWeight: 'bold',
+  fontFamily:'"Copperplate", "Fantasy"',
   fontSize: '20px',
 };
 
@@ -49,7 +50,7 @@ export const buttonContainer: CSSProperties = {
 
 export const submitButton: CSSProperties = {
   padding: '10px 20px',
-  backgroundColor: 'lightgreen',
+  backgroundColor: 'purple',
   color: 'white',
   border: 'none',
   borderRadius: '4px',
