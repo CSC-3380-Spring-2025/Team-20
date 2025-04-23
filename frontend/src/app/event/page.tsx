@@ -21,15 +21,7 @@ export default function Events() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const {
-    myEvents,
-    popularEvents,
-    joinedEvents,
-    addEvent,
-    deleteMyEvent,
-    joinEvent,
-    leaveEvent,
-  } = useEvents();
+  const { popularEvents, addEvent, joinEvent,} = useEvents();
 
   const handleAddEvent = () => setShowForm(true);
   const handleCancelEvent = () => setShowForm(false);
@@ -47,8 +39,8 @@ export default function Events() {
       });
       setShowForm(false);
       showTemporaryAlert(`Created ${event.title}`);
-    } catch (error) {
-      console.error("Failed to create event:", error);
+    } catch {
+      alert("Failed to create event");
       showTemporaryAlert("Failed to create event");
     } finally {
       setIsSubmitting(false); // End submission
@@ -60,100 +52,58 @@ export default function Events() {
     setTimeout(() => setAlertMessage(null), 2000);
   };
 
-  if (user === undefined) return <p>Loading...</p>;
+ 
 
   if (!user) {
     return (
-      <div style={{ 
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh'
-      }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
         <h2 style={styles.headerStyle}>You need to log in to access this page.</h2>
-        <button
-          style={styles.cancelButton}
-          onClick={() => router.push("/auth/login")}
-        >
+        <button style={styles.cancelButton} onClick={() => router.push("/auth/login")}>
           Return to Login
         </button>
       </div>
     );
   }
-
+  console.log("[DEBUG] joinEvent function:", joinEvent);
   return (
     <div style={{ marginBottom: "40px" }}>
       <Header />
 
-      {/* Alert Notification */}
       {alertMessage && (
-        <DivContainer style={{
-          position: 'fixed',
-          top: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          backgroundColor: 'blue',
-          color: 'white',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontWeight: 'bold',
-          zIndex: 1000
-        }}>
+        <DivContainer style={{position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'blue', color: 'white', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold', zIndex: 1000}}>
           {alertMessage}
         </DivContainer>
       )}
 
       <DivContainer style={{ padding: "2px", width: "100%" }}>
-        <DivContainer style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "40px 20px 10px 10px",
-          width: "100%"
-        }}>
+        <DivContainer style={{display: "flex", justifyContent: "space-between",padding: "40px 20px 10px 10px",
+           width: "100%"}}>
+
           <h1 style={styles.titleStyle}>Events</h1>
-          <button
-            style={styles.joinButton} 
-            className=" bg-purple-950 hover:bg-purple-700"
-            onClick={handleAddEvent}
-            disabled={isSubmitting}
-          >
+          <button  style={styles.joinButton} className=" bg-purple-950 hover:bg-purple-700" onClick={handleAddEvent} disabled={isSubmitting}>
             ➕ Add Event
           </button>
+          
         </DivContainer>
 
     
         {showForm && (
-          <EventForm
-            onSave={handleSubmitEvent}
-            onDelete={handleCancelEvent}
-            isSubmitting={isSubmitting}
-          />
-        )}
+          <EventForm onSave={handleSubmitEvent}  onDelete={handleCancelEvent} isSubmitting={isSubmitting}/>
+        )
 
-     
-        <EventSection
-          title="My Events"
-          events={myEvents}
-          onDelete={deleteMyEvent}
-        />
-        <EventSection
-          title="Joined Events"
-          events={joinedEvents}
-          onLeave={leaveEvent}
-        />
-        <EventSection
-          title="Current Events"
-          events={popularEvents}
-          onJoin={joinEvent}
-        />
+      
+        }
+
+        {user && (
+          <>
+            <EventSection  title="Current Events"  events={popularEvents}  onJoin={joinEvent} userId={user.uid}/>
+          </>
+        )}
+           
+
       </DivContainer>
 
-      <button
-        style={styles.linkStyle}
-        onClick={() => router.push("/outsideCampus")}
-      >
+      <button style={styles.linkStyle} onClick={() => router.push("/outsideCampus")}>
         Leaving LSU?
       </button>
     </div>

@@ -12,11 +12,10 @@ interface EventFormProps {
   isSubmitting?: boolean;
 }
 
-const EventForm = ({
-  onSave, 
-  onDelete,
-  isSubmitting = false
+
+const EventForm = ({ onSave,  onDelete, isSubmitting = false
 }: EventFormProps) => {
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dateTime, setDateTime] = useState<Timestamp>(Timestamp.now());
@@ -48,16 +47,8 @@ const EventForm = ({
       }
 
       const userData = userDocSnap.data();
-      const newEvent: Omit<Event, 'id'> = {
-        title,
-        description,
-        coordinates,
-        dateTime,
-        totalInterested: 0,
-        createdBy: userData.displayName,
-       
+      const newEvent: Omit<Event, 'id'> = {  title, description,  coordinates, dateTime, totalInterested: 0, createdBy: userData.displayName,
         userid: user.uid,
-       
       };
 
       await onSave(newEvent);
@@ -67,12 +58,14 @@ const EventForm = ({
       setDateTime(Timestamp.now());
       setCoordinates({ lat: 0, lng: 0 });
       
-    } catch (err) {
-      console.error("Error:", err);
+    } catch  {
+      alert("Error");
       setError("Failed to create event");
     }
   };
 
+
+  //if they edit it
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = new Date(e.target.value);
     if (!isNaN(date.getTime())) {
@@ -80,6 +73,7 @@ const EventForm = ({
     }
   };
 
+  //coordinate change. change with map
   const handleCoordinateChange = (field: 'lat' | 'lng', value: string) => {
     const parsedValue = parseFloat(value);
     if (!isNaN(parsedValue)) {
@@ -103,83 +97,34 @@ const EventForm = ({
 
         <div style={styles.inputContainers}>
           <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={styles.input}
-            required
-            minLength={3}
-            disabled={isSubmitting}
-          />
+          <input  type="text"  value={title}  onChange={(e) => setTitle(e.target.value)} style={styles.input} required  disabled={isSubmitting}/>
         </div>
 
         <div style={styles.inputContainers}>
           <label>Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={styles.input}
-            required
-            minLength={10}
-            disabled={isSubmitting}
-          />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} style={styles.input} required disabled={isSubmitting}/>
         </div>
 
         <div style={styles.inputContainers}>
           <label>Date and Time</label>
-          <input
-            type="datetime-local"
-            value={dateTime.toDate().toISOString().slice(0, 16)}
-            onChange={handleDateTimeChange}
-            style={styles.input}
-            required
-            disabled={isSubmitting}
-          />
+          <input type="datetime-local"  value={dateTime.toDate().toISOString().slice(0, 16)} onChange={handleDateTimeChange} style={styles.input}
+            required disabled={isSubmitting}/>
         </div>
 
         <div style={styles.inputContainers}>
+
           <label>Select Location (Coordinates)</label>
-          <input
-            type="number"
-            placeholder="Latitude"
-            value={coordinates.lat || ""}
-            onChange={(e) => handleCoordinateChange('lat', e.target.value)}
-            style={styles.input}
-            required
-            min="-90"
-            max="90"
-            step="0.0001"
-            disabled={isSubmitting}
-          />
-          <input
-            type="number"
-            placeholder="Longitude"
-            value={coordinates.lng || ""}
-            onChange={(e) => handleCoordinateChange('lng', e.target.value)}
-            style={styles.input}
-            required
-            min="-180"
-            max="180"
-            step="0.0001"
-            disabled={isSubmitting}
-          />
+          <input type="number"  placeholder="Latitude" value={coordinates.lat || ""} onChange={(e) => handleCoordinateChange('lat', e.target.value)} style={styles.input}  required  disabled={isSubmitting}/>
+
+          <input type="number" placeholder="Longitude" value={coordinates.lng || ""} onChange={(e) => handleCoordinateChange('lng', e.target.value)} style={styles.input} required disabled={isSubmitting}/>
         </div>
 
         <div style={styles.buttonContainer}>
-          <button 
-            type="submit" 
-            style={styles.submitButton}
-            disabled={isSubmitting}
-          >
+          <button  type="submit" style={styles.submitButton} disabled={isSubmitting} >
             {isSubmitting ? "Creating..." : "Create Event"}
           </button>
-          <button 
-            type="button" 
-            onClick={onDelete} 
-            style={styles.cancelButton}
-            disabled={isSubmitting}
-          >
+
+          <button type="button"  onClick={onDelete} style={styles.cancelButton} disabled={isSubmitting} >
             Cancel
           </button>
         </div>

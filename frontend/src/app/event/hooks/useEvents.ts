@@ -46,6 +46,13 @@ export default function useEvents() {
   const fetchEvents = async () => {
     if (!user) return;
 
+    console.log("CURRENT USER UID:", user?.uid);
+    console.log("POPULAR EVENTS:", popularEvents.map(e => ({
+    id: e.id,
+    title: e.title,
+    userid: e.userid, 
+    isMine: e.userid === user?.uid
+  })));
     try {
 
       const eventData = await getDocs(eventsCollectionRef);
@@ -87,17 +94,34 @@ export default function useEvents() {
       //after retireving 
       const myOwnEvents = events.filter((e) => e.userid === user.uid);
       const othersEvents = events.filter((e) => e.userid !== user.uid);
+    
+    // Events you've joined (from other users)
       const myJoinedEvents = othersEvents.filter((e) => e.totalInterested && e.totalInterested > 0);
+    
+    // Events you CAN join (not yours, not already joined)
+      const popularEvents = othersEvents.filter(e => 
+        !myJoinedEvents.some(je => je.id === e.id)
+      );
 
       setMyEvents(myOwnEvents);
       setJoinedEvents(myJoinedEvents);
-      setPopularEvents(othersEvents);
+      setPopularEvents(popularEvents);
 
+
+      console.log("Event counts:", {
+        all: events.length,
+        myEvents: myOwnEvents.length,
+        joined: myJoinedEvents.length,
+        popular: popularEvents.length
+      });
+  
     } catch {
       alert("Error fetching events:");
     }
   };
 
+
+  //make sure to have add evnet to 
 
 
 
@@ -195,6 +219,7 @@ export default function useEvents() {
     deleteMyEvent,
     joinEvent,
     leaveEvent,
+    fetchEvents
   };
 
 }
