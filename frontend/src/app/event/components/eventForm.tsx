@@ -5,6 +5,7 @@ import { Timestamp, getDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import * as styles from '../styles/eventFormStyle';
 import { Event } from '../types/eventTypes';
+import { MapPopup } from './mappopup';
 
 interface EventFormProps {
   onSave: (event: Omit<Event, 'id'>) => Promise<void> | void;
@@ -21,6 +22,7 @@ const EventForm = ({ onSave,  onDelete, isSubmitting = false
   const [dateTime, setDateTime] = useState<Timestamp>(Timestamp.now());
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const [error, setError] = useState<string | null>(null);
+  const [showMapPopup, setShowMapPopup] = useState(false);
 
   const auth = getAuth();
 
@@ -73,17 +75,7 @@ const EventForm = ({ onSave,  onDelete, isSubmitting = false
     }
   };
 
-  //coordinate change. change with map
-  const handleCoordinateChange = (field: 'lat' | 'lng', value: string) => {
-    const parsedValue = parseFloat(value);
-    if (!isNaN(parsedValue)) {
-      setCoordinates(prev => ({
-        ...prev,
-        [field]: parsedValue
-      }));
-    }
-  };
-
+ 
   return (
     <div style={styles.overlay}>
       <form onSubmit={handleSubmit} style={styles.container}>
@@ -112,12 +104,30 @@ const EventForm = ({ onSave,  onDelete, isSubmitting = false
         </div>
 
         <div style={styles.inputContainers}>
-
           <label>Select Location (Coordinates)</label>
-          <input type="number"  placeholder="Latitude" value={coordinates.lat || ""} onChange={(e) => handleCoordinateChange('lat', e.target.value)} style={styles.input}  required  disabled={isSubmitting}/>
-
-          <input type="number" placeholder="Longitude" value={coordinates.lng || ""} onChange={(e) => handleCoordinateChange('lng', e.target.value)} style={styles.input} required disabled={isSubmitting}/>
+            <button 
+                type="button" 
+                className="bg-red-300 rounded-md hover:bg-red-400" 
+                onClick={() => setShowMapPopup(true)}
+                style={{ marginBottom: "10px" }}>
+                Go to Map
+            </button>
         </div>
+
+        {location && (
+          <div style={{ 
+            margin: '10px 0',
+            padding: '8px',
+            backgroundColor: '#f0f0f0',
+            borderRadius: '4px',
+            fontSize: '14px'
+          }}>
+            <label>Selected Location:</label><br />
+            Latitude: {coordinates.lat.toFixed(5)}<br />
+            Longitude: {coordinates.lng.toFixed(5)}
+          </div>
+          )}
+
 
         <div style={styles.buttonContainer}>
           <button  type="submit" style={styles.submitButton} disabled={isSubmitting} >
@@ -127,8 +137,21 @@ const EventForm = ({ onSave,  onDelete, isSubmitting = false
           <button type="button"  onClick={onDelete} style={styles.cancelButton} disabled={isSubmitting} >
             Cancel
           </button>
+
+             
         </div>
+      
+
       </form>
+      {showMapPopup && (
+        <MapPopup
+          onClose={() => setShowMapPopup(false)}
+          onCoordinatesSelect={(lat, lng) => {
+            setCoordinates({ lat, lng });
+            setShowMapPopup(false);
+          }}
+        />
+      )} 
     </div>
   );
 };

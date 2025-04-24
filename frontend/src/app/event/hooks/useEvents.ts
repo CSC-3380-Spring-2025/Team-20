@@ -46,13 +46,8 @@ export default function useEvents() {
   const fetchEvents = async () => {
     if (!user) return;
 
-    console.log("CURRENT USER UID:", user?.uid);
-    console.log("POPULAR EVENTS:", popularEvents.map(e => ({
-    id: e.id,
-    title: e.title,
-    userid: e.userid, 
-    isMine: e.userid === user?.uid
-  })));
+   
+  
     try {
 
       const eventData = await getDocs(eventsCollectionRef);
@@ -69,7 +64,6 @@ export default function useEvents() {
             };
           } else if (!areCoordinatesValid(event.coordinates)) {
             event.coordinates = { lat: 0, lng: 0 };
-            console.warn(`Event with id ${docSnap.id} has invalid or missing coordinates.`);
           }
 
           // Handle createdBy displayName
