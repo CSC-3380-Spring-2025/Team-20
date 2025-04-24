@@ -35,7 +35,7 @@ export const container: CSSProperties = {
 };
 
 //header
-export const Titleheader: CSSProperties = {
+export const titleHeader: CSSProperties = {
   textAlign: 'center',
   marginBottom: '20px',
   fontWeight: 'bold',
@@ -105,4 +105,6 @@ export const cancelButton: CSSProperties = {
   transition: 'background-color 0.3s ease',
 };
 
-
+export const subtitleHeaders: CSSProperties = {
+  margin: 20
+};

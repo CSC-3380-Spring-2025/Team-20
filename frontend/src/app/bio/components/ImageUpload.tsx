@@ -12,7 +12,10 @@ const images = [
   "/assets/human-head.png",
   "/assets/jack-o'lantern.png",
   "/assets/pouting-face.png",
-  "/assets/shocked.png"
+  "/assets/shocked.png",
+  "/assets/sad.png",
+  "/assets/ghost.png",
+  "/assets/egg.png"
 ];
 
 

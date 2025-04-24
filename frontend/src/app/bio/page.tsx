@@ -12,6 +12,8 @@ import ProfileImageUpload from "./components/ImageUpload";
 import BioSection from "./components/BioSection";
 import SocialAccountsSection from "./components/SocialAccounts";
 import InterestsSection from "./components/InterestsSection";
+//import MyEventsSection from "./components/MyEventsSection";
+import { MapPopup } from "./components/Coordinates";
 import SaveButton from "./components/SaveButton";
 
 const Profile: React.FC = () => {
@@ -26,7 +28,8 @@ const Profile: React.FC = () => {
   const [socialAccounts, setSocialAccounts] = useState<string[]>(["", "", ""]);
   const [interest, setInterest] = useState<string[]>([]);
   const [pronouns, setPronouns] = useState("");
-  //const [events, setEvents] = useState<string[]>([]);
+  const [showMapPopup, setShowMapPopup] = useState(false);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const [saveStatus, setSaveStatus] = useState<{ success: boolean; error: boolean }>({ 
     success: false, 
     error: false 
@@ -50,7 +53,7 @@ const Profile: React.FC = () => {
           setInterest(docSnap.data().interests || []);
           setProfileImage(docSnap.data().profileImage || null);
           setPronouns(docSnap.data().pronouns || "");
-
+          setCoordinates(docSnap.data().Coordinates || { lat: 0, lng: 0 });
 
 
         } else {
@@ -61,7 +64,9 @@ const Profile: React.FC = () => {
             interests: [], 
             displayName: "", 
             profileImage: null,
-            pronouns: ""
+            pronouns: "",
+            coordinates: { lat: 0, lng: 0 }
+            //myEvents: []
           });
         }
 
@@ -89,7 +94,8 @@ const Profile: React.FC = () => {
         interests: interest,
         displayName,
         profileImage,
-        pronouns
+        pronouns,
+        coordinates: coordinates, 
       }, { merge: true });
 
       setSaveStatus({ success: true, error: false });  // debugging . useful if it doesn't save full data
@@ -112,6 +118,11 @@ const Profile: React.FC = () => {
       </div>
     );
   }
+
+  const handleCoordinatesSelect = async (lat: number, lng: number) => {
+    const newCoordinates = { lat, lng };
+    setCoordinates(newCoordinates);
+  }  
 
   return (
     <div className="relative">
@@ -157,9 +168,39 @@ const Profile: React.FC = () => {
     <SocialAccountsSection  socialAccounts={socialAccounts} setSocialAccounts={setSocialAccounts} 
     />
 
+      {/* Mappop To Set User's Coordinates */}
+      {showMapPopup && (
+        <MapPopup 
+          onClose={() => setShowMapPopup(false)}
+          onCoordinatesSelect={handleCoordinatesSelect}
+        />
+      )}
 
+      <div className="absolute top-20 right-4">
+        <SaveButton 
+          onSave={handleSave} 
+          saveStatus={saveStatus} 
+        />
+      </div>
+
+      {/* Button To Display Popup */}
+      <div className={styles.locationContainer}>
+        <button 
+        onClick={() => setShowMapPopup(true)}
+        className={styles.coordinateButton}
+        >
+          Set Your Location
+        </button>
+        
+        {coordinates && (
+          <span className={styles.coordinatesDisplay}>
+            {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
+            </span>
+          )}
+        </div>
   </div>
   );
 };
 
 export default Profile;
+  

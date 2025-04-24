@@ -1,189 +1,196 @@
 "use client";
+
 import { useState } from 'react';
 import { db } from '../../config/firebase';
-import { addDoc, collection, Timestamp, updateDoc, getDoc, doc, arrayUnion, GeoPoint } from 'firebase/firestore';
+import { 
+    addDoc, 
+    collection, 
+    Timestamp, 
+    updateDoc, 
+    getDoc, 
+    doc, 
+    arrayUnion, 
+    GeoPoint 
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import * as styles from '../styles/eventFormStyle';
 import { Event } from '../types/eventTypes';
 
+import { MapPopup } from '../components/mappopup';
+
 const EventForm = ({
-  onSave, 
-  onDelete 
+    onSave, 
+    onDelete 
 }: { 
-  onSave: (event: Event) => void; 
-  onDelete: () => void 
+    onSave: (event: Event) => void; 
+    onDelete: () => void 
 }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dateTime, setDateTime] = useState<Timestamp>(Timestamp.now());
-  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
-  const [error, setError] = useState<string | null>(null);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [dateTime, setDateTime] = useState<Timestamp>(Timestamp.now());
+    const [showMapPopup, setShowMapPopup] = useState(false);
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+    const [error, setError] = useState<string | null>(null);
 
-  const auth = getAuth();
+    const auth = getAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    
-    const user = auth.currentUser;
-    if (!user) {
-      setError("You must be logged in to create an event.");
-      return;
-    }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
 
-    try {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      
-      if (!userDocSnap.exists()) {
-        setError("User profile not found.");
-        return;
-      }
+        const user = auth.currentUser;
+        if (!user) {
+            setError("You must be logged in to create an event.");
+            return;
+        }
 
-      const userData = userDocSnap.data();
-      const newEvent = {
-        title,
-        description,
-        coordinates: new GeoPoint(coordinates.lat, coordinates.lng),
-        dateTime,
-        totalInterested: 1,
-        createdBy: userData.displayName || user.uid,
-        eventType: "own" as const, 
-        attendees: [user.uid]
-      };
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
 
-      const eventRef = await addDoc(collection(db, "events"), newEvent);
-      await updateDoc(userDocRef, {
-        createdEvents: arrayUnion(eventRef.id)
-      });
+            if (!userDocSnap.exists()) {
+                setError("User profile not found.");
+                return;
+            }
 
-      // Create the Event object with correct types
-      const savedEvent: Event = {
-        id: eventRef.id,
-        title,
-        description,
-        coordinates, // Original {lat, lng} format
-        dateTime,
-        totalInterested: 0,
-        createdBy: userData.displayName || user.uid,
-        eventType: "own"
-      };
+            const userData = userDocSnap.data();
+            const newEvent = {
+                title,
+                description,
+                coordinates: new GeoPoint(coordinates.lat, coordinates.lng),
+                dateTime,
+                totalInterested: 1,
+                createdBy: userData.displayName || user.uid,
+                eventType: "own" as const, 
+                attendees: [user.uid]
+            };
 
-      onSave(savedEvent);
-      
-      setTitle("");
-      setDescription("");
-      setDateTime(Timestamp.now());
-      setCoordinates({ lat: 0, lng: 0 });
-      
-      
-    } catch  {
-      alert("Event creation failed");
+            const eventRef = await addDoc(collection(db, "events"), newEvent);
+            await updateDoc(userDocRef, {
+                createdEvents: arrayUnion(eventRef.id)
+            });
 
-      //takes title, description, weirdly takes dateTime
+            // Create the Event object with correct types
+            const savedEvent: Event = {
+                id: eventRef.id,
+                title,
+                description,
+                coordinates, // Original {lat, lng} format
+                dateTime,
+                totalInterested: 0,
+                createdBy: userData.displayName || user.uid,
+                eventType: "own"
+            };
 
-    }
-  };
+            onSave(savedEvent);
 
-  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(e.target.value);
-    if (!isNaN(date.getTime())) {
-      setDateTime(Timestamp.fromDate(date));
-    }
-  };
+            setTitle("");
+            setDescription("");
+            setDateTime(Timestamp.now());
+            setCoordinates({ lat: 0, lng: 0 });
 
-  const handleCoordinateChange = (field: 'lat' | 'lng', value: string) => {
-    const parsedValue = parseFloat(value);
-    if (!isNaN(parsedValue)) {
-      setCoordinates(prev => ({
-        ...prev,
-        [field]: parsedValue
-      }));
-    }
-  };
+        } catch {
+            alert("Event creation failed");
+        }
+    };
 
-  return (
-    <div style={styles.overlay}>
-      <form onSubmit={handleSubmit} style={styles.container}>
-        <div style={styles.Titleheader}>Create New Event</div>
-        
-        {error && (
-          <div style={{ color: 'red', margin: '10px 0' }}>
-            {error}
-          </div>
-        )}
+    const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const date = new Date(e.target.value);
+        if (!isNaN(date.getTime())) {
+            setDateTime(Timestamp.fromDate(date));
+        }
+    };
 
-        <div style={styles.inputContainers}>
-          <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={styles.input}
-            required
-            minLength={3}
-          />
+    return (
+        <div style={styles.overlay}>
+
+            {/* Shows Event Form */}
+            <form onSubmit={handleSubmit} style={styles.container}>
+                <div style={styles.titleHeader}>Create New Event</div>
+                {error && (
+                    <div style={{ color: 'red', margin: '10px 0' }}>
+                        {error}
+                    </div>
+                )}
+
+                <div style={styles.inputContainers}>
+                    <label>Title</label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        style={styles.input}
+                        required
+                        minLength={3}
+                    />
+                </div>
+
+                <div style={styles.inputContainers}>
+                    <label>Description</label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        style={styles.input}
+                        required
+                        minLength={10}
+                    />
+                </div>
+
+                <div style={styles.inputContainers}>
+                    <label>Date and Time</label>
+                    <input
+                        type="datetime-local"
+                        value={dateTime.toDate().toISOString().slice(0, 16)}
+                        onChange={handleDateTimeChange}
+                        style={styles.input}
+                        required
+                    />
+                </div>
+
+                <div style={styles.inputContainers}>
+                    <label>Select Location (Coordinates)</label>
+                    <button 
+                        type="button" 
+                        className="bg-red-300 rounded-md hover:bg-red-400" 
+                        onClick={() => setShowMapPopup(true)}
+                        style={{ marginBottom: "10px" }}
+                    >
+                        Go to Map
+                    </button>
+                </div>
+
+                {/* Shows Map Popup */}
+                {location && (
+                    <div style={{ 
+                        margin: '10px 0',
+                        padding: '8px',
+                        backgroundColor: '#f0f0f0',
+                        borderRadius: '4px',
+                        fontSize: '14px'
+                    }}>
+                        <label>Selected Location:</label><br />
+                        Latitude: {coordinates.lat.toFixed(5)}<br />
+                        Longitude: {coordinates.lng.toFixed(5)}
+                    </div>
+                )}
+
+                <div style={styles.buttonContainer}>
+                    <button type="submit" style={styles.submitButton}>Submit</button>
+                    <button type="button" onClick={onDelete} style={styles.cancelButton}>Cancel</button>
+                </div>
+            </form>
+
+            {showMapPopup && (
+                <MapPopup 
+                    onClose={() => setShowMapPopup(false)}
+                    onCoordinatesSelect={(lat, lng) => {
+                        setCoordinates({ lat, lng });
+                        setShowMapPopup(false);
+                    }}
+                />
+            )}     
         </div>
-
-        <div style={styles.inputContainers}>
-          <label>Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={styles.input}
-            required
-            minLength={10}
-          />
-        </div>
-
-        <div style={styles.inputContainers}>
-          <label>Date and Time</label>
-          <input
-            type="datetime-local"
-            value={dateTime.toDate().toISOString().slice(0, 16)}
-            onChange={handleDateTimeChange}
-            style={styles.input}
-            required
-          />
-        </div>
-
-        <div style={styles.inputContainers}>
-          <label>Select Location (Coordinates)</label>
-          <input
-            type="number"
-            placeholder="Latitude"
-            value={coordinates.lat || ""}
-            onChange={(e) => handleCoordinateChange('lat', e.target.value)}
-            style={styles.input}
-            required
-            min="-500"
-            max="500"
-            step="0.0001"
-          />
-          <input
-            type="number"
-            placeholder="Longitude"
-            value={coordinates.lng || ""}
-            onChange={(e) => handleCoordinateChange('lng', e.target.value)}
-            style={styles.input}
-            required
-            min="-180"
-            max="180"
-            step="0.0001"
-          />
-        </div>
-
-        <div style={styles.buttonContainer}>
-          <button type="submit" style={styles.submitButton}>
-            Create Event
-          </button>
-          <button type="button" onClick={onDelete} style={styles.cancelButton}>
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default EventForm;

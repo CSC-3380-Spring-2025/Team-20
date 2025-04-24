@@ -16,7 +16,6 @@ export const linkStyle: CSSProperties = {
   fontWeight: 'bold',
 };
 
-
 export const headerStyle: CSSProperties = {
   fontSize: '25px',
   padding: '1px 12px',
@@ -36,7 +35,6 @@ export const interestedStyle: CSSProperties = {
   margin: '5px 0'
 };
 
-
 export const joinButton: CSSProperties = {
   padding: '2px 10px',
   color: 'white',
@@ -45,8 +43,6 @@ export const joinButton: CSSProperties = {
   cursor: 'pointer',
   fontWeight: 'bold',
 };
-
-
 
 export const cancelButton: CSSProperties = {
   padding: '2px 10px',
@@ -76,7 +72,6 @@ export const defaultText: CSSProperties = {
   paddingLeft: '10px',
   marginTop: '8px' 
 }
-
 
 export const eventCard: CSSProperties = {
       backgroundColor: "white",
