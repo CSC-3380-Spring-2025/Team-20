@@ -53,7 +53,7 @@ const Profile: React.FC = () => {
           setDisplayName(docSnap.data().displayName || "");
           setSocialAccounts(docSnap.data().socialAccounts || ["", "", ""]);
           setInterest(docSnap.data().interests || []);
-          setProfileImage(docSnap.data().profileImage || null);
+          setProfileImage(docSnap.data().selectedImage || null);
           setPronouns(docSnap.data().pronouns || "");
 
         } else {
@@ -147,7 +147,7 @@ const Profile: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="text-xl font-bold mb-4">My Created Events</h2>
             {myEvents.length > 0 ? (
-              <EventSection title="" events={myEvents} onDelete={deleteMyEvent} userId={user.uid}/>
+              <EventSection title="" events={myEvents} onDelete={deleteMyEvent} userId={user.uid} />
             ) : (
               <p className="text-gray-500"><span>No Events Created</span></p>
             )}

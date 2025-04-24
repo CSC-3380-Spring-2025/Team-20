@@ -47,8 +47,6 @@ export default function EventSection({ title, events, onDelete, onLeave, onJoin,
                       <span className="font-semibold"> Creator:</span> 
                       {event.createdBy}
                     </p>
-
-
                   </div>
                   
 
