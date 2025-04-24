@@ -102,15 +102,10 @@ export default function useEvents() {
       setPopularEvents(popularEvents);
 
 
-      console.log("Event counts:", {
-        all: events.length,
-        myEvents: myOwnEvents.length,
-        joined: myJoinedEvents.length,
-        popular: popularEvents.length
-      });
+   
   
     } catch {
-      alert("Error fetching events:");
+      console.log("Error fetching events:");
     }
   };
 
@@ -151,7 +146,7 @@ export default function useEvents() {
 
       setMyEvents((prev) => [...prev, uiEvent]);
     } catch {
-      alert("Error adding event");
+      console.log("Error adding event");
     }
   };
 
@@ -170,7 +165,7 @@ export default function useEvents() {
 
       fetchEvents();
     } catch {
-      alert("Error joining event:");
+      console.log("Error joining event:");
     }
   };
 
@@ -186,7 +181,7 @@ export default function useEvents() {
 
       fetchEvents();
     } catch {
-      alert("Error adding event");
+      console.log("Error adding event");
     }
   };
 
@@ -198,7 +193,7 @@ export default function useEvents() {
       setMyEvents((prev) => prev.filter((event) => event.id !== eventId));
       fetchEvents();
     } catch {
-      alert("Error adding event");
+      console.log("Error adding event");
     }
   };
 

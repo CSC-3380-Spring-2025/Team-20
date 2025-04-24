@@ -62,7 +62,7 @@ const Profile: React.FC = () => {
           });
         }
       } catch {
-        alert("Error getting data");
+       console.log("error getting data");
       }
     };
 
@@ -84,7 +84,7 @@ const Profile: React.FC = () => {
       setSaveStatus({ success: true, error: false });
     } catch (error) {
       setSaveStatus({ success: false, error: true });
-      alert(error);
+      console.log(error);
     }
   };
 
