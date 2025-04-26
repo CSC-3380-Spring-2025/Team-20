@@ -19,7 +19,7 @@ export default function Friends() {
 
             <button className="bg-purple-400 border-r-5 font-serif" onClick={() => router.push("/auth/login")}
             >
-                Return to Login
+                Return to Login please return. 
             </button>
 
           </div>
