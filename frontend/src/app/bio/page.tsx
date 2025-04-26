@@ -60,8 +60,6 @@ const Profile: React.FC = () => {
         }
 
         setHasFetchedData(true); 
-
-        
       } catch {
         console.log("Error getting data");
       }
