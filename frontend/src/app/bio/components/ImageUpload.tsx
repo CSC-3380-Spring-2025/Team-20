@@ -14,7 +14,12 @@ const images = [
   "/assets/human-head.png",
   "/assets/jack-o'lantern.png",
   "/assets/pouting-face.png",
-  "/assets/shocked.png"
+  "/assets/shocked.png",
+  "/assets/cat1.png",
+  "/assets/cat2.png",
+  "/assets/lamb.png",
+  "/assets/owl.png",
+  "/assets/turtle.png",
 ];
 
 
@@ -43,8 +48,8 @@ const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({ profileImage,se
     //add to the database. use try catch for all db stuff!
     try {
       await setDoc(doc(db, "users", userId), { selectedImage: imageUrl }, { merge: true });
-    } catch (error) {
-      console.error("Error saving selected image:", error);
+    } catch  {
+      console.error("Error saving selected image:");
       alert("Failed to save selected image.");
     }
   };
