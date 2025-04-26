@@ -2,7 +2,7 @@
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
-
+//check 12 
 import FriendCard from "./components/friendcard";
 export default function Friends() {
 
