@@ -150,23 +150,26 @@ const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer) => {
     const map = (layer as any)._map;
     const center = (layer as L.Polygon).getBounds().getCenter();
     L.popup({
-      maxWidth: 400,
-      maxHeight: 700,
+      maxWidth: 600,
+      maxHeight: 800,
     })
       .setLatLng(center)
       .setContent(`
-        <div style="
+       <div style="
             position: relative; 
-            max-width: 400px; 
-            max-height: 700px; 
-            justify-content: center;">
-          <h3>${name}</h3>
-          <img src="${description}" alt="${name}" style="width: 50%; height: 80%; object-fit: contain;"/>
-          </div>
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            max-width: 600px;
+            max-height: 800px;">
+          <h3 style="text-align: center; font-size: 1.5rem; margin-bottom: 20px;">${name}</h3>
+          <img src="${description}" alt="${name}" style="width: 90%; height: auto; object-fit: contain;"/>
         </div>
       `)
       .openOn(map);
   });
 };
+
 
 export { buildingBlueprint, buildingPopup };
