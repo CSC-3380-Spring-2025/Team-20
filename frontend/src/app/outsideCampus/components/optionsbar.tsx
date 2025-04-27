@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { } from "react";
 import { useHover } from "../hooks/usehover";
 import * as styles from "../styles/ocstyle";
 
@@ -12,7 +12,7 @@ export type InterestsIndex = typeof options[number];
 
 // Create a HoverButton component to handle the hover functionality
 const HoverButton = (
-  { option, isEventSelected, onClick }:
+  { option,  onClick }:
   { option: string, isEventSelected:boolean; onClick: () => void }
 ) => {
   const [Hovered, listener] = useHover();
