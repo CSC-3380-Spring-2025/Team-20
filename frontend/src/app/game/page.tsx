@@ -231,10 +231,10 @@ import { SetStateAction, useState } from "react";
    };  
  
    return (
-     <div className="max-w-3xl mx-auto mt-10 p-8 bg-gradient-to-br from-yellow-300 via-pink-400 to-indigo-500 rounded-3xl shadow-2xl text-center border-4 border-dashed border-indigo-300">
-       <div className="flex justify-center items-center mb-6">
+<div className="max-w-3xl mx-auto mt-10 p-8 bg-gradient-to-br from-purple-800 via-purple-600 to-yellow-400 rounded-3xl shadow-2xl text-center border-4 border-dashed border-yellow-200">
+<div className="flex justify-center items-center mb-6">
          <span className="text-5xl mr-2">🧠</span>
-         <h1 className="text-4xl font-extrabold text-indigo-800">20 Questions: Get To Know Me!</h1>
+         <h1 className="text-4xl font-extrabold text-yellow-400">20 Questions: Get To Know Me!</h1>
        </div>
  
        {!currentQuestion && !isGameOver ? (
@@ -267,7 +267,7 @@ import { SetStateAction, useState } from "react";
  
            <div className="grid grid-cols-2 gap-6 mb-6">
              <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-indigo-200">
-               <p className="mb-4 font-bold text-indigo-700 text-lg">👤 Player 1</p>
+               <p className="mb-4 font-bold text-yellow-400 text-lg">👤 Player 1</p>
                <div className="space-x-3">
                  <button
                    onClick={() => submitAnswer(1, "Yes")}
@@ -293,7 +293,7 @@ import { SetStateAction, useState } from "react";
              </div>
  
              <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-200">
-               <p className="mb-4 font-bold text-pink-700 text-lg">👤 Player 2</p>
+               <p className="mb-4 font-bold text-purple-800 text-lg">👤 Player 2</p>
                <div className="space-x-3">
                  <button
                    onClick={() => submitAnswer(2, "Yes")}
@@ -332,7 +332,7 @@ import { SetStateAction, useState } from "react";
  
        {history.length > 0 && (
          <div className="mt-10 text-left">
-           <h2 className="text-2xl font-bold mb-4 text-indigo-900">📜 Question History</h2>
+           <h2 className="text-2xl font-bold mb-4 text-yellow-400">📜 Question History</h2>
            <div className="max-h-64 overflow-y-auto space-y-3 pr-2">
              {history.map((entry, i) => (
                <div
