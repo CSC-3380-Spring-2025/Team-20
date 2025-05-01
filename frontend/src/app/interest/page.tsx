@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { db } from '@/config/firebase';
 import {doc, setDoc, getDoc} from "firebase/firestore";
 
-//INTERNAL IMPORTS
 import Header from "../components/header";
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -28,6 +27,10 @@ export default function Interest() {
     Travel: "/assets/travel.jpg",
     Sports: "/assets/sports.jpg",
     Fashion: "/assets/fashion.jpg",
+    Technology: "/assets/technology.jpg",     
+    Education: "/assets/education.jpg",   
+    Wellness: "/assets/wellness.jpg", 
+    Entertainment: "/assets/entertainment.jpg"
   };
   
   
