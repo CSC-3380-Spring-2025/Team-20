@@ -1,113 +1,127 @@
-"use client"
+"use client";
 
+//hooks
 import { useState, useEffect } from "react";
 
+//auth and routing
 import { useAuth } from "@/context/auth-context";
-
 import { useRouter } from "next/navigation";
 
-import {collection, getDocs, doc, getDoc} from "firebase/firestore";
+
+//firestore
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
-import FriendCard,{FriendData} from "@/friends/components/friendcard";
+//components
+import FriendCard, { FriendData } from "@/friends/components/friendcard";
 import Header from "@/components/header";
 
 export default function FriendsTest() {
+  const { user } = useAuth();
+  const router = useRouter();
 
-    const {user} = useAuth();
-    const router = useRouter();
-
-    const[people, setPeople] = useState<FriendData[]>([]);
-
-    useEffect(() => {
-        if (!user) return;
+  const [pendingFriends, setPendingFriends] = useState<FriendData[]>([]);
+  const [acceptedFriends, setAcceptedFriends] = useState<FriendData[]>([]);
 
 
-        //handeling fetching the pending users added
-        //handle to take snapchot, store friends data and then traverse
-        //must handle case to see if they are already in the db as a friend, then ignore (condition to continue)
-        //then check if it's pending or accepted
+  useEffect(() => {
+    if (!user) return;
 
-        //case 1. filter all the friends you are currently having
-        //case 2. check whether they are existing people
-        //case 3. check if that existing person if the card is a pending or accepted friend
-        //case 4. if all other cases, push into list
-
-        const fetchFriendRequests = async () => {
-            const userSnap = await getDocs(collection(db, "users"));
-            const requestQueue: FriendData[] = [];
+    
+    const fetchFriendData = async () => {
 
 
-      
-            for (const userDoc of userSnap.docs) {
-              
-      
-              
-              if (userDoc.id=== user.uid){
-                continue;
-              } 
-      
-              const docRef = doc(db, "users", userDoc.id, "friends", user.uid);
-              const docSnap = await getDoc(docRef);
-      
-              if (docSnap.exists()) {
-                const friendData = docSnap.data();
-      
-                
-                if (friendData.userid?.id === user.uid) {
-                  const newFriendData = userDoc.data();
-      
+      try {
 
-                  requestQueue.push({
-                    name: newFriendData.name,
-                    interests: newFriendData.interests,
-                    id: userDoc.id,
-                  });
 
-                }
-              }
+        const userSnap = await getDocs(collection(db, "users"));
+
+        const pendingList: FriendData[] = [];
+        const acceptedList: FriendData[] = [];
+
+        for (const userDoc of userSnap.docs) {
+
+
+          if (userDoc.id === user.uid) continue;
+
+          const docRef = doc(db, "users", userDoc.id, "friends", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+
+            const friendData = docSnap.data();
+            const newFriendData = userDoc.data();
+
+            if (friendData.status === "pending") {
+
+              pendingList.push({ 
+                name: newFriendData.displayName || "No Name added yet",
+                interests: newFriendData.interests || [],
+                 id: userDoc.id,
+              });
+
+            } else if (friendData.status === "accepted") {
+
+              acceptedList.push({
+                name: newFriendData.displayName || "No Name added yet",
+                interests: newFriendData.interests || [],
+                id: userDoc.id,
+              });
+
             }
-      
-            setPeople(requestQueue);
-          };
-      
-          fetchFriendRequests();
-        }, [user]);
+          }
+        }
 
+        setPendingFriends(pendingList);
+        setAcceptedFriends(acceptedList);
 
+      } catch {
+        console.error("Error fetching friends:");
+      }
+    };
 
-    //always have this on every page.tsx!!! we want no one to bypass this
-    if (!user) {
-        return (
-          <div>
-            <h2>You need to log in to access this page.</h2>
-            <button
-              className="bg-purple-400 border-r-5 font-serif"
-              onClick={() => router.push("/auth/login")}
-            >
-              Return to Login
-            </button>
-          </div>
-        );
-    }
+    fetchFriendData();
+  }, [user]);
 
+  const removeFromList = (id: string) => {
+    setPendingFriends((prevState) => 
+      prevState.filter((friend) => 
+        friend.id !== id
+    ));
+  };
+
+ 
+  if (!user) {
     return (
-        <>
-        <Header/>
-
-
-        <div>
-            <h1 className="text-xl p-4 bg-slate-600">Friend Requests</h1>
-
-            <FriendCard friends={people} currentUserId={user.uid}/>
-
-
-
-        </div>
-        </>
-
-
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-purple-400 border-r-5 font-serif"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
     );
+  }
+
+  return (
+    <>
+      <Header />
+      <div>
+
+        <h1 className="text-xl p-4 bg-slate-600">Friend Requests</h1>
+
+
+        <FriendCard friends={pendingFriends} currentUserId={user.uid} removeFromList={removeFromList} isFriendTest={true} />
+
+
+        <h1 className="text-xl p-4 bg-slate-600 mt-8">Friends</h1>
+
+        <FriendCard friends={acceptedFriends} currentUserId={user.uid} removeFromList={() => {}} isFriendTest={true}/>
+
+
+      </div>
+    </>
+  );
 }
-
-
