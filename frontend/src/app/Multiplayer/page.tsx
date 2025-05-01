@@ -1,189 +1,194 @@
 'use client';
- 
-import { SetStateAction, useState } from "react";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: "IzaSyD3N-Uf-5qqe2VnZSmwIeU6EqbXoe2s61o",
-  authDomain: "unifriend-sync-b73cd.firebaseapp.com",
-  projectId: "unifriend-sync-b73cd",
-  storageBucket: "unifriend-sync-b73cd.firebasestorage.app",
-  messagingSenderId: "469605020222",
-  appId: "1:469605020222:web:1cabb4ade236c4efbc576f"
+import { useEffect, useState } from 'react';
+import { db } from '../../firebase';
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot
+} from 'firebase/firestore';
+import { useSession } from 'next-auth/react';
+
+const MultiplayerGame = ({ gameId }) => {
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id || 'anonymous';
+
+  const [game, setGame] = useState(null);
+  const [questionInput, setQuestionInput] = useState('');
+  const [userRole, setUserRole] = useState(null);
+  const [opponentContact, setOpponentContact] = useState(null);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'games', gameId), async (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setGame(data);
+
+        if (!userRole) {
+          const role =
+            data.players.player1 === currentUserId
+              ? 'player1'
+              : data.players.player2 === currentUserId
+              ? 'player2'
+              : null;
+          setUserRole(role);
+        }
+
+        if (data.contactShare?.player1 && data.contactShare?.player2) {
+          const opponentId =
+            userRole === 'player1'
+              ? data.players.player2
+              : data.players.player1;
+          const userSnap = await getDoc(doc(db, 'users', opponentId));
+          setOpponentContact(userSnap.exists() ? userSnap.data().socialAccounts : []);
+        }
+      }
+    });
+
+    return () => unsub();
+  }, [gameId, userRole]);
+
+  if (!game || !userRole) return <div className="text-white p-6">Loading...</div>;
+
+  const submitQuestion = async () => {
+    if (!questionInput.trim()) return;
+    await updateDoc(doc(db, 'games', gameId), {
+      currentQuestion: questionInput.trim(),
+      answers: { player1: null, player2: null }
+    });
+    setQuestionInput('');
+  };
+
+  const submitAnswer = async (answer) => {
+    await updateDoc(doc(db, 'games', gameId), {
+      [`answers.${userRole}`]: answer
+    });
+  };
+
+  const proceedToNextQuestion = async () => {
+    const newHistory = [
+      ...game.history,
+      {
+        question: game.currentQuestion,
+        player1: game.answers.player1,
+        player2: game.answers.player2
+      }
+    ];
+
+    const isLast = newHistory.length >= 20;
+    await updateDoc(doc(db, 'games', gameId), {
+      history: newHistory,
+      currentQuestion: null,
+      answers: { player1: null, player2: null },
+      gameOver: isLast
+    });
+  };
+
+  const sendContactRequest = async () => {
+    await updateDoc(doc(db, 'games', gameId), {
+      [`contactShare.${userRole}`]: true
+    });
+  };
+
+  const bothAnswered = game.answers.player1 && game.answers.player2;
+
+  return (
+    <div className="p-8 max-w-3xl mx-auto text-white">
+      <h1 className="text-3xl font-bold mb-4">🎮 Multiplayer 20 Questions</h1>
+
+      {!game.currentQuestion && !game.gameOver && game.currentTurn === userRole && (
+        <div>
+          <input
+            type="text"
+            value={questionInput}
+            onChange={(e) => setQuestionInput(e.target.value)}
+            placeholder="Type your yes/no question..."
+            className="text-black p-2 rounded w-full mb-4"
+          />
+          <button
+            onClick={submitQuestion}
+            className="bg-blue-600 px-4 py-2 rounded"
+          >
+            Ask
+          </button>
+        </div>
+      )}
+
+      {game.currentQuestion && !game.gameOver && (
+        <div>
+          <p className="mb-4 text-xl">❓ {game.currentQuestion}</p>
+          {!game.answers[userRole] && (
+            <div className="space-x-4">
+              <button
+                onClick={() => submitAnswer('Yes')}
+                className="bg-green-500 px-4 py-2 rounded"
+              >
+                ✅ Yes
+              </button>
+              <button
+                onClick={() => submitAnswer('No')}
+                className="bg-red-500 px-4 py-2 rounded"
+              >
+                ❌ No
+              </button>
+            </div>
+          )}
+
+          {bothAnswered && game.currentTurn === userRole && (
+            <button
+              onClick={proceedToNextQuestion}
+              className="bg-yellow-500 px-4 py-2 rounded mt-4"
+            >
+              🔄 Next Question
+            </button>
+          )}
+        </div>
+      )}
+
+      {game.gameOver && (
+        <div className="mt-6">
+          <h2 className="text-2xl font-bold mb-2">🎉 Game Over!</h2>
+          <p className="mb-4">Would you like to share contact info with your opponent?</p>
+          {!game.contactShare?.[userRole] ? (
+            <button
+              onClick={sendContactRequest}
+              className="bg-purple-600 px-4 py-2 rounded"
+            >
+              🤝 Yes, share my contact info
+            </button>
+          ) : (
+            <p>✅ You've opted in. Waiting for the other player...</p>
+          )}
+
+          {opponentContact && (
+            <div className="mt-4 bg-white text-black p-4 rounded">
+              <h3 className="text-lg font-semibold mb-2">📇 Their contact info:</h3>
+              <ul className="list-disc list-inside">
+                {opponentContact.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="mt-8">
+        <h3 className="text-xl font-bold mb-2">📜 History</h3>
+        <ul className="space-y-2">
+          {game.history.map((entry, i) => (
+            <li
+              key={i}
+              className="bg-white text-black p-2 rounded"
+            >
+              Q{i + 1}: {entry.question} — 👤 P1: {entry.player1} | 👤 P2: {entry.player2}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-
- 
- const TwoPlayerYesNoGame = () => {
-   const [questionInput, setQuestionInput] = useState("");
-   const [currentQuestion, setCurrentQuestion] = useState(null);
-   const [player1Answer, setPlayer1Answer] = useState(null);
-   const [player2Answer, setPlayer2Answer] = useState(null);
-   const [history, setHistory] = useState([]);
-   const isGameOver = history.length >= 20;
- 
-   const submitQuestion = () => {
-     if (questionInput.trim() === "") return;
-     if (history.length >= 20) {
-       alert("You've reached the maximum of 20 questions!");
-       return;
-     }
-     setCurrentQuestion(questionInput.trim());
-     setQuestionInput("");
-     setPlayer1Answer(null);
-     setPlayer2Answer(null);
-   };  
- 
-   const submitAnswer = (player: number, answer: string | SetStateAction<null>) => {
-     if (player === 1) setPlayer1Answer(answer);
-     if (player === 2) setPlayer2Answer(answer);
-   };
- 
-   const nextQuestion = () => {
-     if (currentQuestion && player1Answer && player2Answer) {
-       setHistory([
-         ...history,
-         {
-           question: currentQuestion,
-           player1: player1Answer,
-           player2: player2Answer,
-         },
-       ]);
-     }
-   
-     setCurrentQuestion(null);
-     setPlayer1Answer(null);
-     setPlayer2Answer(null);
-   };  
- 
-   return (
-<div className="max-w-3xl mx-auto mt-10 p-8 bg-gradient-to-br from-purple-800 via-purple-600 to-yellow-400 rounded-3xl shadow-2xl text-center border-4 border-dashed border-yellow-200">
-<div className="flex justify-center items-center mb-6">
-         <span className="text-5xl mr-2">🧠</span>
-         <h1 className="text-4xl font-extrabold text-yellow-400">20 Questions: Get To Know Me!</h1>
-       </div>
- 
-       {!currentQuestion && !isGameOver ? (
-   <>
-     <input
-       type="text"
-       value={questionInput}
-       onChange={(e) => setQuestionInput(e.target.value)}
-       placeholder="Type your yes/no question here..."
-       className="w-full px-4 py-2 border rounded mb-4 text-black"
-     />
-     <button
-       onClick={submitQuestion}
-       className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-     >
-             🎤 Ask Question
-           </button>
-         </>
-       ) : (
-         <>
-           {history.length === 19 && currentQuestion && (
-   <div className="mb-4 text-xl font-bold text-red-600 animate-pulse">
-     🎯 This is the LAST question!
-   </div>
- )}
- 
- <p className="text-lg mb-6 text-gray-800 font-medium">
-   Question: <span className="italic">{currentQuestion}</span>
- </p>
- 
-           <div className="grid grid-cols-2 gap-6 mb-6">
-             <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-indigo-200">
-               <p className="mb-4 font-bold text-yellow-400 text-lg">👤 Player 1</p>
-               <div className="space-x-3">
-                 <button
-                   onClick={() => submitAnswer(1, "Yes")}
-                   className={`px-6 py-2 rounded-full font-bold text-lg ${
-                     player1Answer === "Yes"
-                       ? "bg-green-500 text-white scale-105"
-                       : "bg-green-100 text-green-800 hover:bg-green-200"
-                   }`}
-                 >
-                   ✅ Yes
-                 </button>
-                 <button
-                   onClick={() => submitAnswer(1, "No")}
-                   className={`px-6 py-2 rounded-full font-bold text-lg ${
-                     player1Answer === "No"
-                       ? "bg-red-500 text-white scale-105"
-                       : "bg-red-100 text-red-800 hover:bg-red-200"
-                   }`}
-                 >
-                   ❌ No
-                 </button>
-               </div>
-             </div>
- 
-             <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-200">
-               <p className="mb-4 font-bold text-purple-800 text-lg">👤 Player 2</p>
-               <div className="space-x-3">
-                 <button
-                   onClick={() => submitAnswer(2, "Yes")}
-                   className={`px-6 py-2 rounded-full font-bold text-lg ${
-                     player2Answer === "Yes"
-                       ? "bg-green-500 text-white scale-105"
-                       : "bg-green-100 text-green-800 hover:bg-green-200"
-                   }`}
-                 >
-                   ✅ Yes
-                 </button>
-                 <button
-                   onClick={() => submitAnswer(2, "No")}
-                   className={`px-6 py-2 rounded-full font-bold text-lg ${
-                     player2Answer === "No"
-                       ? "bg-red-500 text-white scale-105"
-                       : "bg-red-100 text-red-800 hover:bg-red-200"
-                   }`}
-                 >
-                   ❌ No
-                 </button>
-               </div>
-             </div>
-           </div>
- 
-           {player1Answer && player2Answer && (
-             <button
-               onClick={nextQuestion}
-               className="bg-yellow-400 text-indigo-900 font-extrabold px-6 py-3 rounded-full hover:bg-yellow-500 transition shadow-lg"
-             >
-               🔄 Next Question
-             </button>
-           )}
-         </>
-       )}
- 
-       {history.length > 0 && (
-         <div className="mt-10 text-left">
-           <h2 className="text-2xl font-bold mb-4 text-yellow-400">📜 Question History</h2>
-           <div className="max-h-64 overflow-y-auto space-y-3 pr-2">
-             {history.map((entry, i) => (
-               <div
-                 key={i}
-                 className="bg-white p-4 rounded-xl shadow border-l-8 border-purple-300"
-               >
-                 <p className="font-semibold text-gray-800">
-                   Q{i + 1}: <span className="italic">{entry.question}</span>
-                 </p>
-                 <p className="mt-1 text-sm text-gray-700">
-                   👤 <strong>Player 1:</strong>{" "}
-                   <span className="text-green-700">{entry.player1}</span> | 👤{" "}
-                   <strong>Player 2:</strong>{" "}
-                   <span className="text-pink-700">{entry.player2}</span>
-                 </p>
-               </div>
-             ))}
-           </div>
-         </div>
-       )}
-     </div>
-   );
- };
- 
- export default TwoPlayerYesNoGame;
+export default MultiplayerGame;

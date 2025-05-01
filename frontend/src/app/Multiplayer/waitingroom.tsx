@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db } from '@/firebase';
-import {
+import { db } from '../../firebase';
   collection,
   setDoc,
   doc,
@@ -68,7 +67,11 @@ const WaitingRoom = ({ currentUserId }) => {
         player1: '',
         player2: '',
       },
-    });
+      contactShare: {
+        player1: false,
+        player2: false,
+      }
+    });    
 
     await deleteDoc(doc(db, 'waitingRoom', currentUserId));
     await deleteDoc(doc(db, 'waitingRoom', otherPlayerId));
