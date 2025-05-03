@@ -1,248 +1,428 @@
 "use client";
 
-import "leaflet/dist/leaflet.css"; 
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import L from "leaflet";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+import Header from "../components/header";
+import HomeButton from "../map/components/homebutton";
+import SearchBar from "../map/components/searchbar";
+import { LocationContent } from "../map/components/popups";
+import styles from "../map/styles/map.module.css";
 
-//INTERNAL IMPORT
-import Header from "../header";
-import { HomeButton, SearchBar } from "./components/mapcontrols";
-import styles from "../../../styles/map.module.css";
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
 
-export default function Map() {
-  const position: [number, number] = [30.413436, -91.180144];
-  const [pin, setPin] = useState<{ x: number; y: number; coords: [number, number] }[]>([]);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
 
-  //Used to Customize Building Shape
-  interface BuildingShape {
-    name: string;
-    description: string;
-  }
+const GeoJSON = dynamic(
+  () => import("react-leaflet").then((mod) => mod.GeoJSON),
+  { ssr: false }
+);
 
-  //Coordinates Starts from the Top Left to the Right, then Right Down to Left
-  //Buildings On Campus
-  const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [-91.180616, 30.414672],[-91.179581, 30.414708],[-91.179552, 30.414168],[-91.180589, 30.414131],[-91.180616, 30.414672]
-            ]
-          ]
-        },
-        "properties": {
-          "name": "Middleton Library",
-          "description": "https://lib.lsu.edu/sites/default/files/2024-01/ccs_coffee_first_floor.jpg"
-        }
-      },
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [-91.179668, 30.413655],[-91.179463, 30.41366],[-91.179453, 30.41344],[-91.179151, 30.413451],[-91.179145, 30.413354],
-              [-91.178929, 30.413363],[-91.178936, 30.41346],[-91.178638, 30.413474],[-91.178631, 30.413348],[-91.178681, 30.413347],
-              [-91.178665, 30.413035],[-91.178611, 30.413037],[-91.178606, 30.412924],[-91.178901, 30.412913],[-91.178906, 30.413015],
-              [-91.179125, 30.413006],[-91.179119, 30.412904],[-91.179426, 30.412893],[-91.179416, 30.412674],[-91.17962, 30.412666],
-              [-91.179668, 30.413655]
-            ]
-          ]
-        },
-        "properties": {
-          "name": "Coates Hall",
-          "description": "https://www.hollyandsmith.com/wp-content/uploads/portfolio/LSU%20Coates%20Hall%20Interior%20Renovation_x_Floorplan%20-%20LSU%20Coates%20Hall-scaled.jpg"
-        }
-      },
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [-91.180341, 30.408311],[-91.180253, 30.408287],[-91.180248, 30.408301],[-91.180193, 30.408285],[-91.180175, 30.408336],
-              [-91.180045, 30.408301],[-91.180064, 30.408251],[-91.179974, 30.408226],[-91.179963, 30.408253], [-91.179928, 30.408244],
-              [-91.179876, 30.408386],[-91.179075, 30.408171],
+const LayerGroup = dynamic(
+  () => import("react-leaflet").then((mod) => mod.LayerGroup),
+  { ssr: false }
+);
 
-              [-91.179118, 30.408053],[-91.179068, 30.408039],[-91.179094, 30.407964],[-91.179109, 30.407968],[-91.179223, 30.407655],
-              [-91.179197, 30.407647],[-91.179269, 30.407453],[-91.179301, 30.40746],[-91.179309, 30.407433],[-91.179281, 30.407424],
-              [-91.179350, 30.407231],[-91.179378, 30.40724],[-91.179388, 30.407212],[-91.17936, 30.407203],[-91.179429, 30.407012],
+const ZoomControl = dynamic(
+    () => import("react-leaflet").then((mod) => mod.ZoomControl),
+    { ssr: false }
+  );  
 
-              [-91.179672, 30.407078],[-91.179655, 30.407131],[-91.179683, 30.407138],[-91.179688, 30.407124],[-91.180057, 30.407223],
-              [-91.180052, 30.40724],[-91.180084, 30.407249],[-91.180106, 30.407191],[-91.180347, 30.407258],[-91.180341, 30.407275],
-              [-91.180406, 30.407292],[-91.180416, 30.407262],[-91.180455, 30.407272],[-91.180465, 30.407244],[-91.180658, 30.407298],
-
-              [-91.180649, 30.407322],[-91.180667, 30.407327],[-91.180636, 30.407410],[-91.180666, 30.407418],[-91.180607, 30.407576],
-              [-91.180671, 30.407595],[-91.180577, 30.407849],[-91.180516, 30.407832],[-91.180341, 30.408311]
-            ]
-          ]
-        },
-        "properties": {
-          "name": "Patrick F. Taylor Hall",
-          "description": "https://marvel-b1-cdn.bc0a.com/f00000000290274/www.lsu.edu/eng/images/selfguidedtourmp3sandimages/tour-final-version-1.jpg"
-        }
-      }
-    ]
+const CustomGeoJSON = ({ data, visible, onEachFeature }: { 
+    data: any, 
+    visible: boolean, 
+    onEachFeature: (feature: any, layer: any) => void 
+  }) => {
+    if (!visible) return null;
+    
+    return (
+      <GeoJSON
+        data={data}
+        pointToLayer={(feature, latlng) => {
+          const L = require("leaflet");
+          return L.marker(latlng, {
+            icon: L.icon({
+              iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+              shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41],
+            }),
+          });
+        }}
+        onEachFeature={onEachFeature}
+      />
+    );
   };
 
-  //Toggle Popup & Pin, Save, Reset, & Share Buttons Styling/Position
-  const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer) => {
-    layer.on('click', () => {
-      const { name, description } = feature.properties as BuildingShape;
-      const map = (layer as any)._map;
-      const center = (layer as L.Polygon).getBounds().getCenter();
-      L.popup({
-        maxWidth: 2200,
-        maxHeight: 4400,
-      })
-      .setLatLng(center)
-      .setContent(`
-        <div style="position: relative; width: 500px; height: 300px;">
-          <h3>${name}</h3>
-          <p>Drag your pin to where you are!</p>
-          <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;"/>
-          <div id="pin" 
-            style="
-            position: absolute; 
-            width: 12px; 
-            height: 12px; 
-            top: 80px; 
-            left: 450px;
-            background-color: red; 
-            border-radius: 100%; 
-            cursor: grab;
-          " draggable="true">
-          </div>
+interface Category {
+  id: string;
+  name: string;
+  subcategories?: Category[];
+}
 
-          <div style="margin-top: 20px;">
-            <button id="saveButton" 
-            style="padding: 10px 20px; 
-            background-color: green; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer;
-            ">Save
-            </button>
+export default function Map() {
+  const position: [number, number] = [30.40797, -91.18549]; //Center of Map
+  const [visibleCategories, setVisibleCategories] = useState<Record<string, boolean>>({});
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
-            <button id="resetButton" 
-            style="padding: 10px 20px; 
-            background-color: red; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            ">Reset
-            </button>
-          
-            <button id="Share" 
-            style="padding: 10px 20px; 
-            background-color: blue; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            ">Share
-            </button>
-          </div>
+  const categories: Category[] = [
+    {
+      id: "buildings",
+      name: "Buildings",
+      subcategories: [
+        {
+          id: "academic&research",
+          name: "Academic & Research",
+          subcategories: [
+            { id: "agriculturalchemistry", name: "Agricultural Chemistry Building" },
+            { id: "agriculturemetal", name: "Agriculture Metal Building" },
+            { id: "allen", name: "Allen Hall" },
+            { id: "animal&foodscience", name: "Animal and Food Science Laboratory" },
+            { id: "art", name: "Art Building" },
+            { id: "atkinson", name: "Atkinson Hall" },
+            { id: "audubon", name: "Audubon Hall" },
+            { id: "audubonsugar", name: "Audubon Sugar Factory" },
+            { id: "barnesogden", name: "Barnes Ogden Art & Design Complex" },
+            { id: "businessedu", name: "Business Education Complex" },
+            { id: "CAMD", name: "CAMD" },
+            { id: "wetlandres", name: "Center for Wetland Resources" },
+            { id: "coates", name: "Charles E. Coates Hall" },
+            { id: "chemistry&materials", name: "Chemistry & Materials Building" },
+          ],
+        },
+        { id: "greek", name: "Greek Houses" },
+        { id: "libraries", 
+          name: "Libraries",
+          subcategories: [
+            { id: "hillmemorial", name: "Hill Memorial Library" },
+            { id: "middleton", name: "LSU Library" },
+            { id: "virginiarice", name: "Virginia Rice Williams Hall" },
+          ]
+        },
+        { id: "operational", name: "Operational Offices" },
+        { id: "worship", name: "Places of Worship" }
+      ],
+    },
+    {
+      id: "event&performance",
+      name: "Event & Performance Venues",
+      subcategories: [
+        { id: "imobrown", name: "Imo Brown Complex" },
+        { id: "livestockexhibit", name: "Livestock Exhibit Building" },
+        { id: "cookconference", name: "Lod and Carole Cook Conference Center" },
+        { id: "cookalumni", name: "Lod Cook Alumni Center" },
+        { id: "union", name: "LSU Student Union" },
+        { id: "minifarm", name: "Mini Farm" },
+        { id: "music&dramaticarts", name: "Music & Dramatic Arts Building" },
+        { id: "music", name: "Music Building" },
+        { id: "nelsonmem", name: "Nelson Memorial" },
+        { id: "parkercol", name: "Parker Coliseum" },
+        { id: "reillytheatre", name: "Reilly Theatre" },
+        { id: "shawcenter", name: "Shaw Center for the Arts" },
+        { id: "uniontheatre", name: "Union Theater" },
+      ],
+    },
+    {
+      id: "athletics",
+      name: "LSU Athletics",
+      subcategories: [
+        { id: "baseball", 
+          name: "Baseball",
+          subcategories: [
+            { id: "alexbox", name: "Alex Box Stadium" }
+          ] 
+        },
+        { id: "football", 
+          name: "Football",
+          subcategories: [
+            { id: "tigerstadium", name: "Tiger Stadium" }
+          ] 
+         },
+        { id: "golf", 
+          name: "Golf",
+          subcategories: [
+            { id: "golfclubhouse", name: "Golf Team Clubhouse" },
+            { id: "univeristyclub", name: "University Club" }
+          ]
+        },
+        { id: "gymnastics",
+          name: "Gymnastics",
+          subcategories: [
+            { id: "gymnasticscenter", name: "Gymnastics Training Center" },
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+        { id: "mensbasketball", 
+          name: "Men's Basketball",
+          subcategories: [
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+        { id: "soccer",
+          name: "Soccer",
+          subcategories: [
+            { id: "soccerstadium", name: "LSU Soccer Stadium" }
+          ]
+        },
+        { id: "softball",
+          name: "Softball",
+          subcategories: [
+            { id: "tigerpark", name: "Tiger Park" }
+          ]
+        },
+        { id: "swimming",
+          name: "Swimming & Diving",
+          subcategories: [
+            { id: "natatorium", name: "Natatorium" }
+          ]
+        },
+        { id: "tennis", 
+          name: "Tennis",
+          subcategories: [
+            { id: "tenniscomplex", name: "LSU Tennis Complex" }
+          ]
+        },
+        { id: "track&field", 
+          name: "Track & Field",
+          subcategories: [
+            { id: "trackstadium", name: "Bernie Moore Track & Field Stadium" },
+            { id: "carlmaddox", name: "Carl Maddox Field House" }
+          ]
+        },
+        { id: "volleyball", 
+          name: "Volleyball",
+          subcategories: [
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+        { id: "womensbasketball", 
+          name: "Women's Basketball",
+          subcategories: [
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+      ],
+    },
+    { id: "museums&art", 
+      name: "Museums & Art Galleries" },
+    {
+      id: "eating",
+      name: "Places to Eat",
+      subcategories: [
+        { id: "dining", 
+          name: "Dining Halls",
+          subcategories: [
+            { id: "459", name: "459 Commons" },
+            { id: "five", name: "The Five" },
+          ] 
+        },
+        { id: "fastcasual", 
+          name: "Fast Casual",
+          subcategories: [
+            { id: "459", name: "459 Commons" },
+            { id: "businessed", name: "Business Education Complex" },
+            { id: "dairy", name: "Dairy Store" },
+            { id: "foster", name: "Foster Hall" },
+            { id: "law", name: "Law Center" },
+            { id: "bookstore", name: "LSU Bookstore" },
+            { id: "library", name: "LSU Library" },
+            { id: "union", name: "LSU Student Union" },
+            { id: "panera", name: "Panera Bread" },
+            { id: "five", name: "The Five" },
+            { id: "veterinarymedicine", name: "Veterinary Medicine" },
+            { id: "retail", name: "Retail Center at Nicholson Gatway"},
+          ]
+        },
+        { id: "fine", 
+          name: "Fine Dining",
+          subcategories: [
+            { id: "union", name: "LSU Student Union" },
+            { id: "club", name: "The Club at Union Square" },
+          ] 
+        },
+      ],
+    },
+    {
+      id: "pointsofinterest",
+      name: "Points of Interest",
+      subcategories: [
+        { id: "burdenmuseum", name: "Burden Museum & Gardens" },
+        { id: "dairy", name: "Dairy Store" },
+        { id: "greektheatre", name: "Greek Theatre" },
+        { id: "hilltop", name: "Hilltop Arboretum" },
+        { id: "indian", name: "Indian Mounds (LSU Campus Mounds)" },
+        { id: "sportshop", name: "LSU Sport Shop"},
+        { id: "union", name: "LSU Student Union"},
+        { id: "warmemorial", name: "LSU War Memorial"},
+        { id: "oakgrove", name: "Memorial Oak Grove"},
+        { id: "memorialtower", name: "Memorial Tower"},
+        { id: "mikethetiger", name: "Mike the Tiger's Habitat"},
+        { id: "mississippiriver", name: "Mississippi River Levee Bike Path and Overlook"},
+        { id: "paradeground", name: "Parade Ground"},
+        { id: "t-33", name: "T-33 Aircraft"},
+        { id: "quad", name: "The Quad"},
+        { id: "lakes", name: "University Lakes"},
+        { id: "visitorreg", name: "Visitor Registration & Information Center"},
+        { id: "dodsonauditorium", name: "William R. Dodson Auditorium"},
+        { id: "retail", name: "Retail Center at Nicholson Gatway"}
+      ],
+    },
+  ];
 
-        </div>
-      `)
-      .openOn(map);
-
-  //Drag & Drop Pin
-  const pin = document.getElementById("pin");
+  //Toggle Category Visibility & Children
+  const toggleCategory = (categoryId: string, checked?: boolean) => {
+    const newChecked = checked !== undefined ? checked : !visibleCategories[categoryId];
     
-  pin?.addEventListener("dragstart", (e) => {
-    e.dataTransfer?.setData("text/plain", "");
-  });
+    setVisibleCategories(prev => ({
+      ...prev,
+      [categoryId]: newChecked
+    }));
     
-    document.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-
-    document.addEventListener("drop", (e) => {
-      e.preventDefault();
-        
-      const rect = pin!.parentElement!.getBoundingClientRect();
-     
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      
-      pin!.style.left = `${offsetX - 10}px`;
-      pin!.style.top = `${offsetY - 10}px`;
-
-      const x = (offsetX / rect.width) * 100;
-      const y = (offsetY / rect.height) * 100;
-
-  //Save Pin Position
-  const saveButton = document.getElementById("saveButton");
-    if (saveButton) {
-      saveButton.addEventListener('click', () => {
-        if (pin) {
-          const pinLeft = pin.style.left;
-          const pinTop = pin.style.top;
-        
-          localStorage.setItem(`pin-${name}`, JSON.stringify({ left: pinLeft, top: pinTop }));
+    //Find Category in Tree
+    const findAndUpdateChildren = (categories: Category[]): boolean => {
+      for (const category of categories) {
+        if (category.id === categoryId) {
+          updateAllChildren(category, newChecked);
+          return true;
         }
+        if (category.subcategories) {
+          const found = findAndUpdateChildren(category.subcategories);
+          if (found) return true;
+        }
+      }
+      return false;
+    };
+    
+    findAndUpdateChildren(categories);
+  };
+
+  //Update All Children in Category
+  const updateAllChildren = (category: Category, checked: boolean) => {
+    if (category.subcategories) {
+      category.subcategories.forEach(subcategory => {
+        setVisibleCategories(prev => ({
+          ...prev,
+          [subcategory.id]: checked
+        }));
+        updateAllChildren(subcategory, checked);
       });
     }
+  };
+
+  //Toggle Category Expansion
+  const toggleExpand = (categoryId: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  };
+
+  //Recursive Rendering 
+  const CategoryItem = ({ category, level = 0 }: { category: Category, level?: number }) => {
+    const hasChildren = !!category.subcategories;
+    const isExpanded = expandedCategories[category.id];
+    const isChecked = visibleCategories[category.id] || false;
     
-  //Connect share button to save button; will work on next
-  const shareButton = document.getElementById("Share");
-    
-  //Reset Pin Position
-  const resetButton = document.getElementById("resetButton");
-    if (resetButton) {
-      resetButton.addEventListener('click', () => {
-        if (pin) {
-        pin.style.left = '450px';
-        pin.style.top = '80px';
-      
-        localStorage.removeItem(`pin-${name}`);
-      }
-    });
-  }
-});
-});
-};
+    return (
+      <div className={`${styles.categoryItem} ${level > 0 ? styles.nested : ''}`} style={{ marginLeft: `${level * 15}px` }}>
+        <div className={styles.categoryHeader}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={() => toggleCategory(category.id)}
+              className={styles.checkboxInput}
+            />
+            <span className={styles.checkboxCustom}></span>
+            {category.name}
+          </label>
+          {hasChildren && (
+            <button
+              className={`${styles.expandButton} ${isExpanded ? styles.expanded : ''}`}
+              onClick={() => toggleExpand(category.id)}
+              aria-label={isExpanded ? "Collapse" : "Expand"}
+            >
+              {isExpanded ? "▼" : "▶"}
+            </button>
+          )}
+        </div>
+        
+        {hasChildren && isExpanded && (
+          <div className={styles.subcategories}>
+            {(category.subcategories ?? []).map(subcategory => (
+              <CategoryItem key={subcategory.id} category={subcategory} level={level + 1} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const onEachFeature = (feature: any, layer: any) => {
+    layer.bindPopup(`
+      <h3>${feature.properties.name}</h3>
+      <p>${feature.properties.description}</p>
+      <small>Category: ${feature.properties.category}</small>
+    `);
+  };
 
   return (
-  <div className={styles.headerstyle}>
-    <Header />
-    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={styles.map}>
-      
-      {/* Display Header */}
+    <div className={styles.container}>
       <Header />
-
-      {/* Display Home Button */}
-      <HomeButton center={position} zoom={17} />
-
-      {/* Display Search Bar */}
-      <SearchBar />
-
-      {/* Display Map */}
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      />
-
-      {/* Display Building */}
-      <GeoJSON
-        data={buildingBlueprint}
-        onEachFeature={buildingPopup}
-        style={() => ({
-          color: "purple",
-          weight: 1,
-          fillOpacity: 0.4
-        })}
-      />
-    </MapContainer>
-  </div>
-  );
-}
+      <div className={styles.mapWrapper}>
+        {typeof window !== 'undefined' && (
+          <MapContainer 
+            center={position} 
+            zoom={15} 
+            scrollWheelZoom={true} 
+            className={styles.map}
+            zoomControl={false}
+          >
+            <HomeButton center={position} zoom={15} />
+            <SearchBar />
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <ZoomControl position="bottomright" />
+            <LayerGroup>
+              {LocationContent.features.map((building, index) => {
+                const isVisible = building.properties?.category 
+                  ? visibleCategories[building.properties.category] 
+                  : false;
+                
+                return (
+                  <CustomGeoJSON
+                    key={index}
+                    data={building}
+                    visible={isVisible}
+                    onEachFeature={onEachFeature}
+                  />
+                );
+              })}
+            </LayerGroup>
+          </MapContainer>
+        )}
+        
+        {/* Sidebar Styling */}
+        <div className={styles.sidebar}>
+          <div className={styles.sidebarContent}>
+              <h3 className={styles.categoriesTitle}>Locations</h3>
+              <div className={styles.categoriesList}>
+                {categories.map(category => (
+                  <CategoryItem key={category.id} category={category} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      );
+    }

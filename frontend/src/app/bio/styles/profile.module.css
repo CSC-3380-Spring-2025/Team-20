@@ -1,8 +1,93 @@
 .labelNames {
   font-size: 1rem;
-  margin: 10px 0 10px 0;
+  margin-bottom: 30px;
+  margin-left: 45px; 
+  
+}
+
+.profileContainer {
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profileBubble {
+  width: 120px;
+  height: 120px;
+  margin-left: 4%;
+  border-radius: 50%;
+  background-color: white;
+  overflow: hidden;
+  cursor: pointer;
   display: flex;
-  margin-left: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileImageBubble {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholderBubble {
+  font-size: 48px;
+  color: #e8dfdf;
+}
+
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 1;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.popupContent {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.imageOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  z-index: 300;
+}
+
+.imageThumbnail {
+  width: 70px;
+  height: 70px;
+
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.imageThumbnail:hover {
+  border-color: #4c2898;
+}
+
+.closeButton {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: #4c2898;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .dropzoneContainer {
@@ -15,7 +100,7 @@
   border: 2px solid #c1bfbf;
   border-radius: 50%; 
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: #340c0c;
 }
   
 .profileImageUpload {
@@ -27,11 +112,14 @@
 
 .nameContainer {
   width: 400px;
-  height: 50px;
+  height: auto;
   margin: 10px 0 0 40px;
   border: 2px solid #c1bfbf;
   border-radius: 10px; 
   background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 } 
 
 .nameInput {
@@ -83,17 +171,20 @@
   height: 40px;
   margin: 10px 0 0 40px;
   color: white;
-  background-color: #207523;
+  background-color: #edd03f;
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.3;
+}
+
+.saveButton:hover{
+  background-color: #e2cb56;
 }
 
 .interestsContainer {
-  position: fixed;
-  top: 150px;
-  right: 150px;
+  position: relative; 
   width: 600px;
-  height: 300px;
+  height: auto; 
   padding: 10px;
   border: 2px solid #c1bfbf;
   border-radius: 5px;
@@ -102,9 +193,10 @@
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
+  margin: 20px 0 0 40px;
 }
 
-/* Interest List Is Organized */
+
 .interestsList {
   display: grid;
   grid-template-columns: repeat(4, auto);
@@ -112,7 +204,7 @@
   margin: 10px 0 0 0;
 }
 
-/* Individual Boxes Wrapped Inside The Container */
+
 .interestsBox {
   background-color: #ffffff;
   color: #000000;

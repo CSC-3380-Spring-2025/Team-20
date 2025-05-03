@@ -1,138 +1,169 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/auth-context";
+import { useRouter } from "next/navigation";
+import { db } from "@/config/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import useEvents from "../event/hooks/useEvents";
 
-// INTERNAL IMPORT
-import styles from "../../../styles/profile.module.css";
-import Header from "../header";
+import styles from "../bio/styles/profile.module.css";
+import Header from "../components/header";
+import ProfileImageUpload from "./components/ImageUpload";
+import BioSection from "./components/BioSection";
+import SocialAccountsSection from "./components/SocialAccounts";
+import InterestsSection from "./components/InterestsSection";
+import SaveButton from "./components/SaveButton";
+import EventSection from "../event/components/eventSection";
 
 const Profile: React.FC = () => {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Profile state
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
-  const maxLength = 160; //Maximum length for bio
   const [bio, setBio] = useState("");
   const [socialAccounts, setSocialAccounts] = useState<string[]>(["", "", ""]);
-  const [save, setSave] = useState(false); 
   const [interest, setInterest] = useState<string[]>([]);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    const imageUrl = URL.createObjectURL(file);
-    setProfileImage(imageUrl);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "image/*": [] },
-    multiple: false,
+  const [pronouns, setPronouns] = useState("");
+  const [saveStatus, setSaveStatus] = useState<{ 
+    success: boolean; 
+    error: boolean 
+  }>({ 
+    success: false, 
+    error: false 
   });
 
-  const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setBio(event.target.value);
-  };
+  // Events state
+  const { myEvents, joinedEvents, deleteMyEvent, leaveEvent, fetchEvents } = useEvents();
 
-  const handleSocialAccountChange = (index: number, value: string) => {
-    const newSocialAccounts = [...socialAccounts];
-    newSocialAccounts[index] = value;
-    setSocialAccounts(newSocialAccounts);
-  };
-
-  //Need To Add Functionality To Save Profile Changes
-  const handleSave = () => {
-    setSave(true);
-  };
-
-  //Connects Interest Sections To Profile
+  // Fetch user data and events
   useEffect(() => {
-    const savedInterests = localStorage.getItem("selectedInterests");
-    if (savedInterests) {
-      setInterest(JSON.parse(savedInterests));
+    if (!user) return;
+
+    const getUserData = async () => {
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+
+          setBio(docSnap.data().bio || "");
+          setDisplayName(docSnap.data().displayName || "");
+          setSocialAccounts(docSnap.data().socialAccounts || ["", "", ""]);
+          setInterest(docSnap.data().interests || []);
+          setProfileImage(docSnap.data().selectedImage || null);
+          setPronouns(docSnap.data().pronouns || "");
+
+        } else {
+          await setDoc(docRef, { 
+            bio: "",  socialAccounts: ["", "", ""], interests: [], displayName: "",  profileImage: null, pronouns: ""
+          });
+        }
+      } catch {
+       console.log("error getting data");
+      }
+    };
+
+    getUserData();
+    fetchEvents();
+  }, [user, fetchEvents]);
+
+  const handleSave = async () => {
+    if (!user?.uid) {
+      alert("User not logged in");
+      return;
     }
-  }, []);
+
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        bio, socialAccounts, interests: interest, displayName, profileImage, pronouns
+      }, { merge: true });
+
+      setSaveStatus({ success: true, error: false });
+    } catch (error) {
+      setSaveStatus({ success: false, error: true });
+      console.log(error);
+    }
+  };
+
+  if (!user || !user.uid) {
+    return (
+
+
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-xl font-bold mb-4">You need to log in to access this page.</h2>
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* Header */}
+    <div className="relative pb-12">
       <Header />
-
-      {/* Profile Image Upload */}
-      <div {...getRootProps()} className={styles.dropzoneContainer}>
-        <input {...getInputProps()} />
-        {profileImage ? (
-          <img src={profileImage} alt="Profile" className={styles.profileImageUpload} />
-        ) : isDragActive ? (
-          <p>Drop your Profile Image Here...</p>
-        ) : (
-          <p>Change Profile Image</p>
-        )}
-      </div>
-
-      {/* Display Name */}
-      <label className={styles.labelNames}>Name</label>
-      <div className={styles.nameContainer}>
-        <input
-          className={styles.nameInput}
-          type="text"
-          placeholder="Name"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-        />
-      </div>
-
-      {/* Bio */}
-      <label className={styles.labelNames}>Bio</label>
-      <div className={styles.bioContainer}>
-        <textarea
-          className={styles.bioInput}
-          placeholder="Add a bio"
-          value={bio}
-          onChange={handleBioChange}
-          maxLength={maxLength}
-          rows={6}
-        />
-      </div>
-
-      {/* Social Accounts */}
-      <div>
-        <label className={styles.labelNames}>Social Accounts</label>
-        {socialAccounts.map((account, index) => (
-          <div key={index} className={styles.socialAccountsContainer}>
-            <input
-              className={styles.socialAccountsInput}
-              type="text"
-              placeholder={`Link to social profile ${index + 1}`}
-              value={account}
-              onChange={(e) => handleSocialAccountChange(index, e.target.value)}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Save Button */}
-      <button onClick={handleSave} className={styles.saveButton}>
-        Save
-      </button>
-      {save && (
-        <div>
-          Profile saved!
+      
+      <div className="container mx-auto px-4">
+      
+        <div className="flex justify-between items-start mb-6">
+          <ProfileImageUpload  profileImage={profileImage}  setProfileImage={setProfileImage} userId={user.uid}/>
+          <SaveButton  onSave={handleSave}  saveStatus={saveStatus} />
         </div>
-      )}
 
-      {/* Interests */}
-      <div className={styles.interestsContainer}>
-        <label className="labelNames">Current Interest(s)</label>
-        {interest.length > 0 ? (
-          <ul className={styles.interestsList}>
-            {interest.map((interest, index) => (
-              <li key={index} className={styles.interestsBox}>
-                {interest}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">No interests selected yet.</p>
-        )}
+        <div className="mb-8">
+          <label className={styles.labelNames}>Name</label>
+          <div className={styles.nameContainer}>
+            <input className={styles.nameInput} type="text" placeholder="Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)}/>
+          </div>
+
+          <label className={styles.labelNames}>Pronouns</label>
+          <div className={styles.nameContainer}>
+            <input className={styles.nameInput} type="text" placeholder="e.g she/her"  value={pronouns} onChange={(e) => setPronouns(e.target.value)}/>
+          </div>
+        </div>
+
+        
+        <div className="flex flex-col md:flex-row gap-6 mb-8">
+          <div className="flex-1">
+            <BioSection bio={bio} setBio={setBio} maxLength={160} />
+          </div>
+          <div className="flex-1">
+            <InterestsSection interest={interest}  setInterest={setInterest} userId={user.uid}/>
+          </div>
+        </div>
+
+        
+        <div className="mb-8">
+          <SocialAccountsSection   socialAccounts={socialAccounts} setSocialAccounts={setSocialAccounts} />
+        </div>
+
+       
+        <div className="space-y-8">
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-xl font-bold mb-4">My Created Events</h2>
+            {myEvents.length > 0 ? (
+              <EventSection title="" events={myEvents} onDelete={deleteMyEvent} userId={user.uid} />
+            ) : (
+              <p className="text-gray-500"><span>No Events Created</span></p>
+            )}
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-xl font-bold mb-4">Joined Events</h2>
+            {joinedEvents.length > 0 ? (
+              <EventSection title=""  events={joinedEvents} onLeave={leaveEvent} userId={user.uid}/>
+            ) : (
+              <p className="text-gray-500">No Events Joined</p>
+            )}
+
+            
+          </div>
+        </div>
       </div>
     </div>
   );

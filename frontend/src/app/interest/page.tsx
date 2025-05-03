@@ -2,10 +2,35 @@
 
 import { useState, useEffect } from 'react';
 
+import { db } from '@/config/firebase';
+import {doc, setDoc, getDoc} from "firebase/firestore";
+
 //INTERNAL IMPORTS
-import Header from "../header";
+import Header from "../components/header";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 
 export default function Interest() {
+  const {user} = useAuth();
+  const router = useRouter();
+  
+
+  const categoryImages: Record<string, string>= {
+    Animals: "/assets/animals.jpg",
+    Books: "/assets/books.jpg",
+    Career: "/assets/career.jpg",
+    Colors: "/assets/colors.jpg",
+    Food: "/assets/food.jpg",
+    Hobbies: "/assets/hobbies.jpg",
+    Personality: "/assets/personality.jpg",
+    Movies: "/assets/movies.jpg",
+    Music: "/assets/music.jpg",
+    Travel: "/assets/travel.jpg",
+    Sports: "/assets/sports.jpg",
+    Fashion: "/assets/fashion.jpg",
+  };
+  
+  
   const categories = {
     Hobbies: [
       "Reading", "Gaming", "Painting", "Drawing", "Writing", "Photography", 
@@ -77,17 +102,28 @@ export default function Interest() {
   const [savedMessage, setSavedMessage] = useState("");
   const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
 
-  // Load saved selections and click counts from localStorage on page load
+  //load click counts from localStorage on page load **termparoy must fix
   useEffect(() => {
-    const savedSelections = localStorage.getItem("selectedInterests");
     const savedClicks = localStorage.getItem("clickCounts");
-    if (savedSelections) {
-      setSelectedButtons(JSON.parse(savedSelections));
-    }
     if (savedClicks) {
       setClickCounts(JSON.parse(savedClicks));
     }
   }, []);
+
+//handles redirect if bypassing auth
+  if (!user) {
+    return (
+      <div>
+        <h2>You need to log in to access this page.</h2>
+        <button
+          className="bg-purple-400 border-r-5 font-serif hover:bg-yellow-300"
+          onClick={() => router.push("/auth/login")}
+        >
+          Return to Login
+        </button>
+      </div>
+    );
+  }
 
   // Handle category click to set the selected category
   const handleCategoryClick = (category: keyof typeof categories | null) => {
@@ -97,13 +133,13 @@ export default function Interest() {
 
   // Handle button click to select or deselect a button
   const handleButtonClick = (buttonName: string) => {
-    setSelectedButtons((prevState: any[]) => {
+    setSelectedButtons((prevState) => {
       if (prevState.includes(buttonName)) {
-        return prevState.filter(name => name !== buttonName);
+        return prevState.filter((name) => name !== buttonName);
       } else {
         return prevState.length < MAX_SELECTION ? [...prevState, buttonName] : prevState;
       }
-    });
+  });
 
     setClickCounts((prevCounts) => {
       const newCounts = { ...prevCounts, [buttonName]: (prevCounts[buttonName] || 0) + 1 };
@@ -113,20 +149,42 @@ export default function Interest() {
   };
 
   // Function to handle saving the selected interests to localStorage
-  const handleSave = () => {
-    localStorage.setItem("selectedInterests", JSON.stringify(selectedButtons)); // Save selected interests
-    setSavedMessage("Your interests have been saved!");
+  const handleSave = async () => {
+    if (!user) return;
+
+    try {
+      const userDoc = doc(db, "users", user.uid);
+      const userSnapshot = await getDoc(userDoc);
+  
+      let existingInterests: string[] = [];
+  
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        existingInterests = userData.interests || [];
+      }
+  
+      // Merge existing and newly selected interests
+      const updatedInterests = Array.from(new Set([...existingInterests, ...selectedButtons]));
+  
+      await setDoc(userDoc, { interests: updatedInterests }, { merge: true });
+  
+      setSavedMessage("Your interests have been saved!");
+    } catch (error) {
+      console.error(error);
+      setSavedMessage("Failed to save interests. Try again!");
+    }
+  
     setTimeout(() => {
       setSavedMessage("");
     }, 3000);
   };
 
   const getTrendingItemsByCategory = (category: keyof typeof categories) => {
-      const categoryItems = categories[category] || [];
-    const categoryClickCounts = categoryItems.reduce((acc: { [x: string]: any; }, item: string | number) => {
+    const categoryItems = categories[category] || [];
+    const categoryClickCounts = categoryItems.reduce((acc: Record<string, number>, item: string) => {
       acc[item] = clickCounts[item] || 0;
       return acc;
-    }, {});
+  }, {});
 
     return Object.entries(categoryClickCounts)
       .sort((a, b) => b[1] - a[1])
@@ -154,104 +212,139 @@ export default function Interest() {
   return (
     <div>
       <Header />
-      <div className="min-h-screen flex flex-col bg-blue-300 pb-36">
-      <div className="flex justify-start px-8 mt-4">
-        <button
-          onClick={handleSave}
-          className="bg-green-500 text-white px-8 py-2 rounded-md shadow-lg hover:bg-green-700"
-        >
-          Save Interests
-        </button>
-      </div>
-
-      {savedMessage && (
-        <div className="flex justify-center mt-2">
-          <div className="text-green-600 font-semibold">{savedMessage}</div>
-        </div>
-      )}
-
-      <div className="flex justify-end px-8 mt-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-64 p-2 border border-gray-400 rounded-lg shadow-md text-gray-900"
-        />
-      </div>
-
-      {selectedCategory && (
-        <div className="flex justify-start px-8 mt-4">
+      <div className="min-h-screen flex flex-col bg-white pb-36">
+        {/* Search & Save */}
+        <div className="flex flex-col sm:flex-row justify-between items-center px-8 mt-4 gap-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full sm:w-2/3 p-2 border border-gray-400 rounded-lg shadow-md text-gray-900"
+          />
           <button
-            onClick={() => setSelectedCategory(null)}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-800"
+            onClick={handleSave}
+            className="bg-yellow-300 text-black px-6 py-2 rounded-md shadow-lg hover:bg-yellow-400"
           >
-            ← Back to Categories
+            Save Interests
           </button>
         </div>
-      )}
-
-      <main className="flex-grow flex justify-center items-center">
-        <div className="grid grid-cols-3 gap-4">
-          {/* Trending Items moved to the top */}
-          {trendingItems.length > 0 && (
-            trendingItems.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => handleButtonClick(item)}
-                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
-                  selectedButtons.includes(item) ? "bg-blue-700" : ""
-                }`}
-              >
-                {item}
-                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  Trending
-                </span>
-              </button>
-            ))
-          )}
-
-          {/* Other Category Buttons */}
-          {filteredButtons.length > 0 ? (
-            filteredButtons.map(({ name, category }, index) => (
-              <button
-                key={index}
-                onClick={() => selectedCategory ? handleButtonClick(name) : handleCategoryClick(name as keyof typeof categories)}
-                className={`relative bg-blue-500 text-white px-12 py-10 text-lg rounded-md shadow-lg hover:bg-blue-700 ${
-                  selectedButtons.includes(name) ? "bg-blue-700" : ""
-                }`}
-              >
-                {name} {category && <span className="text-sm text-gray-300">({category})</span>}
-              </button>
-            ))
-          ) : (
-            <p className="text-white text-lg col-span-3">No results found</p>
-          )}
-        </div>
-      </main>
-
-      <footer className="fixed bottom-0 left-0 w-full bg-blue-600 text-white py-3 shadow-md">
-        <div className="text-center">
-          {selectedButtons.length >= MAX_SELECTION && (
-            <p className="text-red-400 font-semibold">You can only select up to {MAX_SELECTION} interests.</p>
-          )}
-
-          <p className="text-lg">Selected Interests ({selectedButtons.length}/{MAX_SELECTION}):</p>
-
-          <div className="flex flex-wrap justify-center mt-2 px-4">
-            {selectedButtons.map((item, index) => (
-              <span
-                key={index}
-                className="bg-white text-blue-600 px-3 py-1 rounded-full mx-1 my-1 cursor-pointer"
-                onClick={() => handleButtonClick(item)}
-              >
-                {item} <span className="ml-2 text-red-500">x</span>
-              </span>
-            ))}
+  
+        {/* Saved message */}
+        {savedMessage && (
+          <div className="flex justify-center mt-2">
+            <div className="text-green-600 font-semibold">{savedMessage}</div>
           </div>
-        </div>
-      </footer>
+        )}
+  
+        {/* Back to Categories */}
+        {selectedCategory && (
+          <div className="flex justify-start px-8 mt-4">
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className="text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200"
+            >
+              ← Back to Categories
+            </button>
+          </div>
+        )}
+  
+        {/* Main Grid */}
+        <main className="flex-grow flex justify-center items-center px-4 sm:px-8 mt-8">
+          <div className="grid gap-4 w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+            {/* Trending Items */}
+            {trendingItems.length > 0 &&
+              trendingItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleButtonClick(item)}
+                  className={`relative px-12 py-10 text-bold rounded-md shadow-lg ${
+                    selectedButtons.includes(item)
+                      ? "bg-purple-200 text-black"
+                      : "bg-white text-black hover:bg-gray-200"
+                  }`}
+                >
+                  {item}
+                  <span className="absolute top-2 right-2 bg-red-400 text-white text-xs px-2 py-1 rounded-full">
+                    🔥Trending
+                  </span>
+                </button>
+              ))}
+  
+            {/* Category / Interest Buttons */}
+            {filteredButtons.length > 0 ? (
+              filteredButtons.map(({ name, category }, index) => {
+                const isCategory = category === null;
+                const backgroundImage = isCategory
+                  ? categoryImages[name as keyof typeof categoryImages]
+                  : "";
+  
+                return (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      isCategory
+                        ? handleCategoryClick(name as keyof typeof categories)
+                        : handleButtonClick(name)
+                    }
+                    className={`relative px-6 py-20 text-lg font-semibold rounded-xl shadow-lg transition-all duration-200 ${
+                      selectedButtons.includes(name) && !isCategory
+                        ? "bg-yellow-100 text-black"
+                        : isCategory 
+                          ? "bg-white bg-opacity-50 hover:bg-opacity-60 text-black-300 mb-2" 
+                          : "bg-white text-black hover:bg-gray-200" 
+                    }`}
+                    style={
+                      isCategory
+                        ? {
+                            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url(${backgroundImage})`,
+                            opacity: "revert",
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                            textShadow: "1px 1px 4px rgba(0,0,0,0.2)",
+                            marginBottom: "1px"
+                          }
+                        : {}
+                    }
+                  >
+                    {name}
+                    {category && (
+                      <span className="text-sm text-gray-300"> ({category})</span>
+                    )}
+                  </button>
+                );
+              })
+            ) : (
+              <p className="text-gray-700 text-lg col-span-3">No results found</p>
+            )}
+          </div>
+        </main>
+  
+        {/* Footer with Selected Interests */}
+        <footer className="fixed bottom-0 left-0 w-full bg-purple-800 text-white py-3 shadow-md">
+          <div className="text-center">
+            {selectedButtons.length >= MAX_SELECTION && (
+              <p className="text-red-400 font-semibold">
+                You can only select up to {MAX_SELECTION} interests.
+              </p>
+            )}
+            <p className="text-lg">
+              Selected Interests ({selectedButtons.length}/{MAX_SELECTION}):
+            </p>
+            <div className="flex flex-wrap justify-center mt-2 px-4">
+              {selectedButtons.map((item, index) => (
+                <span
+                  key={index}
+                  className="bg-white text-purple-600 px-3 py-1 rounded-full mx-1 my-1 cursor-pointer"
+                  onClick={() => handleButtonClick(item)}
+                >
+                  {item} <span className="ml-2 text-red-500">x</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
-    );
+  );
 }
