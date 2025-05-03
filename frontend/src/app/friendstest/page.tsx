@@ -3,125 +3,147 @@
 //hooks
 import { useState, useEffect } from "react";
 
-//auth and routing
+//auth and router
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 
-
-//firestore
+//db
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 //components
-import FriendCard, { FriendData } from "@/friends/components/friendcard";
+import FriendCard from "@/friends/components/friendcard";
 import Header from "@/components/header";
+import { FriendData } from "@/friends/type/friendtype";
+
+
 
 export default function FriendsTest() {
-  const { user } = useAuth();
-  const router = useRouter();
+
 
   const [pendingFriends, setPendingFriends] = useState<FriendData[]>([]);
   const [acceptedFriends, setAcceptedFriends] = useState<FriendData[]>([]);
+
+  const { user } = useAuth();
+  const router = useRouter();
+
 
 
   useEffect(() => {
     if (!user) return;
 
-    
     const fetchFriendData = async () => {
-
-
+     
       try {
 
 
         const userSnap = await getDocs(collection(db, "users"));
 
-        const pendingList: FriendData[] = [];
-        const acceptedList: FriendData[] = [];
+        const pending: FriendData[] = [];
+        const accepted: FriendData[] = [];
+
 
         for (const userDoc of userSnap.docs) {
 
 
-          if (userDoc.id === user.uid) continue;
+          if ( userDoc.id === user.uid) continue;
 
-          const docRef = doc(db, "users", userDoc.id, "friends", user.uid);
+          const docRef = doc(db, "users",  userDoc.id, "friends", user.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
 
-            const friendData = docSnap.data();
-            const newFriendData = userDoc.data();
+            const friend  = docSnap.data();
+            const newPerson = userDoc.data();
 
-            if (friendData.status === "pending") {
+            const friendEntry: FriendData = {
+              name: newPerson.displayName || "No Name added yet",
+              interests: newPerson.interests || [],
+              id:  userDoc.id,
+              profileImage: newPerson.profileImage || "",
+              status: friend.status,
+              initiator: newPerson.initiatorId,
+            };
 
-              pendingList.push({ 
-                name: newFriendData.displayName || "No Name added yet",
-                interests: newFriendData.interests || [],
-                 id: userDoc.id,
-              });
 
-            } else if (friendData.status === "accepted") {
+            if (friend.status === "pending") {
 
-              acceptedList.push({
-                name: newFriendData.displayName || "No Name added yet",
-                interests: newFriendData.interests || [],
-                id: userDoc.id,
-              });
+              pending.push(friendEntry);
+
+            } else if (friend.status === "accepted") {
+
+              accepted.push(friendEntry);
 
             }
+
           }
         }
 
-        setPendingFriends(pendingList);
-        setAcceptedFriends(acceptedList);
+        setPendingFriends(pending);
+        setAcceptedFriends(accepted);
 
-      } catch {
-        console.error("Error fetching friends:");
+
+      } catch  {
+        console.log("FRIENDTEST: USEEFFECT");
       }
     };
 
     fetchFriendData();
+
+    
   }, [user]);
 
   const removeFromList = (id: string) => {
-    setPendingFriends((prevState) => 
-      prevState.filter((friend) => 
-        friend.id !== id
-    ));
+    setPendingFriends((prev) => prev.filter((friend) => friend.id !== id));
   };
 
- 
+
   if (!user) {
     return (
       <div>
         <h2>You need to log in to access this page.</h2>
-        <button
-          className="bg-purple-400 border-r-5 font-serif"
-          onClick={() => router.push("/auth/login")}
-        >
+        <button className="transition duration-200 bg-purple-400 border-r-5 font-serif" onClick={() => router.push("/auth/login")} >
           Return to Login
         </button>
       </div>
     );
   }
 
+
   return (
     <>
       <Header />
-      <div>
 
-        <h1 className="text-xl p-4 bg-slate-600">Friend Requests</h1>
-
-
-        <FriendCard friends={pendingFriends} currentUserId={user.uid} removeFromList={removeFromList} isFriendTest={true} />
+      <div className="p-4">
 
 
-        <h1 className="text-xl p-4 bg-slate-600 mt-8">Friends</h1>
 
-        <FriendCard friends={acceptedFriends} currentUserId={user.uid} removeFromList={() => {}} isFriendTest={true}/>
+      <div className="flex justify-between items-center mb-6">
 
+        <h2 className="text-4xl font-extrabold text-gray-800"> Friends</h2>  
+
+        <button  className="p-3 bg-yellow-400 rounded-md text-md font-bold shadow hover:bg-yellow-300 transition duration-200" onClick={() => router.push("/friends")}>
+          Back to Friends
+        </button>
+
+
+
+      
+    
+      
+        </div>
+
+        <FriendCard friends={acceptedFriends} UserId={user.uid}  removeFromList={() => {}} isFriend={true}/>
+
+        <h1 className=" text-xl font-bold p-4 bg-gray-300 rounded mt-10">Requests</h1>
+        <FriendCard friends={pendingFriends}  UserId={user.uid}  removeFromList={removeFromList} isFriend={true}/>
+        
+         
+       
 
       </div>
-    </>
-  );
+</>
+);
 }
+          
+          

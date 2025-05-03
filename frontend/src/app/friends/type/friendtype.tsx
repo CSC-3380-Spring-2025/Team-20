@@ -1,7 +1,8 @@
-import { DocumentReference } from "firebase/firestore";
-
-export interface Friend {
-  userid: DocumentReference;
-  status: string;     
-  name: string;       
-}
+export type FriendData = {
+  name: "User";
+  interests: string[];
+  id: string;
+  profileImage: string;
+  status?: string;
+  initiator?: string;
+};
