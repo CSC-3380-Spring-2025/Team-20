@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-
+import { getFirestore } from "firebase/firestore";
+import {doc, setDoc} from "firebase/firestore";
 
 //ayo quit looking 
 const firebaseConfig = {
@@ -14,23 +15,38 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
 
+const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export const signInWithGoogle = async () => {
+const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
-    return result.user;
+    const user = result.user;
+
+    //make sure to have function here
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid, 
+      name: user.displayName,
+      email: user.email,
+    });
+
+    return user; 
+
+
   } catch (error) {
     console.error("Google Sign-In Error:", error);
   }
 };
 
-export const logout = async () => {
+const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
     console.error("Sign Out Error:", error);
   }
 };
+
+const db = getFirestore(app);
+
+export {auth, db, signInWithGoogle, logout};
