@@ -1,23 +1,22 @@
 import "leaflet/dist/leaflet.css"; 
 import style from "../../styles/home.module.css";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import L from "leaflet";
 import { useState } from "react";
 
-import HomeButton from "./mapcontrols";
+import { HomeButton, SearchBar } from "./mapcontrols";
 
 export default function Map() {
-  const position: [number, number] = [30.412035, -91.183815];
+  const position: [number, number] = [30.413436, -91.180144];
   const [pin, setPin] = useState<{ x: number; y: number; coords: [number, number] }[]>([]);
 
-  // Used to Customize Building Shape
+  //Used to Customize Building Shape
   interface BuildingShape {
     name: string;
     description: string;
   }
 
   //Coordinates Starts from the Top Left to the Right, then Right Down to Left
-
   //Buildings On Campus
   const buildingBlueprint: GeoJSON.FeatureCollection<GeoJSON.Geometry, BuildingShape> = {
     "type": "FeatureCollection",
@@ -87,7 +86,7 @@ export default function Map() {
     ]
   };
 
-  //Toggle Popup
+  //Toggle Popup & Pin, Save, Reset, & Share Buttons Styling/Position
   const buildingPopup = (feature: GeoJSON.Feature, layer: L.Layer) => {
     layer.on('click', () => {
       const { name, description } = feature.properties as BuildingShape;
@@ -103,7 +102,8 @@ export default function Map() {
           <h3>${name}</h3>
           <p>Drag your pin to where you are!</p>
           <img src="${description}" alt="${name}" style="width: 80%; height: 80%; object-fit: contain;"/>
-          <div id="pin" style="
+          <div id="pin" 
+            style="
             position: absolute; 
             width: 12px; 
             height: 12px; 
@@ -114,43 +114,108 @@ export default function Map() {
             cursor: grab;
           " draggable="true">
           </div>
+
+          <div style="margin-top: 20px;">
+            <button id="saveButton" 
+            style="padding: 10px 20px; 
+            background-color: green; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            ">Save
+            </button>
+
+            <button id="resetButton" 
+            style="padding: 10px 20px; 
+            background-color: red; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            ">Reset
+            </button>
+          
+            <button id="Share" 
+            style="padding: 10px 20px; 
+            background-color: blue; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            ">Share
+            </button>
+          </div>
+
         </div>
       `)
       .openOn(map);
 
-      //Draggable Pin
-      const pin = document.getElementById("pin");
-      pin?.addEventListener("dragstart", (e) => {
-        e.dataTransfer?.setData("text/plain", "");
-      });
-      document.addEventListener("dragover", (e) => {
-        e.preventDefault();
-      });
-      document.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const rect = pin!.parentElement!.getBoundingClientRect();
-        const offsetX = e.clientX - rect.left;
-        const offsetY = e.clientY - rect.top;
+  //Drag & Drop Pin
+  const pin = document.getElementById("pin");
     
-    pin!.style.left = `${offsetX - 10}px`;
-    pin!.style.top = `${offsetY - 10}px`;
-
-    const x = (offsetX / rect.width) * 100;
-    const y = (offsetY / rect.height) * 100;
-
-    setPin((prevPin) => [
-      ...prevPin,
-      { x, y, coords: [center.lat, center.lng] }
-    ]);
+  pin?.addEventListener("dragstart", (e) => {
+    e.dataTransfer?.setData("text/plain", "");
   });
-  });
-  };
+    
+    document.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    document.addEventListener("drop", (e) => {
+      e.preventDefault();
+        
+      const rect = pin!.parentElement!.getBoundingClientRect();
+     
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      
+      pin!.style.left = `${offsetX - 10}px`;
+      pin!.style.top = `${offsetY - 10}px`;
+
+      const x = (offsetX / rect.width) * 100;
+      const y = (offsetY / rect.height) * 100;
+
+  //Save Pin Position
+  const saveButton = document.getElementById("saveButton");
+    if (saveButton) {
+      saveButton.addEventListener('click', () => {
+        if (pin) {
+          const pinLeft = pin.style.left;
+          const pinTop = pin.style.top;
+        
+          localStorage.setItem(`pin-${name}`, JSON.stringify({ left: pinLeft, top: pinTop }));
+        }
+      });
+    }
+    
+  //Connect share button to save button; will work on next
+  const shareButton = document.getElementById("Share");
+    
+  //Reset Pin Position
+  const resetButton = document.getElementById("resetButton");
+    if (resetButton) {
+      resetButton.addEventListener('click', () => {
+        if (pin) {
+        pin.style.left = '450px';
+        pin.style.top = '80px';
+      
+        localStorage.removeItem(`pin-${name}`);
+      }
+    });
+  }
+});
+});
+};
 
   return (
-    <MapContainer center={position} zoom={15} scrollWheelZoom={true} className={style.map}>
+    <MapContainer center={position} zoom={17} scrollWheelZoom={true} className={style.map}>
       
       {/* Display Home Button */}
-      <HomeButton center={position} zoom={15} />
+      <HomeButton center={position} zoom={17} />
+
+      {/* Display Search Bar */}
+      <SearchBar />
 
       {/* Display Map */}
       <TileLayer
