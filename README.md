@@ -4,6 +4,9 @@ Project Manager: Lily Yang (lyang33lsu)\
 Communications Lead: Cameron Bly (cbly315)\
 Git Master: Pooja Garlapati (pogarla23)\
 Design Lead: Hermyone Green (VaiGreen)\
+
+Quality Assurance Tester: Lily Yang (lyang33lsu)\
+
 Quality Assurance Tester: Lizeth Rodriguez (liz3throdriguez)
 
 # About Our Software
@@ -14,6 +17,8 @@ An interactive website to connect with LSU people.
 - Android
 - iOS
 - Windows
+
+
   
 # Important Links
 Figma: <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs</a>\
@@ -61,3 +66,5 @@ static void Main(){
 	Console.WriteLine("Hello, World!");
 }
 ```
+
+testing
