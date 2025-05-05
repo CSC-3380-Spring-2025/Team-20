@@ -1,10 +1,14 @@
 # UNI-FriendSync : Team 20
 # Members
-Project Manager: Lizeth Rodriguez (liz3throdriquez)\
+Project Manager: Lily Yang (lyang33lsu)\
 Communications Lead: Cameron Bly (cbly315)\
 Git Master: Pooja Garlapati (pogarla23)\
 Design Lead: Hermyone Green (VaiGreen)\
+
 Quality Assurance Tester: Lily Yang (lyang33lsu)\
+
+Quality Assurance Tester: Lizeth Rodriguez (liz3throdriguez)
+
 
 # About Our Software
 An interactive website to connect with LSU people. 
@@ -21,6 +25,14 @@ Designs: [link]\
 Styles Guide(s): [link]
 
 # How to Run Dev and Test Environment
+1. Download dependencies (make sure to delete .next or node.js folder)
+```
+npm install 
+```
+2. Run Environment. Make sure to use a compatible web browser. 
+```
+npm run dev
+```
 
 ## Dependencies
 - List all dependencies here  -- provide a gitignore
