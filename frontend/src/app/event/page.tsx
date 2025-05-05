@@ -8,7 +8,7 @@ import { Timestamp } from "firebase/firestore";
 import Header from "../components/header";
 import DivContainer from "../components/containers";
 import EventSection from "./components/eventSection";
-import EventForm from "./components/eventForm";
+import EventForm from "./components/EventForm";
 import useEvents from "./hooks/useEvents";
 
 // Styles
