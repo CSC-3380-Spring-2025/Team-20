@@ -9,7 +9,7 @@ interface PopupProps {
   isPopupOpen: boolean;
   onPopupClose: () => void;
   friendInfo: FriendData | null;
-  events: Event[]; // ✅ Use actual type
+  events: Event[]; 
 }
 
 const MiniProfile: React.FC<PopupProps> = ({ friendInfo, events, isPopupOpen, onPopupClose }) => {
