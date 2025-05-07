@@ -83,6 +83,9 @@ function Header() {
           <button onClick={() => router.push("/bio")} style={styles.mobileLink} aria-label="Go to My Page">
             Profile
           </button>
+          <button onClick={() => router.push("/friends")} style={styles.mobileLink} aria-label="Go to Find Friends Page">
+            Find Friends
+          </button>
           <button onClick={() => router.push("/event")} style={styles.mobileLink} aria-label="Go to Event Page">
             Events
           </button>
@@ -95,9 +98,7 @@ function Header() {
           <button onClick={() => router.push("/game")} style={styles.mobileLink} aria-label="Go to Game Page">
             Game
           </button>
-          <button onClick={() => router.push("/settings")} style={styles.mobileLink} aria-label="Go to Settings Page">
-            Settings
-          </button>
+          
         </div>
       )}
     </header>

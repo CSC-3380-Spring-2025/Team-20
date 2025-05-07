@@ -18,6 +18,8 @@ An interactive website to connect with LSU people.
 - Android
 - iOS
 - Windows
+
+
   
 # Important Links
 Figma: <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs</a>\
@@ -65,3 +67,5 @@ static void Main(){
 	Console.WriteLine("Hello, World!");
 }
 ```
+
+testing
