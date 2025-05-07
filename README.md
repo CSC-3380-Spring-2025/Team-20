@@ -1,24 +1,24 @@
 # UNI-FriendSync : Team 20
-# Members
+## Members
 Project Manager: Lily Yang (lyang33lsu)\
 Communications Lead: Cameron Bly (cbly315)\
 Git Master: Pooja Garlapati (pogarla23)\
 Design Lead: Hermyone Green (VaiGreen)\
 Quality Assurance Tester: Lizeth Rodriguez (liz3throdriguez)
 
-# About Our Software
+## About Our Software
 An interactive website to connect with LSU people. 
 
 ## Platforms Tested on
 - MacOS
 - Windows
   
-# Important Links
+## Important Links
 <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs Figma</a>\
-Kanban Board: <a href= "https://originatelearnexecute.atlassian.net/jira/software/projects/MBA/boards/1">Our KanBan Board</a>\
+<a href= "https://originatelearnexecute.atlassian.net/jira/software/projects/MBA/boards/1">Our KanBan Board</a>
 
 
-# How to Run Dev and Test Environments
+## How to Run Dev and Test Environments
 1. Clone the Repository
 ```
 git clone https://github.com/CSC-3380-Spring-2025/Team-20.git
@@ -72,8 +72,6 @@ npm run dev
 -  typescript-eslint@8.29.1
 -  typescript@5.8.3
 
-## Commands
-Describe how the commands and process to launch the project on the main branch in such a way that anyone working on the project knows how to check the affects of any code they add.
 ### Start development server
 ```
 npm run dev
