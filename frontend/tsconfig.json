@@ -19,9 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/app/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/map/mapcomponents/mapdisplay.tsx", "src/app/header.tsx", "src/app/map/mapcomponents/mapcontrols.tsx", "src/app/map/searchbar.tsx"],
   "exclude": ["node_modules"]
 }
