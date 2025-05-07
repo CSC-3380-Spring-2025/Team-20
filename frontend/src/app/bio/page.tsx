@@ -95,40 +95,40 @@ const Profile: React.FC = () => {
       <Header />
       
       <div className="container mx-auto px-4 pt-6">
-        {/* Profile Image and Save Button */}
-        <div className="flex justify-between items-start mb-8">
-          <ProfileImageUpload profileImage={profileImage} setProfileImage={setProfileImage} userId={user.uid} />
-          <SaveButton onSave={handleSave} saveStatus={saveStatus} />
-        </div>
+       {/* Profile Image, Name/Pronouns, and Save Button */}
+<div className="flex justify-between items-start mb-8">
+  <div className="flex flex-col md:flex-row items-start gap-6">
+    <ProfileImageUpload profileImage={profileImage} setProfileImage={setProfileImage} userId={user.uid} />
+    
+    <div className="space-y-4">
+      <div>
+        <label className="block text-purple-900 font-medium mb-2">Name</label>
+        <input 
+          className="w-full p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-purple-50"
+          type="text" 
+          placeholder="Name" 
+          value={displayName} 
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
+      </div>
+      
+      <div>
+        <label className="block text-purple-900 font-medium mb-2">Pronouns</label>
+        <input 
+          className="w-full p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-purple-50"
+          type="text" 
+          placeholder="e.g she/her"  
+          value={pronouns} 
+          onChange={(e) => setPronouns(e.target.value)}
+        />
+      </div>
+    </div>
+  </div>
 
-        {/* Name and Pronouns */}
-        <div className="mb-8 bg-white rounded-xl shadow-md p-6 border-0">
-          <div className="mb-4">
-            <label className="block text-purple-900 font-medium mb-2">Name</label>
-            <div className="relative">
-              <input 
-                className="w-full p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                type="text" 
-                placeholder="Name" 
-                value={displayName} 
-                onChange={(e) => setDisplayName(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-purple-900 font-medium mb-2">Pronouns</label>
-            <div className="relative">
-              <input 
-                className="w-full p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                type="text" 
-                placeholder="e.g she/her"  
-                value={pronouns} 
-                onChange={(e) => setPronouns(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+  <div className="absolute top-40 right-4">
+    <SaveButton onSave={handleSave} saveStatus={saveStatus} />
+  </div>
+</div>
 
         {/* Bio and Interests */}
         <div className="flex flex-col md:flex-row gap-6 mb-8">

@@ -98,7 +98,9 @@ function Header() {
           <button onClick={() => router.push("/game")} style={styles.mobileLink} aria-label="Go to Game Page">
             Game
           </button>
-          
+          <button onClick={() => router.push("/reference")} style={styles.mobileLink} aria-label="Go to Reference Page">
+            reference.tsx
+          </button>
         </div>
       )}
     </header>
