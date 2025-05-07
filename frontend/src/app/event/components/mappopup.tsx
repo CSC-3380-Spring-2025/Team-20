@@ -27,11 +27,12 @@ const Popup = dynamic(
 
 interface MapPopupProps {
   onClose: () => void;
-  onCoordinatesSelect: (lat: number, lng: number) => void;
+  onCoordinatesSelect?: (lat: number, lng: number) => void;
   eventId?: string;
   initialCoordinates?: [number, number];
   coordinates?: { lat: number; lng: number };
   zoom?: number;
+  viewOnly?: boolean;
 }
 
 export function MapPopup({
@@ -39,6 +40,7 @@ export function MapPopup({
   onCoordinatesSelect,
   eventId,
   initialCoordinates,
+  viewOnly = false,
 }: MapPopupProps) {
   const defaultPosition: [number, number] = [30.413436, -91.180144];
   const [position, setPosition] = useState<[number, number]>(
@@ -91,7 +93,7 @@ export function MapPopup({
   }, [eventId]);
 
   function DraggableMarker() {
-    const [draggable, setDraggable] = useState(false);
+    const [draggable, setDraggable] = useState(true);
     const markerRef = useRef<any>(null);
 
     const eventHandlers = useMemo(
@@ -121,19 +123,12 @@ export function MapPopup({
         ref={markerRef}
         icon={pinIcon}
       >
-        <Popup minWidth={90}>
-          <span onClick={toggleDraggable}>
-            {draggable
-              ? "Pin is currently draggable"
-              : "Click the popup to make pin draggable"}
-          </span>
-        </Popup>
       </Marker>
     );
   }
 
   const handleSelectCoordinates = () => {
-    onCoordinatesSelect(position[0], position[1]);
+    onCoordinatesSelect?.(position[0], position[1]);
     onClose();
   };
 
@@ -184,7 +179,7 @@ export function MapPopup({
           {isClient && (
             <MapContainer
               center={position}
-              zoom={17}
+              zoom={16}
               scrollWheelZoom={true}
               style={{ height: "100%", width: "100%", zIndex: 1001 }}
             >
@@ -209,6 +204,7 @@ export function MapPopup({
           <div>
             Latitude: {position[0].toFixed(5)}, Longitude: {position[1].toFixed(5)}
           </div>
+          {!viewOnly && onCoordinatesSelect && (
           <button
             onClick={handleSelectCoordinates}
             style={{
@@ -221,6 +217,7 @@ export function MapPopup({
           >
             Select Event Location
           </button>
+          )}
         </div>
       </div>
     </div>

@@ -46,7 +46,7 @@ export const mobileMenu = {
   display: "flex",
   flexDirection:  "column" as 'column',
   alignItems: "flex-start",
-  zIndex: 1000,
+  zIndex: 1001,
 };
 
 export const mobileLink = {

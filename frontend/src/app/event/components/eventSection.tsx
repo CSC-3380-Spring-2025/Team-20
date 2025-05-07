@@ -125,11 +125,12 @@ export default function EventSection({ title, events, onDelete, onLeave, onJoin,
         </div>
       )}
 
-      {showMapPopup && selectedEventCoordinates && (
+      {showMapPopup && selectedEventCoordinates && onJoin && (
         <MapPopup
           onClose={handleCloseMapPopup}
           onCoordinatesSelect={() => {}}
           initialCoordinates={[selectedEventCoordinates.lat, selectedEventCoordinates.lng]}
+          viewOnly={true}
         />
       )}
     </div>
