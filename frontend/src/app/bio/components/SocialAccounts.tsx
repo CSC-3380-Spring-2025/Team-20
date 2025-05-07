@@ -38,3 +38,6 @@ const SocialAccountsSection: React.FC<SocialAccountsSectionProps> = ({
   );
 };
 
+
+
+export default SocialAccountsSection;

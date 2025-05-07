@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/auth-context";
 import { useRouter } from "next/navigation";
@@ -20,55 +21,55 @@ const Profile: React.FC = () => {
   const { user } = useAuth();
   const router = useRouter();
 
-  // Profile state
+
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [socialAccounts, setSocialAccounts] = useState<string[]>(["", "", ""]);
   const [interest, setInterest] = useState<string[]>([]);
   const [pronouns, setPronouns] = useState("");
-  const [saveStatus, setSaveStatus] = useState<{ 
-    success: boolean; 
-    error: boolean 
-  }>({ 
-    success: false, 
-    error: false 
-  });
-
-  // Events state
+  const [saveStatus, setSaveStatus] = useState<{ success: boolean; error: boolean}>({ success: false, error: false });
+  const [hasFetchedData, setHasFetchedData] = useState(false);
   const { myEvents, joinedEvents, deleteMyEvent, leaveEvent, fetchEvents } = useEvents();
 
-  // Fetch user data and events
-  useEffect(() => {
-    if (!user) return;
 
+  useEffect(() => {
+    //fetch only when retrieve it
+    if (!user || hasFetchedData) return;
+
+
+    //fetch function
     const getUserData = async () => {
+
       try {
+
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
+          const data = docSnap.data();
 
-          setBio(docSnap.data().bio || "");
-          setDisplayName(docSnap.data().displayName || "");
-          setSocialAccounts(docSnap.data().socialAccounts || ["", "", ""]);
-          setInterest(docSnap.data().interests || []);
-          setProfileImage(docSnap.data().selectedImage || null);
-          setPronouns(docSnap.data().pronouns || "");
+          setBio(data.bio || "");
+          setDisplayName(data.displayName || "");
+          setSocialAccounts(data.socialAccounts || ["", "", ""]);
+          setInterest(data.interests || []);
+          setProfileImage(data.selectedImage || null);
+          setPronouns(data.pronouns || "");
 
         } else {
-          await setDoc(docRef, { 
-            bio: "",  socialAccounts: ["", "", ""], interests: [], displayName: "",  profileImage: null, pronouns: ""
-          });
+          await setDoc(docRef, {bio: "", socialAccounts: ["", "", ""], interests: [], displayName: "", profileImage: null, pronouns: "",});
         }
+
+        setHasFetchedData(true); 
       } catch {
-       console.log("error getting data");
+        console.log("Error getting data");
       }
     };
 
     getUserData();
     fetchEvents();
-  }, [user, fetchEvents]);
+  }, [user, hasFetchedData, fetchEvents]);
+
 
   const handleSave = async () => {
     if (!user?.uid) {
