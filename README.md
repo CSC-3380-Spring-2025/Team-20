@@ -14,9 +14,9 @@ An interactive website to connect with LSU people.
 - Windows
   
 # Important Links
-Figma: <a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs</a>\
-Designs: [link]\
-Styles Guide(s): [link]
+<a href ="https://www.figma.com/design/JHiBOGEnhZtuueDTH4jwWk/UNI-FriendSync?node-id=0-1&p=f">Uni-Designs Figma</a>\
+Kanban Board: <a href= "https://originatelearnexecute.atlassian.net/jira/software/projects/MBA/boards/1">Our KanBan Board</a>\
+
 
 # How to Run Dev and Test Environments
 1. Clone the Repository
@@ -31,7 +31,9 @@ cd ./frontend/
 ```
 npm install 
 ```
-3. Run Environment. Make sure to use a compatible web browser. Preferably Google Chrome
+4. Add your .env file in frontend folder (permissions required)
+   
+5. Run Environment. Make sure to use a compatible web browser. Preferably Google Chrome
 ```
 npm run dev
 ```
