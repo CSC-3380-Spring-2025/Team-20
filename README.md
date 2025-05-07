@@ -9,6 +9,10 @@ Quality Assurance Tester: Lily Yang (lyang33lsu)\
 
 Quality Assurance Tester: Lizeth Rodriguez (liz3throdriguez)
 
+
+
+
+
 # About Our Software
 An interactive website to connect with LSU people. 
 

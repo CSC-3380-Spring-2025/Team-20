@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useHover } from "../hooks/usehover";
 import * as styles from "../styles/ocstyle";
 
-const options = [ "Restaurants", "Bars and Cafes", "Parks and Recreation", "Arcades", "Monthly Events"] as const;
+const options = [ "Restaurants", "Bars and Cafes", "Parks and Recreation", "Arcades", "Monthly Events", "City Life Calendar",] as const;
 
 
 //passes an index value of our options. easier to maneuver

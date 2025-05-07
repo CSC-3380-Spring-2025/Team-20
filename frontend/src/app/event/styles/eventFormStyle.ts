@@ -105,4 +105,3 @@ export const cancelButton: CSSProperties = {
   transition: 'background-color 0.3s ease',
 };
 
-
