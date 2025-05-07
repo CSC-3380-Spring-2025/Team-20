@@ -1,6 +1,6 @@
 "use client";
 
-"use client";
+
 
 import React, { useState } from "react";
 import Header from "../components/header";
@@ -10,10 +10,11 @@ import OptionsBar from "../outsideCampus/components/optionsbar";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/context/auth-context";
-import EventCard from './EventCard';
+import EventCard from './components/EventCard';
 
 
-import { useAuth } from "../context/auth-context";
+
+
 
 
 
@@ -265,6 +266,7 @@ export default function OutsideCampus() {
   const router = useRouter();
   const [selectedInterest, setSelectedInterest] = useState<InterestCategory | "">("");
   const [events, setEvents] = useState<EventCard[]>(mockCards);
+  
 
   const {user} = useAuth();
   if (!user) {
