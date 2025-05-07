@@ -1,300 +1,488 @@
-// "use client";
-
-// import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-// import L from "leaflet";
-// import { Marker, Popup } from "react-leaflet";
-// import { useCallback, useMemo, useRef, useState } from "react";
-
-// // INTERNAL IMPORT
-// import Header from "../components/header";
-// import { HomeButton, SearchBar } from "./components/mapcontrols";
-// import { buildingBlueprint, buildingPopup } from "./components/popups";
-// import styles from "../../../styles/map.module.css";
-
-// export default function Map() {
-//   const position: [number, number] = [30.413436, -91.180144];
-
-//   const pin = {
-//     lat: 30.413436,
-//     lng: -91.180144,
-//   };
-
-//   const pinIcon = new L.Icon({
-//     iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-//     shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
-//     iconSize: [25, 41],
-//     iconAnchor: [12, 41],
-//     popupAnchor: [1, -34],
-//     shadowSize: [41, 41],
-//   });
-
-//   function DraggableMarker() {
-//     const [draggable, setDraggable] = useState(false);
-//     const [position, setPosition] = useState(pin);
-//     const markerRef = useRef<L.Marker | null>(null);
-
-//     const eventHandlers = useMemo(
-//       () => ({
-//         drag(e: L.LeafletEvent) {
-//           const marker = markerRef.current;
-//           if (marker != null) {
-//             const latlng = marker.getLatLng();
-//             document.getElementById("coordinates")!.innerText = `Dragging: Lat ${latlng.lat.toFixed(
-//               5
-//             )}, Lng ${latlng.lng.toFixed(5)}`;
-//           }
-//         },
-//         dragend() {
-//           const marker = markerRef.current;
-//           if (marker != null) {
-//             const latlng = marker.getLatLng();
-//             setPosition(latlng);
-//             document.getElementById("coordinates")!.innerText = `Pin Location: Lat ${latlng.lat.toFixed(
-//               5
-//             )}, Lng ${latlng.lng.toFixed(5)}`;
-//           }
-//         },
-//       }),
-//       []
-//     );
-
-//     const toggleDraggable = useCallback(() => {
-//       setDraggable((d) => !d);
-//     }, []);
-
-//     return (
-//       <div>
-//         <Marker
-//           draggable={draggable}
-//           eventHandlers={eventHandlers}
-//           position={position}
-//           ref={markerRef}
-//           icon={pinIcon}
-//         >
-//           <Popup minWidth={90}>
-//             <span onClick={toggleDraggable}>
-//               {draggable 
-//               ? "Pin is currently draggable"
-//               : "Click the popup to make pin draggable"}
-//             </span>
-//           </Popup>
-//         </Marker>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className={styles.headerstyle}>
-//       <Header />
-//       <MapContainer
-//         center={position}
-//         zoom={17}
-//         scrollWheelZoom={true}
-//         className={styles.map}
-//       >
-//         {/* Display Draggable Marker */}
-//         <DraggableMarker />
-
-//         {/* Display Coordinates */}
-//         <div
-//           id="coordinates"
-//           style={{
-//             position: "absolute",
-//             bottom: "40px",
-//             left: "10px",
-//             zIndex: 1000,
-//             backgroundColor: "white",
-//             padding: "8px",
-//             border: "1px solid gray",
-//             borderRadius: "5px",
-//           }}
-//         ></div>
-
-//         {/* Display Home Button */}
-//         <HomeButton center={position} zoom={17} />
-
-//         {/* Display Search Bar */}
-//         <SearchBar />
-
-//         {/* Display Map */}
-//         <TileLayer
-//           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-//         />
-
-//         {/* Display Building */}
-//         <GeoJSON
-//           data={buildingBlueprint}
-//           onEachFeature={buildingPopup}
-//           style={() => ({
-//             color: "purple",
-//             weight: 1,
-//             fillOpacity: 0.4,
-//           })}
-//         />
-//       </MapContainer>
-//     </div>
-//   );
-// }
-
-
 "use client";
 
-import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import { useCallback, useMemo, useRef, useState } from "react";
-
-/*
-const MapContainer = dynamic(
-    () => import("react-leaflet").then((mod) => mod.MapContainer),
-    { ssr: false }
-  );
-  const TileLayer = dynamic(
-    () => import("react-leaflet").then((mod) => mod.TileLayer),
-    { ssr: false }
-  );
-  const GeoJSON = dynamic(
-    () => import("react-leaflet").then((mod) => mod.GeoJSON),
-    { ssr: false }
-  );
-  const Marker = dynamic(
-    () => import("react-leaflet").then((mod) => mod.Marker),
-    { ssr: false }
-  );
-  const Popup = dynamic(
-    () => import("react-leaflet").then((mod) => mod.Popup),
-    { ssr: false }
-  );
-*/
-
-// INTERNAL IMPORT
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import Header from "../components/header";
-import { HomeButton, SearchBar } from "./components/mapcontrols";
-import { buildingBlueprint, buildingPopup } from "./components/popups";
+import HomeButton from "../map/components/homebutton";
+import SearchBar from "../map/components/searchbar";
+import { LocationContent } from "../map/components/popups";
 import styles from "../map/styles/map.module.css";
 
-export default function Map() {
-  const position: [number, number] = [30.413436, -91.180144];
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
 
-  const pin = {
-    lat: 30.413436,
-    lng: -91.180144,
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+
+const GeoJSON = dynamic(
+  () => import("react-leaflet").then((mod) => mod.GeoJSON),
+  { ssr: false }
+);
+
+const LayerGroup = dynamic(
+  () => import("react-leaflet").then((mod) => mod.LayerGroup),
+  { ssr: false }
+);
+
+const ZoomControl = dynamic(
+    () => import("react-leaflet").then((mod) => mod.ZoomControl),
+    { ssr: false }
+  );  
+
+const CustomGeoJSON = ({ data, visible, onEachFeature }: { 
+    data: any, 
+    visible: boolean, 
+    onEachFeature: (feature: any, layer: any) => void 
+  }) => {
+    if (!visible) return null;
+    
+    return (
+      <GeoJSON
+        data={data}
+        pointToLayer={(feature, latlng) => {
+          const L = require("leaflet");
+          return L.marker(latlng, {
+            icon: L.icon({
+              iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+              shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41],
+            }),
+          });
+        }}
+        onEachFeature={onEachFeature}
+      />
+    );
   };
 
-  const pinIcon = new L.Icon({
-    iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
+interface Category {
+  id: string;
+  name: string;
+  subcategories?: Category[];
+}
 
-  function DraggableMarker() {
-    const [draggable, setDraggable] = useState(false);
-    const [position, setPosition] = useState(pin);
-    const markerRef = useRef<L.Marker | null>(null);
+export default function Map() {
+  const position: [number, number] = [30.40797, -91.18549]; //Center of Map
+  const [visibleCategories, setVisibleCategories] = useState<Record<string, boolean>>({});
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
-    const eventHandlers = useMemo(
-      () => ({
-        drag() {
-          const marker = markerRef.current;
-          if (marker != null) {
-            const latlng = marker.getLatLng();
-            document.getElementById("coordinates")!.innerText = `Dragging: Lat ${latlng.lat.toFixed(
-              5
-            )}, Lng ${latlng.lng.toFixed(5)}`;
-          }
+  const categories: Category[] = [
+    {
+      id: "buildings",
+      name: "Buildings",
+      subcategories: [
+        {
+          id: "academic&research",
+          name: "Academic & Research",
+          subcategories: [
+            { id: "agriculturalchemistry", name: "Agricultural Chemistry Building" },
+            { id: "agriculturemetal", name: "Agriculture Metal Building" },
+            { id: "allen", name: "Allen Hall" },
+            { id: "animal&foodscience", name: "Animal and Food Science Laboratory" },
+            { id: "art", name: "Art Building" },
+            { id: "atkinson", name: "Atkinson Hall" },
+            { id: "audubon", name: "Audubon Hall" },
+            { id: "audubonsugar", name: "Audubon Sugar Factory" },
+            { id: "barnesogden", name: "Barnes Ogden Art & Design Complex" },
+            { id: "businessedu", name: "Business Education Complex" },
+            { id: "CAMD", name: "CAMD" },
+            { id: "wetlandres", name: "Center for Wetland Resources" },
+            { id: "coates", name: "Charles E. Coates Hall" },
+            { id: "chemistry&materials", name: "Chemistry & Materials Building" },
+            { id: "choppin", name: "Choppin Hall"},
+            { id: "clyde", name: "Clyde Ingram Hall"},
+            { id: "cottonfiber", name: "Cotton Fiber Lab"},
+            { id: "dalrymplememorial", name: "Dalrymple Memorial Building"},
+            { id: "ebdoran", name: "E.B. Doran Hall"},
+            { id: "eleceng", name: "Electrical Engineering Building"},
+            { id: "enecoast", name: "Energy, Coast & Environment Building"},
+            { id: "englab", name: "Engineering Laboratory Annex Building"},
+            { id: "engres", name: "Engineering Research & Development Building"},
+            { id: "foodscience", name: "Food Science Building"},
+            { id: "francioni", name: "Francioni Hall"},
+            { id: "french", name: "French House"},
+            { id: "harryd", name: "Harry D. Wilson Laboratories"},
+            { id: "hatcher", name: "Hatcher Hall"},
+            { id: "hillmemorial", name: "Hill Memorial Library"},
+            { id: "hilltop", name: "Hilltop Arboretum"},
+            { id: "hodges", name: "Hodges Hall"},
+            { id: "horticulture", name: "Horticulture Teaching Facility"},
+            { id: "howe-russell", name: "Howe-Russell Kniffen Geosciences Building"},
+            { id: "hueyp", name: "Huey P. Long Field House"},
+            { id: "humaneco", name: "Human Ecology Building"},
+            { id: "jc", name: "J.C. Miller"},
+            { id: "jesscoates", name: "Jesse Coates Hall"},
+            { id: "johnston", name: "Johnston Hall"},
+            { id: "journalism", name: "Journalism Building"},
+            { id: "juliant", name: "Julian T. White Hall"},
+            { id: "knapp", name: "Knapp Hall"},
+            { id: "latransport", name: "La. Transportation Research Center"},
+            { id: "lahouse", name: "LaHouse"},
+            { id: "law", name: "Law Center"},
+            { id: "lbtc", name: "LBTC Building 3000"},
+            { id: "lifesci", name: "Life Sciences"},
+            { id: "lifesciann", name: "Life Sciences Annex"},
+            { id: "lockett", name: "Lockett Hall"},
+            { id: "laanimal", name: "Louisiana Animal Disease Diagnostic Laboratory"},
+            { id: "ladigital", name: "Louisiana Digital Media Center"},
+            { id: "latech", name: "Louisiana Emerging Technologies Center"},
+            { id: "middleton", name: "LSU Library"},
+            { id: "manship", name: "Manship Research Facility"},
+            { id: "militarysci", name: "Military Science-Aerospace Studies Building"},
+            { id: "music&drama", name: "Music & Dramatic Arts Building"},
+            { id: "music", name: "Music Building"},
+            { id: "nicholson", name: "Nicholson Hall"},
+            { id: "nuclearsci", name: "Nuclear Science Building"},
+            { id: "nuclearscishop", name: "Nuclear Science Shop"},
+            { id: "pft", name: "Patrick F. Taylor Hall"},
+            { id: "peabody", name: "Peabody Hall"},
+            { id: "pertt", name: "PERTT Lab"},
+            { id: "petroleum", name: "Petroleum Engineering Lab"},
+            { id: "prescott", name: "Prescott Hall"},
+            { id: "renewresou", name: "Renewable Natural Resources Building"},
+            { id: "res&pool", name: "Research Lab and Motor Pool"},
+            { id: "rivermodel", name: "River Modeling Center"},
+            { id: "sea", name: "Sea Grant Building"},
+            { id: "seashop", name: "Sea Grant Shop"},
+            { id: "stubbs", name: "Stubbs Hall"},
+            { id: "sturgis", name: "Sturgis Hall"},
+            { id: "potato", name: "Sweet Potato Lab"},
+            { id: "tigerband", name: "Tiger Band Hall"},
+            { id: "tureaud", name: "Tureaud Hall"},
+            { id: "univlab", name: "University Laboratory School"},
+            { id: "vetmed", name: "Veterinary Medicine"},
+            { id: "vetsciani", name: "Veterinary Science Animal Parasite Building"},
+            { id: "vetsciann", name: "Veterinary Science Annex"},
+            { id: "vetscipou", name: "Veterinary Science Poultry Building"},
+            { id: "virginiarice", name: "Virginia Rice Williams Hall"},
+            { id: "woodin", name: "Woodin Hall"},
+          ],
         },
-        dragend() {
-          const marker = markerRef.current;
-          if (marker != null) {
-            const latlng = marker.getLatLng();
-            setPosition(latlng);
-            document.getElementById("coordinates")!.innerText = `Pin Location: Lat ${latlng.lat.toFixed(
-              5
-            )}, Lng ${latlng.lng.toFixed(5)}`;
-          }
+        { id: "greek", name: "Greek Houses" },
+        { id: "libraries", 
+          name: "Libraries",
+          subcategories: [
+            { id: "hillmemorial", name: "Hill Memorial Library" },
+            { id: "middleton", name: "LSU Library" },
+            { id: "virginiarice", name: "Virginia Rice Williams Hall" },
+          ]
         },
-      }),
-      []
-    );
+      ],
+    },
+    {
+      id: "event&performance",
+      name: "Event & Performance Venues",
+      subcategories: [
+        { id: "imobrown", name: "Imo Brown Complex" },
+        { id: "livestockexhibit", name: "Livestock Exhibit Building" },
+        { id: "cookconference", name: "Lod and Carole Cook Conference Center" },
+        { id: "cookalumni", name: "Lod Cook Alumni Center" },
+        { id: "union", name: "LSU Student Union" },
+        { id: "minifarm", name: "Mini Farm" },
+        { id: "music&dramaticarts", name: "Music & Dramatic Arts Building" },
+        { id: "music", name: "Music Building" },
+        { id: "nelsonmem", name: "Nelson Memorial" },
+        { id: "parkercol", name: "Parker Coliseum" },
+        { id: "reillytheatre", name: "Reilly Theatre" },
+        { id: "shawcenter", name: "Shaw Center for the Arts" },
+        { id: "uniontheatre", name: "Union Theater" },
+      ],
+    },
+    {
+      id: "athletics",
+      name: "LSU Athletics",
+      subcategories: [
+        { id: "baseball", 
+          name: "Baseball",
+          subcategories: [
+            { id: "alexbox", name: "Alex Box Stadium" }
+          ] 
+        },
+        { id: "football", 
+          name: "Football",
+          subcategories: [
+            { id: "tigerstadium", name: "Tiger Stadium" }
+          ] 
+         },
+        { id: "golf", 
+          name: "Golf",
+          subcategories: [
+            { id: "golfclubhouse", name: "Golf Team Clubhouse" },
+            { id: "univeristyclub", name: "University Club" }
+          ]
+        },
+        { id: "gymnastics",
+          name: "Gymnastics",
+          subcategories: [
+            { id: "gymnasticscenter", name: "Gymnastics Training Center" },
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+        { id: "mensbasketball", 
+          name: "Men's Basketball",
+          subcategories: [
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+        { id: "soccer",
+          name: "Soccer",
+          subcategories: [
+            { id: "soccerstadium", name: "LSU Soccer Stadium" }
+          ]
+        },
+        { id: "softball",
+          name: "Softball",
+          subcategories: [
+            { id: "tigerpark", name: "Tiger Park" }
+          ]
+        },
+        { id: "swimming",
+          name: "Swimming & Diving",
+          subcategories: [
+            { id: "natatorium", name: "Natatorium" }
+          ]
+        },
+        { id: "tennis", 
+          name: "Tennis",
+          subcategories: [
+            { id: "tenniscomplex", name: "LSU Tennis Complex" }
+          ]
+        },
+        { id: "track&field", 
+          name: "Track & Field",
+          subcategories: [
+            { id: "trackstadium", name: "Bernie Moore Track & Field Stadium" },
+            { id: "carlmaddox", name: "Carl Maddox Field House" }
+          ]
+        },
+        { id: "volleyball", 
+          name: "Volleyball",
+          subcategories: [
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+        { id: "womensbasketball", 
+          name: "Women's Basketball",
+          subcategories: [
+            { id: "petemaravich", name: "Pete Maravich Assembly Center" }
+          ]
+        },
+      ],
+    },
+    {
+      id: "eating",
+      name: "Places to Eat",
+      subcategories: [
+        { id: "dining", 
+          name: "Dining Halls",
+          subcategories: [
+            { id: "459", name: "459 Commons" },
+            { id: "five", name: "The Five" },
+          ] 
+        },
+        { id: "fastcasual", 
+          name: "Fast Casual",
+          subcategories: [
+            { id: "459", name: "459 Commons" },
+            { id: "businessed", name: "Business Education Complex" },
+            { id: "dairy", name: "Dairy Store" },
+            { id: "foster", name: "Foster Hall" },
+            { id: "law", name: "Law Center" },
+            { id: "bookstore", name: "LSU Bookstore" },
+            { id: "middleton", name: "LSU Library" },
+            { id: "union", name: "LSU Student Union" },
+            { id: "panera", name: "Panera Bread" },
+            { id: "five", name: "The Five" },
+            { id: "veterinarymedicine", name: "Veterinary Medicine" },
+            { id: "retail", name: "Retail Center at Nicholson Gatway"},
+          ]
+        },
+        { id: "fine", 
+          name: "Fine Dining",
+          subcategories: [
+            { id: "union", name: "LSU Student Union" },
+            { id: "club", name: "The Club at Union Square" },
+          ] 
+        },
+      ],
+    },
+    {
+      id: "pointsofinterest",
+      name: "Points of Interest",
+      subcategories: [
+        { id: "burdenmuseum", name: "Burden Museum & Gardens" },
+        { id: "dairy", name: "Dairy Store" },
+        { id: "greektheatre", name: "Greek Theatre" },
+        { id: "hilltop", name: "Hilltop Arboretum" },
+        { id: "indian", name: "Indian Mounds (LSU Campus Mounds)" },
+        { id: "sportshop", name: "LSU Sport Shop"},
+        { id: "union", name: "LSU Student Union"},
+        { id: "warmemorial", name: "LSU War Memorial"},
+        { id: "oakgrove", name: "Memorial Oak Grove"},
+        { id: "memorialtower", name: "Memorial Tower"},
+        { id: "mikethetiger", name: "Mike the Tiger's Habitat"},
+        { id: "mississippiriver", name: "Mississippi River Levee Bike Path and Overlook"},
+        { id: "paradeground", name: "Parade Ground"},
+        { id: "t-33", name: "T-33 Aircraft"},
+        { id: "quad", name: "The Quad"},
+        { id: "dodsonauditorium", name: "William R. Dodson Auditorium"},
+        { id: "retail", name: "Retail Center at Nicholson Gatway"}
+      ],
+    },
+  ];
 
-    const toggleDraggable = useCallback(() => {
-      setDraggable((d) => !d);
-    }, []);
+  //Toggle Category Visibility & Children
+  const toggleCategory = (categoryId: string, checked?: boolean) => {
+    const newChecked = checked !== undefined ? checked : !visibleCategories[categoryId];
+    
+    setVisibleCategories(prev => ({
+      ...prev,
+      [categoryId]: newChecked
+    }));
+    
+    //Find Category in Tree
+    const findAndUpdateChildren = (categories: Category[]): boolean => {
+      for (const category of categories) {
+        if (category.id === categoryId) {
+          updateAllChildren(category, newChecked);
+          return true;
+        }
+        if (category.subcategories) {
+          const found = findAndUpdateChildren(category.subcategories);
+          if (found) return true;
+        }
+      }
+      return false;
+    };
+    
+    findAndUpdateChildren(categories);
+  };
 
+  //Update All Children in Category
+  const updateAllChildren = (category: Category, checked: boolean) => {
+    if (category.subcategories) {
+      category.subcategories.forEach(subcategory => {
+        setVisibleCategories(prev => ({
+          ...prev,
+          [subcategory.id]: checked
+        }));
+        updateAllChildren(subcategory, checked);
+      });
+    }
+  };
+
+  //Toggle Category Expansion
+  const toggleExpand = (categoryId: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  };
+
+  //Recursive Rendering 
+  const CategoryItem = ({ category, level = 0 }: { category: Category, level?: number }) => {
+    const hasChildren = !!category.subcategories;
+    const isExpanded = expandedCategories[category.id];
+    const isChecked = visibleCategories[category.id] || false;
+    
     return (
-      <div>
-        <Marker
-          draggable={draggable}
-          eventHandlers={eventHandlers}
-          position={position}
-          ref={markerRef}
-          icon={pinIcon}
-        >
-          <Popup minWidth={90}>
-            <span onClick={toggleDraggable}>
-              {draggable 
-              ? "Pin is currently draggable"
-              : "Click the popup to make pin draggable"}
-            </span>
-          </Popup>
-        </Marker>
+      <div className={`${styles.categoryItem} ${level > 0 ? styles.nested : ''}`} style={{ marginLeft: `${level * 15}px` }}>
+        <div className={styles.categoryHeader}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={() => toggleCategory(category.id)}
+              className={styles.checkboxInput}
+            />
+            <span className={styles.checkboxCustom}></span>
+            {category.name}
+          </label>
+          {hasChildren && (
+            <button
+              className={`${styles.expandButton} ${isExpanded ? styles.expanded : ''}`}
+              onClick={() => toggleExpand(category.id)}
+              aria-label={isExpanded ? "Collapse" : "Expand"}
+            >
+              {isExpanded ? "▼" : "▶"}
+            </button>
+          )}
+        </div>
+        
+        {hasChildren && isExpanded && (
+          <div className={styles.subcategories}>
+            {(category.subcategories ?? []).map(subcategory => (
+              <CategoryItem key={subcategory.id} category={subcategory} level={level + 1} />
+            ))}
+          </div>
+        )}
       </div>
     );
-  }
+  };
+
+  const onEachFeature = (feature: any, layer: any) => {
+    layer.bindPopup(`
+      <h3>${feature.properties.name}</h3>
+      <p>${feature.properties.description}</p>
+    `);
+  };
 
   return (
-    <div className={styles.headerstyle}>
+    <div className={styles.container}>
       <Header />
-      <MapContainer
-        center={position}
-        zoom={17}
-        scrollWheelZoom={true}
-        className={styles.map}
-      >
-        {/* Display Draggable Marker */}
-        <DraggableMarker />
-
-        {/* Display Coordinates */}
-        <div
-          id="coordinates"
-          style={{
-            position: "absolute",
-            bottom: "40px",
-            left: "10px",
-            zIndex: 1000,
-            backgroundColor: "white",
-            padding: "8px",
-            border: "1px solid gray",
-            borderRadius: "5px",
-          }}
-        ></div>
-
-        {/* Display Home Button */}
-        <HomeButton center={position} zoom={17} />
-
-        {/* Display Search Bar */}
-        <SearchBar />
-
-        {/* Display Map */}
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        />
-
-        {/* Display Building */}
-        <GeoJSON
-          data={buildingBlueprint}
-          onEachFeature={buildingPopup}
-          style={() => ({
-            color: "purple",
-            weight: 1,
-            fillOpacity: 0.4,
-          })}
-        />
-      </MapContainer>
-    </div>
-  );
-}
+      <div className={styles.mapWrapper}>
+        {typeof window !== 'undefined' && (
+          <MapContainer 
+            center={position} 
+            zoom={15} 
+            scrollWheelZoom={true} 
+            className={styles.map}
+            zoomControl={false}
+          >
+            <HomeButton center={position} zoom={15} />
+            <SearchBar />
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <ZoomControl position="bottomright" />
+            <LayerGroup>
+              {LocationContent.features.map((building, index) => {
+                const isVisible = building.properties?.category 
+                  ? visibleCategories[building.properties.category] 
+                  : false;
+                
+                return (
+                  <CustomGeoJSON
+                    key={index}
+                    data={building}
+                    visible={isVisible}
+                    onEachFeature={onEachFeature}
+                  />
+                );
+              })}
+            </LayerGroup>
+          </MapContainer>
+        )}
+        
+        {/* Sidebar Styling */}
+        <div className={styles.sidebar}>
+          <div className={styles.sidebarContent}>
+              <h3 className={styles.categoriesTitle}>Locations</h3>
+              <div className={styles.categoriesList}>
+                {categories.map(category => (
+                  <CategoryItem key={category.id} category={category} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      );
+    }

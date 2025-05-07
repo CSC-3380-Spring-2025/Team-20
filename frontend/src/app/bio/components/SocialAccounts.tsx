@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -38,3 +39,4 @@ const SocialAccountsSection: React.FC<SocialAccountsSectionProps> = ({
 };
 
 export default SocialAccountsSection;
+

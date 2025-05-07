@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import * as styles from "../styles/headerstyle";
+import * as styles from "../../app/styles/headerstyle";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 

@@ -90,6 +90,26 @@ export default function Interest() {
       "Beach", "Mountains", "Desert", "City", "Countryside", "Island", "Cruise", 
       "Road Trip", "Camping", "Backpacking", "Sightseeing", "Hiking", "Nature", 
       "Adventure", "Luxury", "Budget Travel", "Cultural"
+    ],
+    Technology: [
+      "AI", "Robotics", "Gaming Tech", "Smartphones", "Programming", "Cybersecurity",
+      "Blockchain", "Gadgets", "Virtual Reality", "Web Development", "Space Tech",
+      "Drones", "Home Automation", "3D Printing", "Cloud Computing"
+    ],
+    Education: [
+      "Math", "Science", "History", "Literature", "Languages", "Philosophy",
+      "Economics", "Political Science", "Psychology", "Art History", "Geography",
+      "Sociology", "STEM", "Environmental Studies", "Ethics"
+    ],
+    Wellness: [
+      "Yoga", "Meditation", "Fitness", "Healthy Eating", "Journaling", "Sleep Hygiene",
+      "Breathwork", "Therapy", "Mindfulness", "Pilates", "Nature Walks",
+      "Detox", "Massage", "Aromatherapy", "Stretching"
+    ],
+    Entertainment: [
+      "TV Shows", "Podcasts", "Board Games", "Video Games", "Stand-Up Comedy",
+      "YouTube", "Live Theater", "Concerts", "Magic Shows", "Musicals",
+      "Streaming", "Karaoke", "Escape Rooms", "Improv", "Trivia Nights"
     ]
   };
 
