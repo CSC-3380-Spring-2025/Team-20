@@ -1,0 +1,219 @@
+.labelNames {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  margin-left: 45px; 
+  
+}
+
+.profileContainer {
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profileBubble {
+  width: 120px;
+  height: 120px;
+  margin-left: 4%;
+  border-radius: 50%;
+  background-color: white;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileImageBubble {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholderBubble {
+  font-size: 48px;
+  color: #e8dfdf;
+}
+
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 1;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.popupContent {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.imageOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  z-index: 300;
+}
+
+.imageThumbnail {
+  width: 70px;
+  height: 70px;
+
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.imageThumbnail:hover {
+  border-color: #4c2898;
+}
+
+.closeButton {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: #4c2898;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.dropzoneContainer {
+  width: 150px;
+  height: 150px;
+  margin: 20px 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #c1bfbf;
+  border-radius: 50%; 
+  cursor: pointer;
+  background-color: #340c0c;
+}
+  
+.profileImageUpload {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nameContainer {
+  width: 400px;
+  height: auto;
+  margin: 10px 0 0 40px;
+  border: 2px solid #c1bfbf;
+  border-radius: 10px; 
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+} 
+
+.nameInput {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: transparent;
+}
+
+
+.bioContainer {
+  width: 90%;
+  height: 150px;
+  margin: 10px;
+  border: 2px solid #c1bfbf;
+  border-radius: 10px; 
+  background-color: #ffffff;
+}
+
+.bioInput {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.socialAccountsContainer {
+  width: 400px;
+  height: 50px;
+  margin: 10px 0 0 40px;
+  border: 2px solid #c1bfbf;
+  border-radius: 10px; 
+  background-color: #ffffff;
+}
+
+.socialAccountsInput {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.saveButton {
+  width: 100px;
+  height: 40px;
+  margin: 10px 0 0 40px;
+  color: white;
+  background-color: #d6ad19;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3;
+}
+
+.saveButton:hover{
+  background-color: #e2cb56;
+}
+
+.interestsContainer {
+  position: relative; 
+  width: 80%;
+  height: auto; 
+  padding: 10px;
+  border: 2px solid #c1bfbf;
+  border-radius: 5px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  margin: 20px 0 0 40px;
+}
+
+
+.interestsList {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 8px;
+  margin: 10px 0 0 0;
+}
+
+
+.interestsBox {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #c1bfbf;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
