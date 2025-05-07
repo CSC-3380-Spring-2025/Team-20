@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import React from "react";
@@ -31,5 +33,6 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, setBio, maxLength }) => {
 
 );
 };
+
 
 export default BioSection;
