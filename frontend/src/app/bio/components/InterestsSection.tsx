@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -111,3 +112,4 @@ const InterestsSection: React.FC<InterestsSectionProps> = ({  interest, setInter
 };
 
 export default InterestsSection;
+

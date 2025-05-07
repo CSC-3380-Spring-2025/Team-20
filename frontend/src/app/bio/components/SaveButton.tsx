@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -24,5 +25,3 @@ const SaveButton: React.FC<SaveButtonProps> = ({ onSave, saveStatus }) => {
     </div>
   );
 };
-
-export default SaveButton;
