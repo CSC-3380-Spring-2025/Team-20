@@ -5,11 +5,15 @@
 import React, { useState } from "react";
 import Header from "../components/header";
 import * as styles from "../outsideCampus/styles/ocstyle";
-import { useHover } from "../outsideCampus/hooks/usehover";
+import { useHover } from "./hooks/usehover";
 import OptionsBar from "../outsideCampus/components/optionsbar";
 import { useRouter } from "next/navigation";
+
 import { useAuth } from "@/context/auth-context";
 import EventCard from './EventCard';
+
+
+import { useAuth } from "../context/auth-context";
 
 
 
@@ -344,5 +348,10 @@ export default function OutsideCampus() {
       </main>
     </>
   );
-  }
+
+}
+
   
+
+  
+

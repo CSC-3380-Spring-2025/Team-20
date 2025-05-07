@@ -1,5 +1,12 @@
 export const backbutton = {
   border: "none",
+
+  
+ 
+ 
+  Color: "lightblue",
+  
+
   padding: "12px 18px",
   borderRadius: "25px",  
   fontSize: "20px",
@@ -8,6 +15,7 @@ export const backbutton = {
   color: "#461D7C",  // Purple text
   backgroundColor: "#5D4E98",  
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",  
+
 };
 
 export const container = {
