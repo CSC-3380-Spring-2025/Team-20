@@ -116,7 +116,7 @@
   margin: 10px 0 0 40px;
   border: 2px solid #c1bfbf;
   border-radius: 10px; 
-  background-color: #ffffff;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -130,10 +130,11 @@
   background-color: transparent;
 }
 
+
 .bioContainer {
-  width: 400px;
+  width: 90%;
   height: 150px;
-  margin: 10px 0 0 40px;
+  margin: 10px;
   border: 2px solid #c1bfbf;
   border-radius: 10px; 
   background-color: #ffffff;
@@ -183,7 +184,7 @@
 
 .interestsContainer {
   position: relative; 
-  width: 600px;
+  width: 80%;
   height: auto; 
   padding: 10px;
   border: 2px solid #c1bfbf;
