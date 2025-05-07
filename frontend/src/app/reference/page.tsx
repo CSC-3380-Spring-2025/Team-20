@@ -22,3 +22,4 @@ const IconRefPage: React.FC = () => {
     )
 
 }
+export default IconRefPage;

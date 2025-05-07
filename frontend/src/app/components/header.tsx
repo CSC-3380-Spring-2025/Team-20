@@ -99,7 +99,7 @@ function Header() {
             Game
           </button>
           <button onClick={() => router.push("/reference")} style={styles.mobileLink} aria-label="Go to Reference Page">
-            reference.tsx
+            Reference
           </button>
         </div>
       )}
