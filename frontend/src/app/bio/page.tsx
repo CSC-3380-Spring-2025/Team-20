@@ -105,12 +105,12 @@ const Profile: React.FC = () => {
   }
 
   return (
+    <>
     <div className="relative pb-12">
       <Header />
       
-
       <div className="container mx-auto px-4 pt-6">
-       {/* Profile Image, Name/Pronouns, and Save Button */}
+     
 <div className="flex justify-between items-start mb-8">
   <div className="flex flex-col md:flex-row items-start gap-6">
     <ProfileImageUpload profileImage={profileImage} setProfileImage={setProfileImage} userId={user.uid} />
@@ -144,25 +144,9 @@ const Profile: React.FC = () => {
     <SaveButton onSave={handleSave} saveStatus={saveStatus} />
   </div>
 </div>
-=======
       <div className="container mx-auto px-4">
       
-        <div className="flex justify-between items-start mb-6">
-          <ProfileImageUpload  profileImage={profileImage}  setProfileImage={setProfileImage} userId={user.uid}/>
-          <SaveButton  onSave={handleSave}  saveStatus={saveStatus} />
-        </div>
-
-        <div className="mb-8">
-          <label className={styles.labelNames}>Name</label>
-          <div className={styles.nameContainer}>
-            <input className={styles.nameInput} type="text" placeholder="Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)}/>
-          </div>
-
-          <label className={styles.labelNames}>Pronouns</label>
-          <div className={styles.nameContainer}>
-            <input className={styles.nameInput} type="text" placeholder="e.g she/her"  value={pronouns} onChange={(e) => setPronouns(e.target.value)}/>
-          </div>
-        </div>
+       
 
 
         
@@ -204,6 +188,8 @@ const Profile: React.FC = () => {
         </div>
       </div>
     </div>
+    </div>
+    </>
   );
 };
 

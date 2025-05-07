@@ -80,6 +80,7 @@ export default function Events() {
            width: "100%"}}>
 
           <h1 style={styles.titleStyle}>Events</h1>
+         
           <button  style={styles.joinButton} className=" bg-purple-950 hover:bg-purple-700" onClick={handleAddEvent} disabled={isSubmitting}>
             ➕ Add Event
           </button>
@@ -103,9 +104,11 @@ export default function Events() {
 
       </DivContainer>
 
-      <button style={styles.linkStyle} onClick={() => router.push("/outsideCampus")}>
-        Leaving LSU?
+      <button   className="bg-yellow-200  rounded-full hover:bg-yellow-100 transition-opacity-0.2 ml-2" style={styles.linkStyle} onClick={() => router.push("/outsideCampus")}>
+        Leaving LSU?  Click Here!
       </button>
+
+      
     </div>
   );
 }

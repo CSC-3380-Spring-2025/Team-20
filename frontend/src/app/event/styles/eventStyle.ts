@@ -7,11 +7,13 @@ export const titleStyle: CSSProperties = {
 };
 
 export const linkStyle: CSSProperties = {
-  fontSize: '30px',
-  marginTop: '50px',
+  fontSize: '20px',
+  
   color: 'black',
-  padding: '1px 12px',
+  padding: '4px 12px',
   fontWeight: 'bold',
+  
+ 
 };
 
 export const headerStyle: CSSProperties = {
