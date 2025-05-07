@@ -172,4 +172,3 @@ import { SetStateAction, useState } from "react";
  };
  
  export default TwoPlayerYesNoGame;
-
